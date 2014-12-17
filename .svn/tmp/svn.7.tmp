@@ -1,0 +1,79 @@
+#Test values that feeds into the test cases
+#Note: isForceChangePassword, cartItem quantity and loginMode is not string and cannot 
+#      be converted, hardcode them
+
+#User Service
+firstTimeSignupEmail=chongjinheng@hotmail.com
+userEmail=lim_chengyang@hotmail.com
+firstTimeSignupEmail2=cyc_chong@hotmail.com
+storeName=The store
+newStoreName=That store
+password=cyc12345
+oldPassword=cyc12345
+newPassword=aarief12345
+forceChangePassword=false
+storeImage=akgjewlakwejfha;elifh
+
+
+#forgotPasswordSession stuff
+forgotPasswordSessionID=1
+validDays=1
+
+#Bean creation
+id=1,2,3
+manageSalesID=1
+#index incremented by bean type: product, category, discount
+name=Mouse,Animal,Too Small
+
+#Store Service
+storeID=1
+storeName=Kikilo
+action=0
+categoryID=1
+categoryID2=2
+categoryID3=3
+
+#Product Creation
+productName=Aarief
+code=#0003
+description=Tom's friend
+price=20000
+thumbnail=aoeihgawoeihg[
+categoryIDList=1,2,3
+
+#Category Creation
+productIDList=1,2,3
+
+#Discount Creation
+discountID=1
+type=1
+value=1
+
+#Cart Item creation
+productID=1
+productIDforDAOtest=2
+quantity=2
+customAmountDescription=
+customAmount=
+
+#Sales
+paymentType=0
+subTotalAmount=500
+totalAmount=500
+discountAmount=50
+tenderAmount=1000
+changeAmount=650
+  #send receipt
+email=k.yihui@hotmail.com
+salesID=1
+receiptNumber=140312000001000023
+
+
+#pcrTest
+pcrID=1
+pcrProduct=ChewBaca
+pcrProductCode=SI9092
+pcrCategory=Titan
+
+
+

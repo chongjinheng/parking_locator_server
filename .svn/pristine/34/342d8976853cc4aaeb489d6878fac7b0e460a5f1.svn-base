@@ -1,0 +1,449 @@
+package com.softspace.pos.DTO;
+
+import java.util.Date;
+import java.util.List;
+
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.bean.Store;
+
+/**
+ * General JSON Transfer Object
+ * 
+ * @author original author
+ */
+public class JSONServiceDTO {
+
+	/****** INIT ******/
+	private String device;
+	private String platform;
+	private String versionNo;
+	private String pkXML;
+
+	/****** GENERAL ******/
+	private String serviceName;
+	private JSONServiceError error;
+	private String language;
+	private String sessionKey;
+
+	/***** IDs *****/
+	private Long storeID;
+	private Long productID;
+	private Long categoryID;
+	private Long productCategoryReferenceID;
+	private Long cartItemID;
+	private Long discountID;
+	private Long forgotPassSessionID;
+	private Long salesID;
+
+	/****** ACTIVATION/LOGIN ******/
+	private String userEmail;// email
+	private String storeName;
+	private String password;
+	private String newPassword;
+	private Boolean isForceChangePassword;
+	private Integer loginMode;
+	private Store userProfile;// a store class check if convert into Json
+
+	/**** STORE & INVENTORY ****/
+	private String storeImage;
+	private String action;
+	private List<Long> productIDList;
+	private List<Product> productList;
+	private List<Category> categoryList;
+	private List<Discount> discountList;
+	private List<Discount> discountPackageList;
+	private Long newCategoryID;
+	private Long newProductID;
+	private Long newDiscountID;
+
+	/*** SALES ***/
+	private String email; // customerEmail in disguise
+	private List<CartItem> cartList;
+	private String paymentType;
+	private Long subTotalAmount;
+	private Long totalAmount;
+	private Long discountAmount;
+	private Long tenderAmount;
+	private Long changeAmount;
+	private Discount discountPackage;
+	private String receiptNumber;
+	private List<Sales> salesHistoryList;
+	private Date transactionDate;
+
+	public List<Discount> getDiscountPackageList() {
+		return discountPackageList;
+	}
+
+	public void setDiscountPackageList(List<Discount> discountPackageList) {
+		this.discountPackageList = discountPackageList;
+	}
+
+	public String getCustomerEmail() {
+		return email;
+	}
+
+	public void setCustomerEmail(String customerEmail) {
+		this.email = customerEmail;
+	}
+
+	public String getStoreImage() {
+		return storeImage;
+	}
+
+	public void setStoreImage(String storeImage) {
+		this.storeImage = storeImage;
+	}
+
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+	public List<Sales> getSalesHistoryList() {
+		return salesHistoryList;
+	}
+
+	public void setSalesHistoryList(List<Sales> salesHistoryList) {
+		this.salesHistoryList = salesHistoryList;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
+
+	public Boolean getIsForceChangePassword() {
+		return isForceChangePassword;
+	}
+
+	public void setIsForceChangePassword(Boolean isForceChangePassword) {
+		this.isForceChangePassword = isForceChangePassword;
+	}
+
+	public List<CartItem> getCartList() {
+		return cartList;
+	}
+
+	public void setCartList(List<CartItem> cartList) {
+		this.cartList = cartList;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public Long getSubTotalAmount() {
+		return subTotalAmount;
+	}
+
+	public void setSubTotalAmount(Long subTotalAmount) {
+		this.subTotalAmount = subTotalAmount;
+	}
+
+	public Long getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(Long totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public Long getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(Long discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	public Long getTenderAmount() {
+		return tenderAmount;
+	}
+
+	public void setTenderAmount(Long tenderAmount) {
+		this.tenderAmount = tenderAmount;
+	}
+
+	public Long getChangeAmount() {
+		return changeAmount;
+	}
+
+	public void setChangeAmount(Long changeAmount) {
+		this.changeAmount = changeAmount;
+	}
+
+	public Discount getDiscountPackage() {
+		return discountPackage;
+	}
+
+	public void setDiscountPackage(Discount discountPackage) {
+		this.discountPackage = discountPackage;
+	}
+
+	public void setLoginMode(Integer loginMode) {
+		this.loginMode = loginMode;
+	}
+
+	public Long getStoreId() {
+		return storeID;
+	}
+
+	public void setStoreId(Long storeId) {
+		this.storeID = storeId;
+	}
+
+	public Long getProductId() {
+		return productID;
+	}
+
+	public void setProductId(Long productId) {
+		this.productID = productId;
+	}
+
+	public Long getCategoryId() {
+		return categoryID;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryID = categoryId;
+	}
+
+	public Long getProductCategoryReferenceId() {
+		return productCategoryReferenceID;
+	}
+
+	public void setProductCategoryReferenceId(Long productCategoryReferenceId) {
+		this.productCategoryReferenceID = productCategoryReferenceId;
+	}
+
+	public Long getCartItemId() {
+		return cartItemID;
+	}
+
+	public void setCartItemId(Long cartItemId) {
+		this.cartItemID = cartItemId;
+	}
+
+	public Long getDiscountId() {
+		return discountID;
+	}
+
+	public void setDiscountId(Long discountId) {
+		this.discountID = discountId;
+	}
+
+	public Long getForgotPassSessionId() {
+		return forgotPassSessionID;
+	}
+
+	public void setForgotPassSessionId(Long forgotPassSessionId) {
+		this.forgotPassSessionID = forgotPassSessionId;
+	}
+
+	public Long getSalesId() {
+		return salesID;
+	}
+
+	public void setSalesId(Long salesId) {
+		this.salesID = salesId;
+	}
+
+	public Boolean isForceChangePassword() {
+		return isForceChangePassword;
+	}
+
+	public void setForceChangePassword(boolean isForceChangePassword) {
+		this.isForceChangePassword = isForceChangePassword;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getVersionNo() {
+		return versionNo;
+	}
+
+	public void setVersionNo(String versionNo) {
+		this.versionNo = versionNo;
+	}
+
+	public String getPkXML() {
+		return pkXML;
+	}
+
+	public void setPkXML(String pkXML) {
+		this.pkXML = pkXML;
+	}
+
+	public JSONServiceError getError() {
+		return error;
+	}
+
+	public void setError(JSONServiceError error) {
+		this.error = error;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
+	public String getEmail() {
+		return userEmail;
+	}
+
+	public void setEmail(String email) {
+		this.userEmail = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Integer getLoginMode() {
+		return loginMode;
+	}
+
+	public void setLoginMode(int loginMode) {
+		this.loginMode = loginMode;
+	}
+
+	public Store getUserProfile() {
+		return userProfile;
+	}
+
+	public void setUserProfile(Store userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public List<Product> getProductList() {
+		return productList;
+	}
+
+	public void setProductList(List<Product> productList) {
+		this.productList = productList;
+	}
+
+	public List<Category> getCategoryList() {
+		return categoryList;
+	}
+
+	public void setCategoryList(List<Category> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	public List<Discount> getDiscountList() {
+		return discountList;
+	}
+
+	public void setDiscountList(List<Discount> discountList) {
+		this.discountList = discountList;
+	}
+
+	public Long getNewCategoryID() {
+		return newCategoryID;
+	}
+
+	public void setNewCategoryID(Long newCategoryID) {
+		this.newCategoryID = newCategoryID;
+	}
+
+	public Long getNewProductID() {
+		return newProductID;
+	}
+
+	public void setNewProductID(Long newProductID) {
+		this.newProductID = newProductID;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public Long getNewDiscountID() {
+		return newDiscountID;
+	}
+
+	public void setNewDiscountID(Long newDiscountID) {
+		this.newDiscountID = newDiscountID;
+	}
+
+	public List<Long> getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(List<Long> productIDList) {
+		this.productIDList = productIDList;
+	}
+
+}

@@ -1,0 +1,176 @@
+package com.softspace.test.service;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.service.StoreService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author chongjinheng
+ */
+public class StoreServiceTest extends BaseTestCase {
+
+	@Autowired
+	private Properties testValue;
+
+	@Autowired
+	private StoreService storeService;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testGetInventoryList() throws Exception {
+		dto = storeService.doGetInventoryList(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")));
+		List<Category> categoryList = dto.getCategoryList();
+		List<Product> productList = dto.getProductList();
+		List<Discount> discountList = dto.getDiscountList();
+
+		assertTrue("No category in list", categoryList.size() > 0 && !categoryList.isEmpty());
+		assertTrue("No product in list", productList.size() > 0);
+		assertTrue("No discount in list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testManageCategory() throws Exception {
+		/** Object required for manageCategory **/
+		List<Category> categoryList = new ArrayList<Category>();
+		String tempStringID = testValue.getProperty("categoryIDList");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		String action = testValue.getProperty("action");
+
+		if (action == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Category category = new Category();
+				category.setName(tempNameStore[i]);
+				categoryList.add(category);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Category category = new Category();
+				category.setID(Long.valueOf(tempIDStore[i]));
+				category.setName(tempNameStore[i]);
+				categoryList.add(category);
+			}
+		}
+
+		dto = storeService.doManageCategory(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")), action,
+				categoryList);
+		assertNotNull("new category ID is not returned", dto.getNewCategoryID());
+	}
+
+	@Test
+	public void testManageCategoryItem() throws Exception {
+		/** Object needed for manageCategoryItem **/
+		String tempProductID = testValue.getProperty("productIDList");
+		String[] tempIDStore = tempProductID.split(",");
+		List<String> productStringList = Arrays.asList(tempIDStore);
+		List<Long> productIDList = new ArrayList<Long>();
+		for (String s : productStringList) {
+			productIDList.add(Long.valueOf(s));
+		}
+		storeService.doManageCategoryItem(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				Long.valueOf(testValue.getProperty("categoryID")), productIDList);
+	}
+
+	@Test
+	public void testManageProduct() throws Exception {
+		/** Object required for manageProduct **/
+		String tempStringID = testValue.getProperty("productIDList");
+		String tempStringProID = testValue.getProperty("categoryIDList");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		String[] tempCatIDStore = tempStringProID.split(",");
+		List<Product> products = new ArrayList<Product>();
+
+		if (testValue.getProperty("action") == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Product product = new Product();
+				product.setName(tempNameStore[i]);
+				List<String> categoryStrings = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryStrings.add(s);
+				}
+				List<Long> categoryIDs = new ArrayList<Long>();
+				for (String s : categoryStrings) {
+					categoryIDs.add(Long.valueOf(s));
+				}
+				product.setCategoryIDList(categoryIDs);
+				products.add(product);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Product product = new Product();
+				product.setID(Long.valueOf(tempIDStore[i]));
+				product.setName(tempNameStore[i]);
+				List<String> categoryStrings = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryStrings.add(s);
+				}
+				List<Long> categoryIDs = new ArrayList<Long>();
+				for (String s : categoryStrings) {
+					categoryIDs.add(Long.valueOf(s));
+				}
+				product.setCategoryIDList(categoryIDs);
+				products.add(product);
+			}
+		}
+
+		dto = storeService.doManageProduct(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("action"), products);
+		assertNotNull("new product id is not returned", dto.getNewProductID());
+	}
+
+	@Test
+	public void testManageDiscount() throws Exception {
+		/** Object required for manageDiscount **/
+		String tempStringID = testValue.getProperty("id");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		List<Discount> discounts = new ArrayList<Discount>();
+
+		if (testValue.getProperty("action") == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Discount discount = new Discount();
+				discount.setName(tempNameStore[i]);
+				discounts.add(discount);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Discount discount = new Discount();
+				discount.setID(Long.valueOf(tempIDStore[i]));
+				discount.setName(tempNameStore[i]);
+				discount.setType(testValue.getProperty("type"));
+				discount.setValue(Long.valueOf(testValue.getProperty("value")));
+				discounts.add(discount);
+			}
+		}
+
+		dto = storeService.doManageDiscount(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("action"), discounts);
+		assertNotNull("new discount id is not returned", dto.getNewDiscountID());
+	}
+}

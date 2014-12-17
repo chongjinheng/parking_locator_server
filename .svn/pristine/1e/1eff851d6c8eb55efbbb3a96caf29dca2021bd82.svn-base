@@ -1,0 +1,85 @@
+package com.softspace.pos.bean;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+/**
+ * Category table that have a list of product IDs<br>
+ * Field: name, productIDList, store, List productCategoryReference
+ * 
+ * @param String name, List productIDList, Store store, List
+ * @author chengyang
+ */
+
+@Entity
+public class Category extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String name;
+
+	@Transient
+	private List<Long> productIDList = new ArrayList<Long>();
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private Store store;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+	@Fetch(FetchMode.SUBSELECT)
+	private List<ProductCategoryReference> productCategoryReference = new ArrayList<ProductCategoryReference>();
+
+	public void setID(Long id) {
+		this.id = id;
+	}
+
+	public List<ProductCategoryReference> getProductsCategoryReference() {
+		return productCategoryReference;
+	}
+
+	public Long getID() {
+		return id;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Long> getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(List<Long> productIDList) {
+		this.productIDList = productIDList;
+	}
+
+}

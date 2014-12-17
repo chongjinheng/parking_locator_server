@@ -1,0 +1,78 @@
+package com.softspace.test.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.service.SalesService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author Darren
+ */
+public class SalesServiceTest extends BaseTestCase {
+
+	@Autowired
+	private SalesService salesService;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testDoConfirmSales() throws Exception {
+		/** Object required for doConfirmSale **/
+		Discount discount = new Discount();
+		discountDAO.getDiscountById(1l, 1l);
+
+		List<CartItem> cartList = new ArrayList<CartItem>();
+		CartItem cartItem = new CartItem();
+		cartItem.setProductID(1l);
+		cartItem.setQuantity(2);
+		cartList.add(cartItem);
+
+		dto = salesService.doConfirmSale("lim_chengyang@hotmail.com", 1l, 1, 1500l, 1500l, 100l, 1500l, 100l, discount, cartList);
+		Assert.assertNotNull("sales id is not returned", dto.getSalesId());
+		Assert.assertNotNull("receipt number is not returned", dto.getReceiptNumber());
+	}
+
+	@Test
+	public void testDoSendReceipt() throws Exception {
+		dto = salesService.doSendReciept("lim_chengyang@hotmail.com", 1l, "aarief.kamaruddin@softspace.com.my", 1l);
+	}
+
+	@Test
+	public void testGetSalesHistory() throws Exception {
+		dto = salesService.getSalesHistory("lim_chengyang@hotmail.com", 1l);
+
+		List<Sales> salesHistoryList = dto.getSalesHistoryList();
+		Assert.assertTrue("sales history list is empty", salesHistoryList.size() < 0);
+	}
+
+	@Test
+	public void testGetSalesHistoryDetails() throws Exception {
+		dto = salesService.getSalesHistoryDetails("lim_chengyang@hotmail.com", 1l, 1l);
+
+		List<CartItem> cartList = dto.getCartList();
+		Assert.assertNotNull("sales id is not returned", dto.getSalesId());
+		Assert.assertNotNull("receipt number is not returned", dto.getReceiptNumber());
+		Assert.assertNotNull("payment type is not returned", dto.getPaymentType());
+		Assert.assertNotNull("transaction date is not returned", dto.getTransactionDate());
+		Assert.assertNotNull("sub total amount is not returned", dto.getSubTotalAmount());
+		Assert.assertNotNull("total amount is not returned", dto.getTotalAmount());
+		Assert.assertNotNull("discount amount is not returned", dto.getDiscountAmount());
+		Assert.assertTrue("cart list is empty", cartList.size() < 0);
+	}
+}

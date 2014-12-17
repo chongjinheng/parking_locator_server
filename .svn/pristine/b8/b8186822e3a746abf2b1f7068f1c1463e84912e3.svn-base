@@ -1,0 +1,52 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Store;
+
+/**
+ * @author chengyang
+ */
+@Repository
+@Transactional(readOnly = true)
+public class StoreDAOImpl extends GenericDAO implements StoreDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Override
+	public Long createStore(String storeName, String userEmail) {
+		Store store = new Store();
+		store.setStoreName(storeName);
+		store.setCreatedBy(userEmail);
+		store.setCreatedDate(new Date());
+		return crudDAO.create(store);
+	}
+
+	@Override
+	public Store getStoreByStoreId(Long ID) {
+		return (Store) getSessionFactory().createCriteria(Store.class).add(Restrictions.eq("id", ID)).uniqueResult();
+	}
+
+	@Override
+	public void updateUserProfile(String userEmail, String storeName, String storeImage) {
+		PosUser posUser = posUserDAO.getUserByEmail(userEmail);
+		Store store = posUser.getStore();
+		store.setStoreName(storeName);
+		store.setStoreImage(storeImage);
+		store.setModifiedBy(userEmail);
+		store.setModifiedDate(new Date());
+		crudDAO.update(store);
+	}
+
+}

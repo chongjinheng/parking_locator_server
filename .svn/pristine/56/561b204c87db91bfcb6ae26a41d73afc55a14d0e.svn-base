@@ -1,0 +1,60 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+
+/**
+ * PCR DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class ProductCategoryReferenceDAOImpl extends GenericDAO implements ProductCategoryReferenceDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	// TODO DAO return list not tested
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductCategoryReference> getPcrByCategoryId(Long id) {
+		return (List<ProductCategoryReference>) getSessionFactory().createCriteria(ProductCategoryReference.class)
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("category.id", id)).list();
+	}
+
+	@Override
+	public ProductCategoryReference getPcrById(Long id) {
+		return (ProductCategoryReference) getSessionFactory().createCriteria(ProductCategoryReference.class)
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("id", id)).uniqueResult();
+	}
+
+	@Override
+	public Long createProductCategoryReference(Product tempProduct, String userEmail, Category tempCategory) {
+		ProductCategoryReference tempPcr = new ProductCategoryReference();
+		tempPcr.setCategory(tempCategory);
+		tempPcr.setProduct(tempProduct);
+		tempPcr.setCreatedBy(userEmail);
+		tempPcr.setCreatedDate(new Date());
+		return crudDAO.create(tempPcr);
+	}
+
+	@Override
+	public void updateProductCategoryReference(String userEmail, Category tempCategory, ProductCategoryReference tempPCR) {
+		tempPCR.setCategory(tempCategory);
+		tempPCR.setModifiedBy(userEmail);
+		tempPCR.setModifiedDate(new Date());
+		crudDAO.update(tempPCR);
+	}
+}

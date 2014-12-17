@@ -1,0 +1,87 @@
+package com.softspace.pos.bean;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Category table
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "CATEGORY")
+public class Category extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(name = "NAME")
+	private String name;
+
+	@Transient
+	private List<Long> productList = new ArrayList<Long>();
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "STORE_ID", nullable = false)
+	@JsonExclusion
+	private Store store;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+	@JsonExclusion
+	private List<ProductCategoryReference> productsCategoryReference = new ArrayList<ProductCategoryReference>();
+
+	public List<ProductCategoryReference> getProductsCategoryReference() {
+		return productsCategoryReference;
+	}
+
+	public void setProductsCategoryReference(List<ProductCategoryReference> productsCategoryReference) {
+		this.productsCategoryReference = productsCategoryReference;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Long> getProductIds() {
+		return productList;
+	}
+
+	public void setProductIds(List<Long> productIds) {
+		this.productList = productIds;
+	}
+
+}

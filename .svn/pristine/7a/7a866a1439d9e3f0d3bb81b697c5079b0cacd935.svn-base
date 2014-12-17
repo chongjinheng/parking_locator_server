@@ -1,0 +1,597 @@
+package com.softspace.pos.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.DAO.CategoryDAO;
+import com.softspace.pos.DAO.CrudDAO;
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DAO.ProductCategoryReferenceDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.pos.bean.Store;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+import com.softspace.pos.util.Validators;
+
+/**
+ * Store Services
+ * 
+ * @author Darren
+ */
+@Service
+public class StoreServiceImpl implements StoreService {
+
+	private static final Logger logger = LoggerFactory.getLogger(StoreServiceImpl.class);
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Autowired
+	private CategoryDAO categoryDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Autowired
+	private ProductCategoryReferenceDAO pcrDAO;
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doGetInventoryList(String email, Long storeID) throws SSPosMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			Validators.sanityCheck(storeID);
+			email = Validators.sanityCheck(email);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				logger.debug(email + " is found in database");
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " :user does not have a store");
+				} else if (store.getID() != storeID) {
+					throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage());
+				}
+				logger.debug(store.getStoreName() + "is found with this email");
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ " :email is not registered");
+			}
+
+			List<Product> products = productDAO.getAllProductsInStore(storeID);
+			// this double loop is to set all category id in the categoryIDlist in each product properly
+			for (Product pro : products) {
+				List<Long> categoryIDList = new ArrayList<Long>();
+				List<ProductCategoryReference> pcrs = pcrDAO.getPcrByProductID(pro.getID());
+				for (ProductCategoryReference pcr : pcrs) {
+					categoryIDList.add(pcr.getCategory().getID());
+				}
+				pro.setCategoryIDList(categoryIDList);
+			}
+
+			List<Category> categories = categoryDAO.getAllCategoriesInStore(storeID);
+			for (Category cat : categories) {
+				List<Long> productId = new ArrayList<Long>();
+				List<ProductCategoryReference> pcrs = pcrDAO.getPcrByCategoryId(cat.getID());
+				for (ProductCategoryReference pcr : pcrs) {
+					productId.add(pcr.getProduct().getID());
+					// logger.info("Category id: " + cat.getId() + ", Product ID: " + pcr.getProduct().getId()
+					// + " is added into this category");
+				}
+				cat.setProductIDList(productId);
+			}
+
+			List<Discount> discounts = discountDAO.getAllDiscountsWOCustomInStore(storeID);
+
+			if (products.size() <= 0 || categories.size() <= 0 || discounts.size() <= 0) {
+				logger.warn("There are one or more table contains no entry");
+			}
+
+			dtoToReturn.setProductList(products);
+			logger.debug("Store id : " + storeID + "," + products.size() + " products push to JSON");
+			dtoToReturn.setCategoryList(categories);
+			logger.debug("Store id : " + storeID + "," + categories.size() + " products push to JSON");
+			dtoToReturn.setDiscountList(discounts);
+			logger.debug("Store id : " + storeID + "," + discounts.size() + " products push to JSON");
+
+		} catch (SSPosMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception found in doGetInventoryList" + e);
+			throw e;
+		}
+
+		return dtoToReturn;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doManageCategory(String email, Long storeId, String action, List<Category> categoryList)
+			throws SSPosMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = Validators.sanityCheck(email);
+			Validators.sanityCheck(storeId);
+			action = Validators.sanityCheck(action);
+			if (categoryList.size() <= 0)
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :categoryList - doManageCategory");
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				logger.debug(email + " found in database");
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " :user dont have store");
+				} else if (store.getID() != storeId) {
+					throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage());
+				}
+				logger.debug(store.getStoreName() + " is found with this email");
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ " :user not registered - doManageCategory");
+			}
+
+			/** Action cases **/
+			switch (action) {
+				case "0":
+					Category catTemp = categoryList.get(0);
+					Long i = categoryDAO.createCategory(catTemp, email, storeId);
+					logger.info(catTemp.getName() + " created successfully");
+
+					dtoToReturn.setNewCategoryID(i);
+					break;
+
+				case "1":
+					// Requirement says if an error occurred, the code will still run until the end, then log the error
+					// errorOccured flag is used to achieve this
+					boolean errorOccured = false;
+					String failedIdToReturn = " Failed id: ";
+					for (Category cat : categoryList) {
+						// this is to loop through category and edit one by one
+						Category category = categoryDAO.getCategoryById(cat.getID(), storeId);
+						logger.info("Updating " + category.getName());
+						if (category != null && category.getID() != null) {
+							categoryDAO.updateCategory(cat, email, storeId, category);
+							logger.debug("Updated to " + category.getName());
+						} else {
+							errorOccured = true;
+							failedIdToReturn += cat.getID() + ", ";
+						}
+					}
+					if (errorOccured) { // return a list of faulty id's
+						failedIdToReturn.substring(0, failedIdToReturn.length() - 1);// delete the last comma
+						throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+								ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturn);
+					}
+					break;
+
+				case "2":
+					boolean errorFound = false;
+					String failedIdToReturnDelete = " Failed id = ";
+					for (Category cat : categoryList) {
+						Category category = categoryDAO.getCategoryById(cat.getID(), storeId);
+						// if something wrong is sent from mobile
+						if (category == null || category.getID() == null) {
+							errorFound = true;
+							failedIdToReturnDelete += cat.getID() + ", ";
+							logger.error("Category id: " + cat.getID() + " does not exist in database");
+						} else {
+							// proceed to category and pcr deletion
+							Long idForPcrDelete = category.getID();
+							categoryDAO.deleteCategory(category, email);
+							logger.info(category.getName() + " is  deleted");
+							for (ProductCategoryReference pcr : pcrDAO.getPcrByCategoryId(idForPcrDelete)) {
+								if (pcr != null) {
+									pcrDAO.deleteProductCategoryReference(email, pcr);
+									logger.debug(pcr.getProduct().getID() + "is unlinked from category");
+								}
+							}
+						}
+						if (errorFound) {
+							failedIdToReturnDelete.substring(0, failedIdToReturnDelete.length() - 1);
+							throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+									ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturnDelete + " - doManageCategory");
+						}
+
+					}
+					break;
+
+				default:
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " invalid action - doManageCategory");
+			}
+
+		} catch (SSPosMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception found - doManageCategory ");
+			throw e;
+		}
+		return dtoToReturn;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doManageCategoryItem(String email, Long storeId, Long categoryID, List<Long> productIDList)
+			throws SSPosMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = Validators.sanityCheck(email);
+			Validators.sanityCheck(storeId);
+			Validators.sanityCheck(categoryID);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				logger.debug(email + " is found in database");
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " :user does not have store - doManageCategoryItem");
+				} else if (store.getID() != storeId) {
+					throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage());
+				}
+				logger.debug(store.getStoreName() + " found with this email");
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ " :user not registered - doManageCategoryItem");
+			}
+
+			/** Processes **/
+			Category categoryToChange = categoryDAO.getCategoryById(categoryID, storeId);
+			if (categoryToChange.getStore().getID() != store.getID()) {
+				throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage()
+						+ " : store does not have this category - doManageCategoryItem");
+			}
+			List<ProductCategoryReference> pcrs = pcrDAO.getPcrByCategoryId(categoryID);
+
+			// if there is not PCR in the category
+			if (pcrs.size() <= 0) {
+				if (!(productIDList.size() <= 0)) {
+					for (Long id : productIDList) {
+						Product pro = productDAO.getProductById(id, storeId);
+						pcrDAO.createProductCategoryReference(pro, email, categoryToChange);
+					}
+				}
+			} else {
+				// by comparing the product id sent from mobile and the product id in PCR binded to the selected category
+				// when a value matches, the product id will be set to 0, delete will be set to false
+				// when a value does not match, delete flag will be true and will be deleted
+				// all product id that is not 0 will be added into database
+				for (ProductCategoryReference ref : pcrs) {
+					boolean delete = true;
+					for (int i = 0; i < productIDList.size(); i++) {
+						// compare every product id sent from mobile with a PCR from database and determine need to delete it or not
+						if (productIDList.get(i) == ref.getProduct().getID()) {
+							delete = false;
+							productIDList.set(i, 0l);
+							break;
+						}
+					}
+					if (delete) {
+						pcrDAO.deleteProductCategoryReference(email, ref);
+						logger.debug(ref.getProduct().getName() + " removed from" + ref.getCategory().getName());
+					}
+				}
+				if (!(productIDList.size() <= 0)) {
+					for (Long idAdd : productIDList) {
+						if (idAdd != 0l) {
+							Product proNew = productDAO.getProductById(idAdd, storeId);
+							pcrDAO.createProductCategoryReference(proNew, email, categoryToChange);
+
+							logger.info("A new pcr is added to this category for product " + proNew.getName());
+						}
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("Exception found - doManageCategoryItem ");
+			throw e;
+		}
+
+		return dtoToReturn;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doManageProduct(String email, Long storeId, String action, List<Product> productList)
+			throws SSPosMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = email.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(storeId);
+			Validators.sanityCheck(action);
+			if (productList.size() <= 0 || productList == null)
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :productList - doManageProduct");
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				logger.debug(email + " is found in database");
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+							+ " :user dont have store - doManageProduct");
+				} else if (store.getID() != storeId) {
+					throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage());
+				}
+				logger.debug(store.getStoreName() + " found with this email");
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :user not registered - doManageProduct");
+			}
+
+			/** Action cases **/
+			switch (action) {
+				case "0":
+
+					if (store == null || store.getDeleteFlag()) {
+						throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+								+ " user does not have a store - doManageProduct");
+					}
+
+					// we can only create 1 item
+					Product proTemp = productList.get(0);
+					// check if the product code is the same
+					if (productDAO.checkProductCodeExists(storeId, proTemp.getCode())) {
+						throw new SSPosMobileRequestException(ErrorStatus.DUPLICATE_PRODUCT_CODE,
+								ErrorStatus.DUPLICATE_PRODUCT_CODE.getDefaultMessage());
+					}
+					Long i = productDAO.createProduct(proTemp, email, storeId);
+					logger.debug(proTemp.getName() + " created successfully");
+
+					Category category = new Category();
+					if (proTemp.getCategoryIDList() != null && proTemp.getCategoryIDList().size() > 0) {
+						for (Long cat : proTemp.getCategoryIDList()) { // loop create pcr and map all to 1 product
+							// in each product they pass have a category list)
+							if (categoryDAO.getCategoryById(cat, storeId) == null) {
+								throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR,
+										ErrorStatus.UNHANDLED_ERROR.getDefaultMessage() + " unable to retrieve category - doManageProduct");
+							}
+							category = categoryDAO.getCategoryById(cat, storeId);
+							if (cat == null || cat == 0 || category == null || category.getDeleteFlag()) {
+								logger.info("Category does not exist in db, no pcr created");
+								break;
+							}
+							pcrDAO.createProductCategoryReference(productDAO.getProductById(i, storeId), email, category);
+						}
+
+						logger.debug("Product linked to category : " + category.getName());
+					}
+
+					dtoToReturn.setNewProductID(i);
+					break;
+
+				case "1":
+					boolean errorOccured = false;
+					String failedIdToReturn = " Failed Product id = ";
+					String failedCatIdToReturn = " Failed Category id = ";
+					for (Product pro : productList) {
+						Product product = productDAO.getProductById(pro.getID(), storeId);
+						if (product != null && !product.getDeleteFlag()) {
+							// get all PCRs from mobile
+							List<ProductCategoryReference> pcrsFromMobile = pcrDAO.getPcrByProductID(product.getID());
+							// push new PCR list of the product here
+							List<ProductCategoryReference> pcrTempStore = new ArrayList<ProductCategoryReference>();
+							if (pcrsFromMobile == null) {
+								throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR,
+										ErrorStatus.UNHANDLED_ERROR.getDefaultMessage() + "pcr is not sent from mobile - doManageProduct");
+							}
+							for (ProductCategoryReference pcrfm : pcrsFromMobile) {
+								ProductCategoryReference dbPcr = pcrDAO.getPcrById(pcrfm.getID());
+								if (dbPcr != null) {
+									// if it exist in database
+									if (pcrfm.getCategory().getID() != dbPcr.getCategory().getID()) {
+										// this is to update PCR table
+										pcrDAO.updateProductCategoryReference(email, pcrfm.getCategory(), dbPcr);
+										pcrTempStore.add(dbPcr); // this is to update product table
+										logger.info("A new pcr pushed into pcrTempStore");
+									}
+								} else {
+									errorOccured = true;
+									failedCatIdToReturn += pcrfm.getCategory().getID();
+								}
+							}
+							productDAO.updateProduct(product, email, pcrTempStore, pro);
+							logger.info(product.getName() + " is updated");
+						} else {
+							errorOccured = true;
+							failedIdToReturn += pro.getID() + ", ";
+						}
+					}
+					if (errorOccured) {
+						failedIdToReturn.substring(0, failedIdToReturn.length() - 1);
+						throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+								ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturn + "\n" + failedCatIdToReturn
+										+ " - doManageProduct");
+					}
+					break;
+
+				case "2":
+					boolean errorFound = false;
+					String failedIdToReturnDelete = " Failed id = ";
+					for (Product pro : productList) {
+						Product product = productDAO.getProductById(pro.getID(), storeId);
+						if (product != null && !product.getDeleteFlag()) {
+							Long productIDToDelete = product.getID();
+							productDAO.deleteProduct(product, email);
+							logger.info(product.getName() + " is deleted");
+							for (ProductCategoryReference pcr : pcrDAO.getPcrByProductID(productIDToDelete)) {
+								if (pcr == null)
+									break;
+								pcrDAO.deleteProductCategoryReference(email, pcr);
+								logger.debug(pcr.getCategory().getID() + "is unlinked from category");
+							}
+
+						} else {
+							errorFound = true;
+							failedIdToReturnDelete += pro.getID() + ", ";
+						}
+						if (errorFound) {
+							failedIdToReturnDelete.substring(0, failedIdToReturnDelete.length() - 1);
+							throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+									ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturnDelete + " - doManageProduct");
+						}
+					}
+					break;
+
+				default:
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " action is not valid - doManageProduct");
+			}
+		} catch (SSPosMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception found - doManageProduct ");
+			throw e;
+		}
+		return dtoToReturn;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doManageDiscount(String email, Long storeId, String action, List<Discount> discountList)
+			throws SSPosMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = Validators.sanityCheck(email);
+			Validators.sanityCheck(storeId);
+			Validators.sanityCheck(action);
+			if (discountList.size() <= 0 || discountList.get(0).getID() == null) {
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :discountList - doManageDiscount");
+			}
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				logger.debug(email + " is found in database");
+
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " :user dont have store - doManageDiscount");
+				} else if (store.getID() != storeId) {
+					throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage());
+				}
+				logger.debug(store.getStoreName() + " is found with this email");
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ " :user not registered - doManageDiscount");
+			}
+
+			/** Action cases **/
+			switch (action) {
+				case "0":
+					// requirement state that we can only create 1 product at a time
+					Discount disTemp = discountList.get(0);
+					// 0 for percentage and 1 for fixed amount
+					if (!disTemp.getType().equals("0") && !disTemp.getType().equals("1")) {
+						throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+								+ ": discountType is invalid - doManageDiscount");
+					}
+					Long i = discountDAO.createDiscount(email, store, disTemp);
+					logger.info(disTemp.getName() + " created successfully");
+					dtoToReturn.setNewDiscountID(i);
+					break;
+
+				case "1":
+					// requirement states we will check through whole list of error and then rollback the entire transaction
+					// error is check through errorOccured flag
+					boolean errorOccured = false;
+					String failedIdToReturn = " Failed Product id = ";
+					for (Discount dis : discountList) {
+						Discount discount = discountDAO.getDiscountById(dis.getID(), storeId);
+						logger.info("Updating " + discount.getName());
+						if (discount != null && !discount.getDeleteFlag()) {
+							discountDAO.updateDiscount(discount, discount.getName(), email);
+							logger.debug("Name updated successfully to " + discount.getName());
+						} else {
+							errorOccured = true;
+							failedIdToReturn += dis.getID() + ", ";
+						}
+					}
+					if (errorOccured) {
+						failedIdToReturn.substring(0, failedIdToReturn.length() - 1);
+						throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+								ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturn + " - doManageDiscount");
+					}
+					break;
+
+				case "2":
+					boolean errorFound = false;
+					String failedIdToReturnDelete = " Failed id = ";
+					for (Discount dis : discountList) {
+						// Discount discount = new Discount();
+						Discount discount = discountDAO.getDiscountById(dis.getID(), storeId);
+						// Discount dct = new Discount(); // TODO maybe null need test
+						// dct = discount;
+						if (discount == null) {
+							errorFound = true;
+							failedIdToReturnDelete += dis.getID() + ", ";
+						} else {
+							logger.debug("Deleting " + discount.getName());
+							discountDAO.deleteDiscount(discount, email);
+							logger.info(discount.getName() + " is deleted");
+						}
+
+					}
+					if (errorFound) {
+						failedIdToReturnDelete.substring(0, failedIdToReturnDelete.length() - 1);
+						throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+								ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + failedIdToReturnDelete + " - doManageDiscount");
+					}
+					break;
+
+				default:
+					throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+							+ " invalid action - doManageDiscount");
+			}
+
+		} catch (SSPosMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception found - doManageDiscount ");
+			throw e;
+		}
+		return dtoToReturn;
+	}
+}

@@ -1,0 +1,102 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.pos.bean.Store;
+import com.softspace.pos.util.Formatters;
+
+/**
+ * Product DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class ProductDAOImpl extends GenericDAO implements ProductDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Override
+	public Product getProductById(Long id, Long storeID) {
+		return (Product) getSessionFactory().createCriteria(Product.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("id", id)).add(Restrictions.eq("store.id", storeID)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Product> getAllProductsInStore(Long storeID) {
+		List<Product> products = getSessionFactory().createCriteria(Product.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return products;
+	}
+
+	@Override
+	public Long createProduct(Product product, String userEmail, Long storeID) {
+		product.setCreatedBy(userEmail);
+		product.setCreatedDate(new Date());
+		String thumbnailString = null;
+		if (product.getImage() != null) {
+			try {
+				thumbnailString = Formatters.resizeBase64Image(product.getImage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			product.setThumbnail(thumbnailString);
+		}
+		Store store = storeDAO.getStoreByStoreId(storeID);
+		product.setStore(store);
+		return crudDAO.create(product);
+	}
+
+	@Override
+	public void updateProduct(Product product, String userEmail, List<ProductCategoryReference> pcr, Product tempProduct) {
+		product.setName(tempProduct.getName());
+		product.setCode(tempProduct.getCode());
+		product.setImage(tempProduct.getImage());
+		product.setDescription(tempProduct.getDescription());
+		product.setPrice(tempProduct.getPrice());
+		String thumbnailString = null;
+		if (product.getImage() != null) {
+			try {
+				thumbnailString = Formatters.resizeBase64Image(product.getImage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			product.setThumbnail(thumbnailString);
+		}
+		product.setProductsCategoryReference(pcr);
+		crudDAO.update(product);
+	}
+
+	@Override
+	public void deleteProduct(Product product, String userEmail) {
+		product.setDeleteFlag(true);
+		product.setModifiedBy(userEmail);
+		product.setModifiedDate(new Date());
+		crudDAO.update(product);
+	}
+
+	@Override
+	public boolean checkProductCodeExists(Long storeID, String productCode) {
+		Product check = (Product) getSessionFactory().createCriteria(Product.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("code", productCode)).add(Restrictions.eq("store.id", storeID)).uniqueResult();
+		if (check == null)
+			return false;
+		else
+			return true;
+	}
+
+}

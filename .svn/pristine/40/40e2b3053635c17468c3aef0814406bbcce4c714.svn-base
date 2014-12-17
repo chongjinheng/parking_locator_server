@@ -1,0 +1,73 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Sales DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+@Repository
+@Transactional(readOnly = true)
+public class SalesDAOImpl extends GenericDAO implements SalesDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Override
+	public Sales getSalesById(Long id, Long storeID) {
+		return (Sales) getSessionFactory().createCriteria(Sales.class).add(Restrictions.eq("store.id", storeID))
+				.add(Restrictions.eq("id", id)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Sales> getSalesByShopID(Long id) {
+		return (List<Sales>) getSessionFactory().createCriteria(Sales.class).add(Restrictions.eq("store.id", id)).list();
+	}
+
+	@Override
+	public Long createSales(String userEmail, Long storeID, String paymentType, Long subTotalAmount, Long totalAmount, Long discountAmount,
+			Long tenderAmount, Long changeAmount, Discount discountPackage, String receiptNumber) {
+
+		PosUser posUser = posUserDAO.getUserByEmail(userEmail);
+		Store store = posUser.getStore();
+
+		Sales sales = new Sales();
+		sales.setPaymentType(paymentType);
+		sales.setChangeAmount(changeAmount);
+		sales.setCreatedBy(userEmail);
+		sales.setTransactionDate(new Date());
+		sales.setCreatedDate(new Date());
+		sales.setDiscount(discountPackage);
+		sales.setSubTotalAmount(subTotalAmount);
+		sales.setTotalAmount(totalAmount);
+		sales.setTenderAmount(tenderAmount);
+		if (!(discountAmount == null))
+			sales.setDiscountAmount(discountAmount);
+		sales.setStore(store);
+		sales.setReceiptNumber(String.valueOf(receiptNumber));
+
+		return crudDAO.create(sales);
+	}
+
+}

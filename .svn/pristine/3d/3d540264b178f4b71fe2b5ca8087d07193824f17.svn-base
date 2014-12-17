@@ -1,0 +1,92 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Discount DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ * @author chengyang
+ */
+@Repository
+@Transactional(readOnly = true)
+public class DiscountDAOImpl extends GenericDAO implements DiscountDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Override
+	public Discount getDiscountById(Long id, Long storeID) {
+		return (Discount) getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("id", id))
+				.add(Restrictions.eq("store.id", storeID)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Discount> getAllDiscountsInStore(Long storeID) {
+		List<Discount> discounts = getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return discounts;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Discount> getAllDiscountsWOCustomInStore(Long storeID) {
+		List<Discount> discounts = getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("custom", false))
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("store.id", storeID)).list();
+		return discounts;
+	}
+
+	@Override
+	public Long createCustomDiscount(String userEmail, Discount discountPackage) {
+
+		PosUser posUser = posUserDAO.getUserByEmail(userEmail);
+
+		Discount discount = new Discount();
+		discount.setCustomFlag(true);
+		discount.setName(discountPackage.getName());
+		discount.setCreatedDate(new Date());
+		discount.setCreatedBy(userEmail);
+		discount.setType(discountPackage.getType());
+		discount.setValue(discountPackage.getValue());
+		discount.setStore(posUser.getStore());
+		return crudDAO.create(discount);
+	}
+
+	@Override
+	public Long createDiscount(String userEmail, Store store, Discount discount) {
+		discount.setCreatedBy(userEmail);
+		discount.setCreatedDate(new Date());
+		discount.setStore(store);
+		return crudDAO.create(discount);
+	}
+
+	@Override
+	public void updateDiscount(Discount discount, String name, String userEmail) {
+		discount.setName(name);
+		discount.setModifiedBy(userEmail);
+		discount.setModifiedDate(new Date());
+		crudDAO.update(discount);
+	}
+
+	@Override
+	public void deleteDiscount(Discount discount, String userEmail) {
+		discount.setDeleteFlag(true);
+		discount.setModifiedBy(userEmail);
+		discount.setModifiedDate(new Date());
+		crudDAO.update(discount);
+	}
+}

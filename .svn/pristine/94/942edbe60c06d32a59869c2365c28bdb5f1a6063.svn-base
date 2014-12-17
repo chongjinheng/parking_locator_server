@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/softspace/pos/bean/Product.java=UTF-8
+encoding//src/main/java/com/softspace/pos/service/StoreServiceImpl.java=UTF-8
+encoding//src/test/java/com/softspace/test/controller/MobileRequestControllerTest.java=UTF-8
+encoding//src/test/java/com/softspace/test/service/StoreServiceTest.java=UTF-8

@@ -1,0 +1,14 @@
+package com.softspace.pos.util;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Custom JSON Exclusion annotation
+ * 
+ * @author Darren
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JsonExclusion {
+
+}

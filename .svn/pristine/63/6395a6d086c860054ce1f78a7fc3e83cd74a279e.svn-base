@@ -1,0 +1,25 @@
+package com.softspace.pos.DAO;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.SalesRunningNumber;
+
+/**
+ * Sales Running Number DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+@Repository
+@Transactional(readOnly = true)
+public class SalesRunningNumberDAOImpl extends GenericDAO implements SalesRunningNumberDAO {
+
+	@Override
+	public SalesRunningNumber getSalesRunningNumberByStoreId(Long id) {
+		return (SalesRunningNumber) getSessionFactory().createCriteria(SalesRunningNumber.class).add(Restrictions.eq("store.id", id))
+				.uniqueResult();
+	}
+
+}

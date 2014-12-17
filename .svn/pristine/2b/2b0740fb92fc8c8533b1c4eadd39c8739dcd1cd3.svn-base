@@ -1,0 +1,22 @@
+# Universal jdbc settings
+jdbc.partitionCount=1
+hibernate.generate_statistics=false
+hibernate.show_sql=false
+
+# MYSQL
+jdbc.driverClassName=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/SSPOS?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8
+jdbc.username=root
+jdbc.password=
+hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+
+## For first time running/switch db, please use create, then immediately change to update.
+## Create is used to import data from import.sql.
+hibernate.hbm2ddl.auto=update
+
+#Run this script after creation of database
+#ALTER DATABASE SSPOS CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+#ALTER TABLE DISCOUNT CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+#ALTER TABLE PRODUCT CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+#ALTER TABLE CATEGORY CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+#ALTER TABLE STORE CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;

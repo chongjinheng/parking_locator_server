@@ -1,0 +1,91 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.SalesDAO;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Sales;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for SalesDao.
+ * 
+ * @author cylim
+ */
+
+public class SalesDaoTest extends BaseTestCase {
+
+	@Autowired
+	private SalesDAO salesDAO;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${salesID}")
+	private Long salesID;
+
+	@Value("${discountID}")
+	private Long discountID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${paymentType}")
+	private String paymentType;
+
+	@Value("${subTotalAmount}")
+	private Long subTotalAmount;
+
+	@Value("${totalAmount}")
+	private Long totalAmount;
+
+	@Value("${discountAmount}")
+	private Long discountAmount;
+
+	@Value("${tenderAmount}")
+	private Long tenderAmount;
+
+	@Value("${changeAmount}")
+	private Long changeAmount;
+
+	@Value("${receiptNumber}")
+	private String receiptNumber;
+
+	@Test
+	public void testGetSalesById() {
+		Sales sales = salesDAO.getSalesById(salesID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", sales);
+	}
+
+	// @Test
+	// public void testGetSalesByRecieptNumber() {
+	// Sales sales = salesDAO.getSalesByRecieptNumber("140417000001000001");
+	// Assert.assertNotNull("Category with this id doesnt exists", sales);
+	// }
+
+	@Test
+	public void testGetSalesByShopID() {
+		List<Sales> salesList = salesDAO.getSalesByShopID(storeID);
+		Assert.assertNotNull("The list is null", salesList);
+		Assert.assertTrue("no records inside list", salesList.size() > 0);
+	}
+
+	@Test
+	public void testCreateSales() {
+		Discount discountPackage = discountDAO.getDiscountById(discountID, storeID);
+
+		Long i = salesDAO.createSales(userEmail, storeID, paymentType, subTotalAmount, totalAmount, discountAmount, tenderAmount,
+				changeAmount, discountPackage, receiptNumber);
+		Assert.assertNotNull("Sales is not created", salesDAO.getSalesById(i, storeID));
+	}
+}

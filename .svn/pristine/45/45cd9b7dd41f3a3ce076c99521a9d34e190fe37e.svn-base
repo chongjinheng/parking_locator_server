@@ -1,0 +1,125 @@
+package com.softspace.pos.bean;
+
+import java.util.List;
+
+public class EmailDetails {
+
+	private String email;
+	private String temporaryPassword;
+	private String storeName;
+	private String receiptNumber;
+	private String paymentType;
+	private String subTotalAmount;
+	private String totalAmount;
+	private String discountAmount;
+	private String tenderAmount;
+	private String changeAmount;
+	private String discountName;
+	private List<CartItem> cartItemList;
+	private String time;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getTemporaryPassword() {
+		return temporaryPassword;
+	}
+
+	public void setTemporaryPassword(String temporaryPassword) {
+		this.temporaryPassword = temporaryPassword;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public String getSubTotalAmount() {
+		return subTotalAmount;
+	}
+
+	public void setSubTotalAmount(String subTotalAmount) {
+		this.subTotalAmount = subTotalAmount;
+	}
+
+	public String getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(String totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(String discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	public String getTenderAmount() {
+		return tenderAmount;
+	}
+
+	public void setTenderAmount(String tenderAmount) {
+		this.tenderAmount = tenderAmount;
+	}
+
+	public String getChangeAmount() {
+		return changeAmount;
+	}
+
+	public void setChangeAmount(String changeAmount) {
+		this.changeAmount = changeAmount;
+	}
+
+	public String getDiscountName() {
+		return discountName;
+	}
+
+	public void setDiscountName(String discountName) {
+		this.discountName = discountName;
+	}
+
+	public List<CartItem> getCartItemList() {
+		return cartItemList;
+	}
+
+	public void setCartItemList(List<CartItem> cartItemList) {
+		this.cartItemList = cartItemList;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+}

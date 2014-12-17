@@ -1,0 +1,107 @@
+package com.softspace.pos.bean;
+
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Store table
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "STORE", uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "IMAGE" }) })
+public class Store extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	@Column(name = "NAME")
+	private String storeName;
+
+	@Column(name = "IMAGE")
+	private String storeImage;
+
+	@JsonExclusion
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Category> categories;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Product> products;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Discount> discounts;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Sales> sales;
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public List<Category> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storageName) {
+		this.storeName = storageName;
+	}
+
+	public String getStoreImage() {
+		return storeImage;
+	}
+
+	public void setStoreImage(String storageImage) {
+		this.storeImage = storageImage;
+	}
+
+	public List<Discount> getDiscounts() {
+		return discounts;
+	}
+
+	public void setDiscounts(List<Discount> discounts) {
+		this.discounts = discounts;
+	}
+
+	public List<Sales> getSales() {
+		return sales;
+	}
+
+	public void setSales(List<Sales> sales) {
+		this.sales = sales;
+	}
+
+}

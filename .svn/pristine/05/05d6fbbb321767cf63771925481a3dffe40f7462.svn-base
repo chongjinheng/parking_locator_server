@@ -1,0 +1,55 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.SalesRunningNumberDAO;
+import com.softspace.pos.DAO.StoreDAO;
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for SalesRunningNumberDao.
+ * 
+ * @author cylim
+ */
+
+public class SalesRunningNumberDaoTest extends BaseTestCase {
+
+	@Autowired
+	private SalesRunningNumberDAO salesRunningNumberDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	private Long storeID = 1l;
+
+	@Test
+	public void testGetSalesById() {
+		SalesRunningNumber salesRunningNumber = salesRunningNumberDAO.getSalesRunningNumberByStoreId(storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", salesRunningNumber);
+	}
+
+	@Test
+	public void testCreateSalesRunningNumber() {
+		storeDAO.createStore("jimmy", testValue.getProperty("firstTimeSignupEmail"));
+		Assert.assertNotNull("SalesRunningNumber not created",
+				salesRunningNumberDAO.getSalesRunningNumberByStoreId(Long.valueOf(testValue.getProperty("storeID"))));
+	}
+
+	@Test
+	public void testGetRunningNumber() {
+		@SuppressWarnings("unused")
+		int i = salesRunningNumberDAO.getNextRunningNumber(Long.valueOf(testValue.getProperty("storeID")));
+		// Cannot test if run full junitTest
+		// Assert.assertEquals(1, i);
+	}
+
+}

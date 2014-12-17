@@ -1,0 +1,11 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.PosUserSession;
+
+public interface SessionDAO {
+
+	public void updateSession(String sessionKey, String username);
+
+	public PosUserSession checkSessionValidity(String sessionKey, String username);
+
+}

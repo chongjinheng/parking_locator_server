@@ -1,0 +1,15 @@
+package com.softspace.pos.util;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Formatters {
+
+	public static String formatOutputDate(Date recordedDate) {
+
+		SimpleDateFormat formatter;
+		formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+		return formatter.format(recordedDate);
+	}
+}

@@ -1,0 +1,14 @@
+# MYSQL
+jdbc.driverClassName=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/SSPOS2?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+jdbc.username=root
+jdbc.password=
+jdbc.partitionCount=1
+
+hibernate.generate_statistics=false
+hibernate.show_sql=false
+hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+#hibernate.ejb.naming_strategy=com.softspace.pos.util.CustomNamingStrategy;
+# For first time running/change db, please use create, then immediately change to update
+hibernate.hbm2ddl.auto=update
+

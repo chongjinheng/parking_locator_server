@@ -1,0 +1,94 @@
+package com.softspace.pos.bean;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Category table
+ * 
+ * @author cylim
+ */
+@Entity
+public class Category extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String name;
+
+	@Transient
+	private List<Long> productIDList = new ArrayList<Long>();
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	@JsonExclusion
+	private Store store;
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+	@JsonExclusion
+	private List<ProductCategoryReference> productsCategoryReference = new ArrayList<ProductCategoryReference>();
+
+	public List<Long> getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(List<Long> productIDList) {
+		this.productIDList = productIDList;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<ProductCategoryReference> getProductsCategoryReference() {
+		return productsCategoryReference;
+	}
+
+	public void setProductsCategoryReference(List<ProductCategoryReference> productsCategoryReference) {
+		this.productsCategoryReference = productsCategoryReference;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Long> getProductIds() {
+		return productIDList;
+	}
+
+	public void setProductIds(List<Long> productIds) {
+		this.productIDList = productIds;
+	}
+
+}

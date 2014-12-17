@@ -1,0 +1,48 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.bean.Discount;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for DiscountDao.
+ * 
+ * @author cylim
+ */
+public class DiscountDaoTest extends BaseTestCase {
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	private Long storeID = 1l;
+	private Long discountID = 1l;
+
+	@Test
+	public void testGetDiscountById() {
+		Discount discount = discountDAO.getDiscountById(discountID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", discount);
+		Assert.assertEquals("TooHandsome", discount.getName());
+	}
+
+	@Test
+	public void testGetAllDiscountInStore() {
+		List<Discount> discountList = discountDAO.getAllDiscountsInStore(storeID);
+		Assert.assertNotNull("The list is null", discountList);
+		Assert.assertTrue("no records inside list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testGetAllDiscountWOCustomInStore() {
+		List<Discount> discountList = discountDAO.getAllDiscountsWOCustomInStore(storeID);
+		Assert.assertNotNull("The list is null", discountList);
+		Assert.assertTrue("no records inside list", discountList.size() > 0);
+	}
+
+}

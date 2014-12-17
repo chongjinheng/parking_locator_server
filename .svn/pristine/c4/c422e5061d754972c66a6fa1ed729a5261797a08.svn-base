@@ -1,0 +1,40 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Discount;
+
+/**
+ * Discount DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class DiscountDAOImpl extends GenericDAO implements DiscountDAO {
+
+	@Override
+	public Discount getDiscountById(Long id, Long storeID) {
+		return (Discount) getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("id", id))
+				.add(Restrictions.eq("store.id", storeID)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Discount> getAllDiscountsInStore(Long storeID) {
+		List<Discount> discounts = getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return discounts;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Discount> getAllDiscountsWOCustomInStore(Long storeID) {
+		List<Discount> discounts = getSessionFactory().createCriteria(Discount.class).add(Restrictions.eq("custom", false))
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("store.id", storeID)).list();
+		return discounts;
+	}
+}

@@ -1,0 +1,79 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.ForgotPasswordSession;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Pos User DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class PosUserDAOImpl extends GenericDAO implements PosUserDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Autowired
+	private ForgotPasswordSessionDAO forgetPasswordSessionDAO;
+
+	@Override
+	public PosUser getUserByEmail(String email) {
+		return (PosUser) getSessionFactory().createCriteria(PosUser.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("email", email)).uniqueResult();
+	}
+
+	@Override
+	public Long createPosUser(String userEmail, String hashedPassword, Long storeID) {
+		PosUser posUser = new PosUser();
+		posUser.setCreatedBy(userEmail);
+		posUser.setEmail(userEmail);
+		posUser.setCreatedDate(new Date());
+		posUser.setPassword(hashedPassword);
+		Store store = storeDAO.getStoreByStoreId(storeID);
+		posUser.setStore(store);
+
+		return crudDAO.create(posUser);
+	}
+
+	@Override
+	public void updatePosUser(String userEmail, String hasedPassword) {
+		PosUser posUser = getUserByEmail(userEmail);
+		posUser.setModifiedDate(new Date());
+		posUser.setModifiedBy(userEmail);
+		crudDAO.update(posUser);
+
+	}
+
+	@Override
+	public void updatePosUserForgetPasswordSession(String userEmail, Long forgotPasswordSessionID) {
+		PosUser posUser = getUserByEmail(userEmail);
+		ForgotPasswordSession forgetPasswordSession = forgetPasswordSessionDAO.getForgetPasswordSessionByID(forgotPasswordSessionID);
+		posUser.setForgotPasswordSession(forgetPasswordSession);
+		posUser.setModifiedBy(userEmail);
+		posUser.setModifiedDate(new Date());
+		crudDAO.update(posUser);
+	}
+
+	@Override
+	public void updatePosUserPassword(String userEmail, String newHashedPassword) {
+		PosUser posUser = getUserByEmail(userEmail);
+		posUser.setModifiedDate(new Date());
+		posUser.setPassword(newHashedPassword);
+		crudDAO.update(posUser);
+	}
+}

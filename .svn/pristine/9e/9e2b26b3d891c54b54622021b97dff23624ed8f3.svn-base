@@ -1,0 +1,47 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Sales Running Number DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+@Repository
+@Transactional(readOnly = true)
+public class SalesRunningNumberDAOImpl extends GenericDAO implements SalesRunningNumberDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Override
+	public SalesRunningNumber getSalesRunningNumberByStoreId(Long ID) {
+		return (SalesRunningNumber) getSessionFactory().createCriteria(SalesRunningNumber.class).add(Restrictions.eq("store.id", ID))
+				.uniqueResult();
+	}
+
+	@Override
+	public Long createSalesRunningNumber(Long storeID) {
+		SalesRunningNumber salesRunningNumber = new SalesRunningNumber();
+		salesRunningNumber.setCurrentDate(new Date());
+		salesRunningNumber.setRunningNumber(0);
+		Store store = storeDAO.getStoreByStoreId(storeID);
+		salesRunningNumber.setStore(store);
+
+		return crudDAO.create(salesRunningNumber);
+	}
+
+}

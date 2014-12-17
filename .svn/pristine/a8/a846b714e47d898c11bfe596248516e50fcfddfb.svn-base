@@ -1,0 +1,45 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.StoreDAO;
+import com.softspace.pos.bean.Store;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * @author chengyang
+ */
+
+public class StoreDaoTest extends BaseTestCase {
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	@Test
+	public void testCreateStore() {
+		Long i = storeDAO.createStore(testValue.getProperty("storeName"), testValue.getProperty("firstTimeSignupEmail"));
+		Assert.assertNotNull("Store not created", storeDAO.getStoreByStoreId(i));
+	}
+
+	@Test
+	public void testGetStoreByStoreID() {
+		Assert.assertNotNull("Store not created", storeDAO.getStoreByStoreId(Long.valueOf(testValue.getProperty("storeID"))));
+	}
+
+	@Test
+	public void testUpdateUserProfile() {
+		storeDAO.updateUserProfile(testValue.getProperty("userEmail"), testValue.getProperty("storeName"),
+				testValue.getProperty("thumbnail"));
+		Store store = storeDAO.getStoreByStoreId(Long.valueOf(testValue.getProperty("storeID")));
+		Assert.assertEquals(testValue.getProperty("storeName"), store.getStoreName());
+		Assert.assertEquals(testValue.getProperty("thumbnail"), store.getStoreImage());
+	}
+
+}

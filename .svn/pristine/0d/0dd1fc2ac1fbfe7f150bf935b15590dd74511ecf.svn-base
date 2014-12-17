@@ -1,0 +1,77 @@
+package com.softspace.pos.service;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.softspace.pos.DAO.SessionDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.PosUserSession;
+import com.softspace.pos.controller.MobileRequestController;
+import com.softspace.pos.enums.ServiceNames;
+import com.softspace.pos.exceptions.SessionTimedOutException;
+
+/**
+ * Service that interacts with sessionDAO
+ * 
+ * @author chongjinheng
+ */
+@Service
+public class SessionService {
+
+	private static SessionService instance;
+
+	@Autowired
+	private SessionDAO sessionDAO;
+
+	public SessionService() {
+		instance = this;
+	}
+
+	// could get instance from spring context too..
+	public static final SessionService getInstance() {
+		return instance;
+	}
+
+	public void setNewKey(HttpSession session, String sessionKey, JSONServiceDTO dto) {
+		PosUser mobileUser = getCurrentUser(session);
+		// flow control for all services, email will be null in several login screens
+		session.setAttribute("thesession", sessionKey);
+		if (dto.getServiceName().equals(ServiceNames.LOGOUT.toString())) {
+			sessionDAO.updateSession("", dto.getEmail());
+		} else if (dto.getServiceName().equals(ServiceNames.CHANGE_PASSWORD.toString())) {
+			sessionDAO.updateSession(sessionKey, dto.getEmail());
+		} else {
+			sessionDAO.updateSession(sessionKey, mobileUser.getEmail());
+		}
+	}
+
+	public String getSessionKey(HttpSession session) throws SessionTimedOutException {
+
+		PosUser mobileUser = getCurrentUser(session);
+		String sessionKey = (String) session.getAttribute("thesession");
+		PosUserSession sessionBean = new PosUserSession();
+
+		if (sessionKey != null && mobileUser != null) {
+			// check whether session key is valid ( match session's session key with db session key)
+			sessionBean = sessionDAO.checkSessionValidity(sessionKey, mobileUser.getEmail());
+		}
+
+		if ((sessionBean != null) && (sessionKey != null) && sessionKey.equals(sessionBean.getSessionValue())) {
+			return sessionKey;
+		}
+		if (sessionBean == null) {
+			System.out.println("sessionKey does not match with database or does not exist!");
+		}
+		return "";
+
+	}
+
+	private PosUser getCurrentUser(HttpSession session) {
+
+		PosUser mobileUser = (PosUser) session.getAttribute(MobileRequestController.SESSION_KEYS.CURRENT_LOGIN_STAFF.name());
+		return mobileUser;
+	}
+}

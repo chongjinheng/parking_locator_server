@@ -1,0 +1,87 @@
+package com.softspace.pos.bean;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+/**
+ * POS User table
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "POS_USER")
+public class PosUser extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	@Column(name = "EMAIL", unique = true, nullable = false)
+	private String email;
+
+	@Column(name = "PASSWORD")
+	private String password;
+
+	@Column(name = "USER_TYPE")
+	private String userType = "ADMIN";
+
+	@OneToOne
+	private ForgotPassSession forgotPasswordSession;
+
+	@ManyToOne
+	private Store store;
+
+	public long getId() {
+		return id;
+	}
+
+	public ForgotPassSession getForgotPasswordSession() {
+		return forgotPasswordSession;
+	}
+
+	public void setForgotPasswordSession(ForgotPassSession forgotPasswordSession) {
+		this.forgotPasswordSession = forgotPasswordSession;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+}

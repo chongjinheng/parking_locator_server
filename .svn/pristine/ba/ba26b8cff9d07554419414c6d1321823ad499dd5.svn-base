@@ -1,0 +1,36 @@
+package com.softspace.pos.DTO;
+
+/**
+ * @author Darren
+ */
+public class JSONCategory {
+
+	private String id;
+	private String name;
+	private String productIDList;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(String productIDList) {
+		this.productIDList = productIDList;
+	}
+
+}

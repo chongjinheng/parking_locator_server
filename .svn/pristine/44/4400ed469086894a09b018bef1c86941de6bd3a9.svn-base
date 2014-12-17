@@ -1,0 +1,65 @@
+#Test values that feeds into the test cases
+#Note: isForceChangePassword, cartItem quantity and loginMode is not string and cannot 
+#      be converted, hardcode them
+
+#User Service
+firstTimeSignupEmail=iwantanonexistentemail@hotmail.com
+userEmail=lim_chengyang@hotmail.com
+storeName=The store
+newStoreName=That store
+password=cyc12345
+oldPassword=cyc12345
+newPassword=aarief12345
+forceChangePassword=false
+storeImage=akgjewlakwejfha;elifh
+
+#Bean creation
+id=1,2,3
+manageSalesID=1
+#index incremented by bean type: product, category, discount
+name=Mouse,Animal,Too Small
+
+#Store Service
+storeID=1
+action=0
+categoryID=1
+
+#Product Creation
+code=#0003
+description=Tom's friend
+price=200.00
+thumbnail=aoeihgawoeihg[
+categoryIDList=1,2,3
+
+#Category Creation
+productIDList=1,2,3
+
+#Discount Creation
+discountID=1
+type=1
+value=1
+
+#Cart Item creation
+productID=1
+quantity=2
+customAmountDescription=
+customAmount=
+
+#Sales
+paymentType=0
+subTotalAmount=5.00
+totalAmount=5.00
+discountAmount=0.50
+tenderAmount=10.00
+changeAmount=6.50
+  #send receipt
+email=soulcylim@gmail.com
+salesID=1
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+package com.softspace.pos.util;
+
+import com.softspace.pos.DTO.JSONServiceDTO;
+
+public class JSONConverter {
+
+	public static JSONServiceDTO fromMobile() {
+		return null;
+	}
+
+	public static JSONServiceDTO toMobile() {
+		return null;
+	}
+}

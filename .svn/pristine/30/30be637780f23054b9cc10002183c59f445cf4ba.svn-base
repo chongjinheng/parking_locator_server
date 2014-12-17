@@ -1,0 +1,110 @@
+package com.softspace.test.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for ProductDAO.
+ * 
+ * @author azliabdullah
+ * @author chengyang
+ */
+public class ProductDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Value("${productIDforDAOtest}")
+	private Long productID;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${productName}")
+	private String productName;
+
+	@Value("${code}")
+	private String productCode;
+
+	@Value("${description}")
+	private String productDescription;
+
+	@Value("${price}")
+	private Long productPrice;
+
+	@Value("${productImage}")
+	private String productImage;
+
+	@Value("${productCode}")
+	private String duplicatedProductCode;
+
+	@Test
+	public void testGetProduct() {
+		Product product = productDAO.getProductById(productID, storeID);
+		Assert.assertNotNull("No Product with this Id", product);
+
+		List<ProductCategoryReference> pcrs = product.getProductsCategoryReference();
+		Assert.assertNotNull("pcrs is empty", pcrs);
+
+		for (ProductCategoryReference productCategoryReference : pcrs) {
+			System.out.println(productCategoryReference.getCategory().getName());
+		}
+	}
+
+	@Test
+	public void testGetAllProductsInStore() {
+		List<Product> productList = productDAO.getAllProductsInStore(storeID);
+		Assert.assertNotNull("its null", productList);
+		Assert.assertTrue("no records inside list", productList.size() > 0);
+	}
+
+	@Test
+	public void testCreateProduct() {
+		Product product = new Product();
+		product.setName(productName);
+		product.setCode(productCode);
+		product.setDescription(productDescription);
+		product.setPrice(productPrice);
+		Long i = productDAO.createProduct(product, userEmail, storeID);
+		Assert.assertNotNull("Product is not created", productDAO.getProductById(i, storeID));
+	}
+
+	@Test
+	public void testUpdateProduct() {
+		Product tempProduct = new Product();
+		tempProduct.setName(productName);
+		tempProduct.setCode(productCode);
+		tempProduct.setDescription(productDescription);
+		tempProduct.setPrice(productPrice);
+		tempProduct.setImage(productImage);
+		Product product = productDAO.getProductById(productID, storeID);
+		List<ProductCategoryReference> pcr = new ArrayList<ProductCategoryReference>();
+		productDAO.updateProduct(product, userEmail, pcr, tempProduct);
+	}
+
+	@Test
+	public void testDeleteProduct() {
+		Product product = productDAO.getProductById(productID, storeID);
+		productDAO.deleteProduct(product, userEmail);
+		Assert.assertNull("Product havent delete", productDAO.getProductById(productID, storeID));
+	}
+
+	@Test
+	public void testCheckProductCode() {
+		Assert.assertEquals(true, productDAO.checkProductCodeExists(storeID, duplicatedProductCode));
+	}
+}

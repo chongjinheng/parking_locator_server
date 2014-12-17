@@ -1,0 +1,68 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.SalesDAO;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Sales;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for SalesDao.
+ * 
+ * @author cylim
+ */
+
+public class SalesDaoTest extends BaseTestCase {
+
+	@Autowired
+	private SalesDAO salesDAO;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	private Long storeID = 1l;
+	private Long salesID = 1l;
+
+	@Test
+	public void testGetSalesById() {
+		Sales sales = salesDAO.getSalesById(salesID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", sales);
+	}
+
+	// @Test
+	// public void testGetSalesByRecieptNumber() {
+	// Sales sales = salesDAO.getSalesByRecieptNumber("140417000001000001");
+	// Assert.assertNotNull("Category with this id doesnt exists", sales);
+	// }
+
+	@Test
+	public void testGetSalesByShopID() {
+		List<Sales> salesList = salesDAO.getSalesByShopID(storeID);
+		Assert.assertNotNull("The list is null", salesList);
+		Assert.assertTrue("no records inside list", salesList.size() > 0);
+	}
+
+	@Test
+	public void testCreateSales() {
+		Discount discountPackage = discountDAO.getDiscountById(Long.valueOf(testValue.getProperty("discountID")),
+				Long.valueOf(testValue.getProperty("storeID")));
+
+		Long i = salesDAO.createSales(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("paymentType"), Long.valueOf(testValue.getProperty("subTotalAmount")),
+				Long.valueOf(testValue.getProperty("totalAmount")), Long.valueOf(testValue.getProperty("discountAmount")),
+				Long.valueOf(testValue.getProperty("tenderAmount")), Long.valueOf(testValue.getProperty("changeAmount")), discountPackage,
+				testValue.getProperty("receiptNumber"));
+		Assert.assertNotNull("Sales is not created", salesDAO.getSalesById(i, Long.valueOf(testValue.getProperty("storeID"))));
+	}
+}

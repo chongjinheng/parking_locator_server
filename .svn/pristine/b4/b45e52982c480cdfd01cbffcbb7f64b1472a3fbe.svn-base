@@ -1,0 +1,65 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.CartItemDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Product;
+import com.softspace.test.controller.BaseTestCase;
+
+public class CartItemDaoTest extends BaseTestCase {
+
+	@Autowired
+	private CartItemDAO cartItemDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	@Value("${salesID}")
+	private Long salesID;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${totalAmount}")
+	private Long amount;
+
+	@Value("${customAmountDescription}")
+	private String customAmountDescription;
+
+	@Value("${productIDforDAOtest}")
+	private Long productID;
+
+	@Value("${quantityForDAOtest}")
+	private Integer quantity;
+
+	@Test
+	public void testCreateCustomCartItem() {
+		CartItem cartItem = new CartItem();
+		cartItem.setAmount(amount);
+		cartItem.setCustomAmountDescription(customAmountDescription);
+		cartItem.setQuantity(quantity);
+
+		cartItemDAO.createCustomCartItem(salesID, cartItem, storeID, userEmail);
+	}
+
+	@Test
+	public void testCreateCartItem() {
+		Product product = productDAO.getProductById(productID, storeID);
+		CartItem cartItem = new CartItem();
+		cartItem.setAmount(amount);
+		cartItem.setQuantity(quantity);
+		cartItemDAO.createCartItem(salesID, cartItem, storeID, product, userEmail);
+	}
+}

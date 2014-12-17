@@ -1,0 +1,157 @@
+package com.softspace.pos.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.softspace.pos.DTO.JSONCart;
+import com.softspace.pos.DTO.JSONCategory;
+import com.softspace.pos.DTO.JSONDTO;
+import com.softspace.pos.DTO.JSONDiscount;
+import com.softspace.pos.DTO.JSONProduct;
+import com.softspace.pos.DTO.JSONSalesHistory;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.bean.Store;
+
+public class JSONConverter {
+
+	public static JSONServiceDTO fromMobile(JSONDTO dto) {
+		return null;
+	}
+
+	public static JSONDTO toMobile(JSONServiceDTO dto) {
+		JSONDTO runningDTO = new JSONDTO();
+
+		/*** INIT ***/
+		runningDTO.setPkXML(dto.getPkXML());
+		runningDTO.setError(dto.getError());
+		runningDTO.setLanguage(dto.getLanguage());
+		runningDTO.setSessionKey(dto.getSessionKey());
+		/*** IDs ***/
+		runningDTO.setStoreID(dto.getStoreId().toString());
+		runningDTO.setSalesID(dto.getSalesId().toString());
+		/*** LOGIN ***/
+		runningDTO.setLoginMode(dto.getLoginMode());
+
+		Store store = dto.getUserProfile();
+		store.setStoreName(dto.getStoreName());
+		store.setStoreImage(dto.getStoreImage());
+		runningDTO.setUserProfile(store);
+
+		/*** STORE & INVENTORY ***/
+		if (dto.getProductList().size() > 0) {
+			List<JSONProduct> jsonProducts = new ArrayList<JSONProduct>();
+			for (Product pro : dto.getProductList()) {
+				JSONProduct jsonProduct = new JSONProduct();
+				jsonProduct.setId(pro.getId().toString());
+				jsonProduct.setCode(pro.getCode());
+				jsonProduct.setName(pro.getName());
+				jsonProduct.setPrice(pro.getPrice().toString());
+				jsonProduct.setThumbnail(pro.getThumbnail());
+
+				if (pro.getCategoryIDList().size() > 0) {
+					List<String> tempCatID = new ArrayList<String>();
+					for (Long catID : pro.getCategoryIDList()) {
+						tempCatID.add(catID.toString());
+					}
+					jsonProduct.setCategoryIDList(tempCatID);
+
+					jsonProducts.add(jsonProduct);
+				}
+			}
+			runningDTO.setProductList(jsonProducts);
+		}
+
+		if (dto.getCategoryList().size() > 0) {
+			List<JSONCategory> jsonCategories = new ArrayList<JSONCategory>();
+			for (Category cat : dto.getCategoryList()) {
+				JSONCategory jsonCategory = new JSONCategory();
+				jsonCategory.setId(cat.getId().toString());
+				jsonCategory.setName(cat.getName());
+
+				if (cat.getProductIds().size() > 0) {
+					List<String> tempProID = new ArrayList<String>();
+					for (Long proID : cat.getProductIds()) {
+						tempProID.add(proID.toString());
+					}
+					jsonCategory.setProductIDList(tempProID);
+				}
+			}
+			runningDTO.setCategoryList(jsonCategories);
+		}
+
+		if (dto.getDiscountList().size() > 0) {
+			List<JSONDiscount> jsonDiscounts = new ArrayList<JSONDiscount>();
+			for (Discount dis : dto.getDiscountList()) {
+				JSONDiscount jsonDiscount = new JSONDiscount();
+				jsonDiscount.setId(dis.getId().toString());
+				jsonDiscount.setName(dis.getName());
+				jsonDiscount.setType(dis.getType());
+				jsonDiscount.setValue(dis.getValue().toString());
+			}
+			runningDTO.setDiscountList(jsonDiscounts);
+		}
+
+		runningDTO.setNewCategoryID(dto.getNewCategoryID().toString());
+		runningDTO.setNewProductID(dto.getNewProductID().toString());
+		runningDTO.setNewDiscountID(dto.getNewDiscountID().toString());
+
+		/*** SALES ***/
+		if (dto.getCartList().size() > 0) {
+			List<JSONCart> jsonCarts = new ArrayList<JSONCart>();
+			for (CartItem cart : dto.getCartList()) {
+				JSONCart jsonCart = new JSONCart();
+				jsonCart.setProductID(cart.getProductID().toString());
+				jsonCart.setProductCode(cart.getProductCode());
+				jsonCart.setCustomAmountDescription(cart.getCustomAmountDescription());
+				jsonCart.setQuantity(cart.getQuantity());
+
+				Double tempSubTotal = Long.valueOf(cart.getSubTotal()).doubleValue();
+				tempSubTotal /= 100;
+				jsonCart.setSubtotal(tempSubTotal.toString());
+			}
+			runningDTO.setCartList(jsonCarts);
+		}
+
+		runningDTO.setPaymentType(dto.getPaymentType());
+
+		Double tempSubTotalAmount = Long.valueOf(dto.getSubTotalAmount()).doubleValue();
+		tempSubTotalAmount /= 100;
+		runningDTO.setSubTotalAmount(tempSubTotalAmount.toString());
+
+		Double tempTotalAmount = Long.valueOf(dto.getTotalAmount()).doubleValue();
+		tempTotalAmount /= 100;
+		runningDTO.setTotalAmount(tempTotalAmount.toString());
+
+		Double tempDiscountAmount = Long.valueOf(dto.getDiscountAmount()).doubleValue();
+		tempDiscountAmount /= 100;
+		runningDTO.setDiscountAmount(tempDiscountAmount.toString());
+
+		runningDTO.setReceiptNumber(dto.getReceiptNumber());
+
+		if (dto.getSalesHistoryList().size() > 0) {
+			List<JSONSalesHistory> jsonSalesHistories = new ArrayList<JSONSalesHistory>();
+			for (Sales sales : dto.getSalesHistoryList()) {
+				JSONSalesHistory jsonSalesHistory = new JSONSalesHistory();
+				jsonSalesHistory.setSalesID(sales.getSalesID().toString());
+				jsonSalesHistory.setReceiptNumber(sales.getReceiptNumber());
+				jsonSalesHistory.setPaymentType(sales.getPaymentType());
+
+				Double tempTotalAmount1 = Long.valueOf(sales.getTotalAmount()).doubleValue();
+				tempTotalAmount1 /= 100;
+				jsonSalesHistory.setTotalAmount(tempTotalAmount1.toString());
+
+				jsonSalesHistory.setTransactionDate(sales.getTransactionDate().toString());
+			}
+			runningDTO.setSalesHistoryList(jsonSalesHistories);
+		}
+
+		runningDTO.setTransactionDate(dto.getTransactionDate().toString());
+
+		return runningDTO;
+	}
+}

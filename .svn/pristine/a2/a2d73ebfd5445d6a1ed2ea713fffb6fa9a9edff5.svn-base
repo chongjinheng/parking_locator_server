@@ -1,0 +1,33 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Sales;
+
+/**
+ * Sales DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+@Repository
+@Transactional(readOnly = true)
+public class SalesDAOImpl extends GenericDAO implements SalesDAO {
+
+	@Override
+	public Sales getSalesById(Long id, Long storeID) {
+		return (Sales) getSessionFactory().createCriteria(Sales.class).add(Restrictions.eq("store.id", storeID))
+				.add(Restrictions.eq("id", id)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Sales> getSalesByShopID(Long id) {
+		return (List<Sales>) getSessionFactory().createCriteria(Sales.class).add(Restrictions.eq("store.id", id)).list();
+	}
+
+}

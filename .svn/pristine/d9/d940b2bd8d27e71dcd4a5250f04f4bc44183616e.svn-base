@@ -1,0 +1,25 @@
+package com.softspace.pos.DTO;
+
+/**
+ * Error JSON Class
+ * 
+ * @author original author
+ */
+public class JSONServiceError {
+
+	private final int code;// eIndex
+	private final String message;
+
+	public JSONServiceError(final int errorCode, final String message) {
+		this.code = errorCode;
+		this.message = message;
+	}
+
+	public final int getCode() {
+		return code;
+	}
+
+	public final String getMessage() {
+		return message;
+	}
+}

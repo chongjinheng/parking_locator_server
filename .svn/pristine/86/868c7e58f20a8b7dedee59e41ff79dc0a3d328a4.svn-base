@@ -1,0 +1,14 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.ForgetPasswordSession;
+
+public interface ForgetPasswordSessionDAO {
+
+	public Long createForgetPasswordSession(String email, String hashedTempPassword);
+
+	public ForgetPasswordSession getForgetPasswordSessionByID(Long ID);
+
+	public void updateForgetPasswordSession(String hashedTempPassword, String userEmail);
+
+	public void deleteForgetPasswordSession(String userEmail);
+}

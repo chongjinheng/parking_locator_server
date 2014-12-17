@@ -1,0 +1,68 @@
+package com.softspace.pos.DTOBeans;
+
+public class JSONCart {
+
+	private String productID;
+	private String productCode;
+	private String productName;
+	private String customAmount;
+	private String customAmountDescription;
+	private String subtotal;
+	private Integer quantity;
+
+	public String getCustomAmount() {
+		return customAmount;
+	}
+
+	public void setCustomAmount(String customAmount) {
+		this.customAmount = customAmount;
+	}
+
+	public String getProductID() {
+		return productID;
+	}
+
+	public void setProductID(String productID) {
+		this.productID = productID;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getCustomAmountDescription() {
+		return customAmountDescription;
+	}
+
+	public void setCustomAmountDescription(String customAmountDescription) {
+		this.customAmountDescription = customAmountDescription;
+	}
+
+	public String getSubtotal() {
+		return subtotal;
+	}
+
+	public void setSubtotal(String subtotal) {
+		this.subtotal = subtotal;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
+}

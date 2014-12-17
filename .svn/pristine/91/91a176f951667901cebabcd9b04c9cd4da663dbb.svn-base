@@ -1,0 +1,16 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.Store;
+
+/**
+ * @author chengyang
+ */
+
+public interface StoreDAO {
+
+	public Store getStoreByStoreId(Long ID);
+
+	public Long createStore(String storeName, String userEmail);
+
+	public void updateUserProfile(String userEmail, String storeName, String storeImage);
+}

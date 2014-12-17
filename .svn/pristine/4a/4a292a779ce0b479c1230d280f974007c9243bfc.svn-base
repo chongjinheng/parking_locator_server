@@ -1,0 +1,112 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.CategoryDAO;
+import com.softspace.pos.DAO.ProductCategoryReferenceDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for ProductCategoryReferenceDAO.
+ * 
+ * @author azliabdullah
+ * @author chengyang
+ */
+public class ProductCategoryReferenceDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ProductCategoryReferenceDAO pcrDao;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private CategoryDAO categoryDAO;
+
+	@Value("${categoryID}")
+	private Long categoryID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${pcrID}")
+	private Long pcrID;
+
+	@Value("${productIDforDAOtest}")
+	private Long productID;
+
+	@Value("${pcrProduct}")
+	private String pcrProduct;
+
+	@Value("${pcrProductCode}")
+	private String pcrProductCode;
+
+	@Value("${pcrCategory}")
+	private String pcrCategory;
+
+	@Value("${categoryID3}")
+	private Long categoryID3;
+
+	@Test
+	public void testGetPcrByCategoryId() {
+		List<ProductCategoryReference> pcrs = pcrDao.getPcrByCategoryId(categoryID);
+		Assert.assertNotNull("its null", pcrs);
+		Assert.assertTrue("no records inside list", pcrs.size() > 0);
+	}
+
+	@Test
+	public void testGetPcrById() {
+		ProductCategoryReference pcr = pcrDao.getPcrById(pcrID);
+		Assert.assertNotNull("ProductCategoryReference with this id not exist", pcr);
+	}
+
+	@Test
+	public void testGetPcrByProductId() {
+		List<ProductCategoryReference> pcrs = pcrDao.getPcrByProductID(productID);
+		Assert.assertNotNull("its null", pcrs);
+		Assert.assertTrue("no records inside list", pcrs.size() > 0);
+	}
+
+	@Test
+	public void testCreateProductCategoryReference() {
+
+		Product product = new Product();
+		product.setName(pcrProduct);
+		product.setCode(pcrProductCode);
+		Long i1 = productDAO.createProduct(product, userEmail, storeID);
+		Category category = new Category();
+		category.setName(pcrCategory);
+		Long i2 = categoryDAO.createCategory(category, userEmail, storeID);
+		Category category1 = categoryDAO.getCategoryById(i2, storeID);
+		Product product1 = productDAO.getProductById(i1, storeID);
+		Long i = pcrDao.createProductCategoryReference(product1, userEmail, category1);
+		Assert.assertNotNull("PCR is not created.", pcrDao.getPcrById(i));
+	}
+
+	@Test
+	public void testUpdateProductCategoryReference() {
+		ProductCategoryReference pcr = pcrDao.getPcrById(pcrID);
+		Category category = categoryDAO.getCategoryById(categoryID3, storeID);
+		pcrDao.updateProductCategoryReference(userEmail, category, pcr);
+	}
+
+	@Test
+	public void testDeleteProductCategoryReference() {
+		ProductCategoryReference pcr = pcrDao.getPcrById(pcrID);
+		pcrDao.deleteProductCategoryReference(userEmail, pcr);
+		Assert.assertNull("The pcr is not deleted", pcrDao.getPcrById(pcrID));
+	}
+}

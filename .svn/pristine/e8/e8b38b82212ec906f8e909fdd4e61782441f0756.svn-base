@@ -1,0 +1,89 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.StoreDAO;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Store;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for DiscountDao.
+ * 
+ * @author cylim
+ */
+public class DiscountDaoTest extends BaseTestCase {
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${discountID}")
+	private Long discountID;
+
+	@Value("${discountName}")
+	private String discountName;
+
+	@Value("${type}")
+	private String discountType;
+
+	@Value("${value}")
+	private Double discountValue;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Test
+	public void testGetDiscountById() {
+		Discount discount = discountDAO.getDiscountById(discountID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", discount);
+		Assert.assertEquals("TooHandsome", discount.getName());
+	}
+
+	@Test
+	public void testGetAllDiscountInStore() {
+		List<Discount> discountList = discountDAO.getAllDiscountsInStore(storeID);
+		Assert.assertNotNull("The list is null", discountList);
+		Assert.assertTrue("no records inside list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testGetAllDiscountWOCustomInStore() {
+		List<Discount> discountList = discountDAO.getAllDiscountsWOCustomInStore(storeID);
+		Assert.assertNotNull("The list is null", discountList);
+		Assert.assertTrue("no records inside list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testCreateCustomDiscount() {
+		Discount discount = new Discount();
+		discount.setName(discountName);
+		discount.setType(discountType);
+		discount.setValue(discountValue);
+		discountDAO.createCustomDiscount(userEmail, discount);
+	}
+
+	@Test
+	public void testCreateDiscount() {
+		Store store = storeDAO.getStoreByStoreId(1l);
+		Discount discount = new Discount();
+		discount.setName(discountName);
+		discount.setType(discountType);
+		discount.setValue(discountValue);
+		Long i = discountDAO.createDiscount(userEmail, store, discount);
+		Assert.assertNotNull("Discount failed to create", discountDAO.getDiscountById(i, storeID));
+
+	}
+}

@@ -1,0 +1,44 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.ForgotPasswordSessionDAO;
+import com.softspace.pos.bean.ForgotPasswordSession;
+import com.softspace.pos.util.Encryptor;
+import com.softspace.test.controller.BaseTestCase;
+
+public class ForgotPasswordSessionDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	@Test
+	public void testCreateForgetPasswordSession() {
+		Long i = forgotPasswordSessionDAO.createForgetPasswordSession(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword("yayman12345", testValue.getProperty("userEmail")));
+		Assert.assertNotNull("ForgotPasswordSession failed to be created ", forgotPasswordSessionDAO.getForgetPasswordSessionByID(i));
+	}
+
+	@Test
+	public void testGetPasswordSessionByID() {
+		Long fpID = forgotPasswordSessionDAO.createForgetPasswordSession(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword(testValue.getProperty("newPassword"), testValue.getProperty("userEmail")));
+		ForgotPasswordSession forgotPassworddSession = forgotPasswordSessionDAO.getForgetPasswordSessionByID(fpID);
+		Assert.assertNotNull("ForgotPasswordSession with this ID doesnt exists", forgotPassworddSession);
+	}
+
+	@Test
+	public void testUpdateForgotPasswordSession() {
+		forgotPasswordSessionDAO.createForgetPasswordSession(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword("yayman12345", testValue.getProperty("userEmail")));
+		forgotPasswordSessionDAO.updateForgetPasswordSession(Encryptor.hashPassword("yuo17212", testValue.getProperty("userEmail")),
+				testValue.getProperty("userEmail"));
+	}
+}

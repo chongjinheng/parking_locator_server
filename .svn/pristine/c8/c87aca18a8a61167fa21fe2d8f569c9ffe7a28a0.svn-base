@@ -1,0 +1,33 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Product;
+
+/**
+ * Product DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class ProductDAOImpl extends GenericDAO implements ProductDAO {
+
+	@Override
+	public Product getProductById(Long id, Long storeID) {
+		return (Product) getSessionFactory().createCriteria(Product.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("id", id)).add(Restrictions.eq("store.id", storeID)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Product> getAllProductsInStore(Long storeID) {
+		List<Product> products = getSessionFactory().createCriteria(Product.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return products;
+	}
+}

@@ -1,0 +1,297 @@
+package com.softspace.pos.controller;
+
+import java.io.IOException;
+import java.util.Locale;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.softspace.pos.DTO.JSONDTO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.DTO.JSONServiceError;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.enums.ServiceNames;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+import com.softspace.pos.exceptions.SSRecoverableException;
+import com.softspace.pos.exceptions.SessionTimedOutException;
+import com.softspace.pos.service.PosUserService;
+import com.softspace.pos.service.SalesService;
+import com.softspace.pos.service.StoreService;
+import com.softspace.pos.util.Encryptor;
+import com.softspace.pos.util.JSONConverter;
+import com.softspace.pos.util.JSONFactory;
+
+/**
+ * POS version of GenericMobileServiceController<br/>
+ * Renamed to reflect more on this Class' role and avoid confusion
+ * 
+ * @author original author
+ * @author azliabdullah
+ */
+@Controller
+@RequestMapping(value = { "/s", "/s/**" })
+public class MobileRequestController extends AbstractController {
+
+	private int SESSION_TIME_OUT = 60 * 60 * 12;
+
+	private static final Logger logger = LoggerFactory.getLogger(MobileRequestController.class);
+	// TODO later phase? perf logger
+	// TODO later phase? smartdeviceversioning
+
+	@Autowired
+	private PosUserService posUserService;
+
+	@Autowired
+	private StoreService storeService;
+
+	@Autowired
+	private SalesService salesService;
+
+	// TODO exception logger here in later phase?
+
+	@Autowired
+	private MessageSource messageSource;
+
+	// TODO login token. needed?
+
+	// TODO initResource and versioning later phase?
+
+	@RequestMapping(value = { "" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String defResp(final HttpServletResponse response) throws IOException {
+		return "";
+	}
+
+	@RequestMapping(value = { "/init" }, method = RequestMethod.POST)
+	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@ResponseBody
+	public void doInit(final HttpServletRequest request, @RequestBody final String jsonFromMobile, final HttpServletResponse response,
+			final Locale locale) throws Exception {
+		System.out.println("INIT-START");
+
+		request.getSession(true).invalidate();
+		request.getSession(true).setMaxInactiveInterval(120);
+
+		// generating cookie for the first time
+		Cookie cookie = generateAndSetCookie(response);
+		setCookieToSession(request.getSession(), cookie);
+
+		JSONServiceDTO respObj = new JSONServiceDTO();
+		respObj.setPkXML("init end");
+
+		flushResponse(response, respObj);
+	}
+
+	@RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
+	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	// don't bother with this line.
+	public void doProcessMobileRequest(final HttpServletRequest request, @RequestBody final String jsonFromMobile,
+			final HttpServletResponse response, final Locale locale) throws Exception {
+		String serviceName = null;
+		try {
+
+			// TODO get rsa3, senderPublicKey from request's session. They are used for encryption/decryption. Not in Phase 1
+
+			StringBuilder newJsonFromMobile = Encryptor.hidePassword(jsonFromMobile);
+
+			logger.debug("\nJSON sent from mobile app: {}", newJsonFromMobile);
+
+			// checkCookie here
+			checkCookie(request, response);
+
+			// setMaxInactiveInterval (when session will time out)
+			request.getSession().setMaxInactiveInterval(SESSION_TIME_OUT);
+
+			// do process request and get the response JSON
+			// TODO later phase? decrypt the json before convert to JSONServiceDTO object then process
+			// in Phase 1 directly convert to JSONServiceDTO object then process
+			JSONDTO dtoFromMobile = JSONFactory.create().fromJson(jsonFromMobile, JSONDTO.class);
+			JSONServiceDTO requestObj = JSONConverter.fromMobile(dtoFromMobile);
+			serviceName = requestObj.getServiceName();
+			JSONServiceDTO respObj = processRequest(requestObj, locale, request, response);
+
+			// TODO renew session key. sessionkey can only be assigned to session, only when the session has a posUser set inside its
+			// attribute
+			String sessionKey = generateAndSetSessionKey(respObj);
+
+			// TODO renew session cookie
+			Cookie cookie = generateAndSetCookie(response);
+
+			if (respObj.getError() != null) {
+				int errorCode = respObj.getError().getCode();
+				// error code between 5000 - 5999 && 8000 - 8999 are recoverable error, it's fine. user can retry
+				if ((10001 == errorCode) || ((errorCode >= 5000) && (errorCode < 6000)) || ((errorCode >= 8000) && (errorCode < 9000))) {
+					response.setStatus(HttpServletResponse.SC_OK);
+				} else {
+					// non recoverable - could be session prob, etc. forced user to re-login
+					request.getSession().invalidate();
+					response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+
+				}
+			}
+			//
+			PosUser staff = (PosUser) request.getSession(true).getAttribute(SESSION_KEYS.CURRENT_LOGIN_STAFF.name());
+			// flushResponse will throw an IOException if client connection is dropped
+			flushResponse(response, respObj);
+
+			if ((request.getSession() != null) && (staff != null)) {
+				// set the session key and cookie to the session
+				setCookieToSession(request.getSession(), cookie);
+				// this is the part where you pass current cookie data into the new session
+				setSessionKeyToSession(request.getSession(), sessionKey);
+			}
+
+		} catch (SSPosMobileRequestException e) {
+			try {
+				logger.error("session has timed out.");
+				if (e.getErrorStatus() == ErrorStatus.SESSION_TIMED_OUT) {
+					response.setStatus(HttpServletResponse.SC_FOUND);
+				} else {
+					response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+				}
+
+				flushResponse(response, getExceptionMessage(locale, e.getErrorStatus(), serviceName));
+
+				// TODO if want to save exception to incident table
+			} catch (SSRecoverableException e1) {
+				logger.error("Problem returning the response to client. Has the client disconnected to my app?");
+				throw new RuntimeException(e1);
+			}
+			throw e;
+		} catch (SessionTimedOutException e) {
+			logger.error("Session Expired: ", e);
+			response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+
+			flushResponse(response, getExceptionMessage(locale, ErrorStatus.SESSION_TIMED_OUT, serviceName));
+		} catch (Exception e) {
+			try {
+				logger.error("Error in method invocation: ", e);
+				response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
+
+				flushResponse(response, getExceptionMessage(locale, ErrorStatus.ERROR_METHOD_INVOCATION_ERROR, serviceName));
+			} catch (SSRecoverableException e1) {
+				logger.error("Problem returning the response to client. Has the client disconnected to my app?");
+				throw new RuntimeException(e1);
+			}
+			// TODO if want to save exception to incident table
+			throw e;
+		}
+	}
+
+	private JSONServiceDTO processRequest(JSONServiceDTO dto, final Locale locale, final HttpServletRequest request,
+			final HttpServletResponse response) throws SSPosMobileRequestException {
+		Assert.notNull(dto);
+
+		ServiceNames serviceNameEnum = extractServiceName(dto);
+		// PosUser staff = null;
+		try {
+			switch (serviceNameEnum) {
+				case SIGN_UP:
+					logger.debug("Entering {} service", ServiceNames.SIGN_UP);
+					dto = posUserService.doSignUp(dto.getStoreName(), dto.getEmail(), dto.getPassword());
+					break;
+				case LOGIN:
+					logger.debug("Entering {} service", ServiceNames.LOGIN);
+					dto = posUserService.doLogIn(dto.getEmail(), dto.getPassword());
+					persistToSession(dto, request, dto.getEmail());
+					break;
+				case LOGOUT:
+					logger.debug("Entering {} service", ServiceNames.LOGOUT);
+					request.getSession(true).invalidate();
+					break;
+				case FORGOT_PASSWORD:
+					logger.debug("Entering {} service", ServiceNames.FORGOT_PASSWORD);
+					dto = posUserService.doForgotPassword(dto.getEmail());
+					break;
+				case CHANGE_PASSWORD:
+					logger.debug("Entering {} service", ServiceNames.CHANGE_PASSWORD);
+					dto = posUserService.doChangePassword(dto.getEmail(), dto.getOldPassword(), dto.getNewPassword(),
+							dto.isForceChangePassword());
+					break;
+				case GET_INVENTORY_LIST:
+					logger.debug("Entering {} service", ServiceNames.GET_INVENTORY_LIST);
+					dto = storeService.doGetInventoryList(dto.getEmail(), dto.getStoreId());
+					break;
+				case MANAGE_CATEGORY:
+					logger.debug("Entering {} service", ServiceNames.MANAGE_CATEGORY);
+					dto = storeService.doManageCategory(dto.getEmail(), dto.getStoreId(), dto.getAction(), dto.getCategoryList());
+					break;
+				case MANAGE_CATEGORY_ITEM:
+					logger.debug("Entering {} service", ServiceNames.MANAGE_CATEGORY_ITEM);
+					dto = storeService.doManageCategoryItem(dto.getEmail(), dto.getStoreId(), dto.getCategoryId(), dto.getProductIDList());
+					break;
+				case MANAGE_PRODUCT:
+					logger.debug("Entering {} service", ServiceNames.MANAGE_PRODUCT);
+					dto = storeService.doManageProduct(dto.getEmail(), dto.getStoreId(), dto.getAction(), dto.getProductList());
+					break;
+				case MANAGE_DISCOUNT:
+					logger.debug("Entering {} service", ServiceNames.MANAGE_DISCOUNT);
+					dto = storeService.doManageDiscount(dto.getEmail(), dto.getStoreId(), dto.getAction(), dto.getDiscountPackageList());
+					break;
+				case UPDATE_USER_PROFILE:
+					logger.debug("Entering {} service", ServiceNames.UPDATE_USER_PROFILE);
+					dto = posUserService.doUpdateProfile(dto.getEmail(), dto.getStoreId(), dto.getStoreName(), dto.getStoreImage());
+					break;
+				case CONFIRM_SALE:
+					logger.debug("Entering {} service", ServiceNames.CONFIRM_SALE);
+					dto = salesService.doConfirmSale(dto.getEmail(), dto.getStoreId(), dto.getPaymentType(), dto.getSubTotalAmount(),
+							dto.getTotalAmount(), dto.getDiscountAmount(), dto.getTenderAmount(), dto.getChangeAmount(),
+							dto.getDiscountPackage(), dto.getCartList());
+					break;
+
+				case SEND_RECEIPT:
+					logger.debug("Entering {} service", ServiceNames.SEND_RECEIPT);
+					dto = salesService.doSendReciept(dto.getEmail(), dto.getStoreId(), dto.getCustomerEmail(), dto.getSalesId());
+					break;
+
+				case SALES_HISTORY:
+					logger.debug("Entering {} service", ServiceNames.SALES_HISTORY);
+					dto = salesService.getSalesHistory(dto.getEmail(), dto.getStoreId());
+					break;
+
+				case SALES_HISTORY_DETAIL:
+					logger.debug("Entering {} service", ServiceNames.SALES_HISTORY_DETAIL);
+					dto = salesService.getSalesHistoryDetails(dto.getEmail(), dto.getStoreId(), dto.getSalesId());
+					break;
+
+				default:
+					logger.error("Service name not found: " + serviceNameEnum);
+					throw new SSPosMobileRequestException(ErrorStatus.ERROR_SERVICE_NOT_FOUND, "Service name not found: " + serviceNameEnum);
+			}
+
+		} catch (SSPosMobileRequestException e) {
+			return getExceptionMessage(locale, e.getErrorStatus(), serviceNameEnum.name());
+		} catch (Exception e) {
+			logger.error("unhandled exception", e);
+			return getExceptionMessage(locale, ErrorStatus.UNHANDLED_ERROR, serviceNameEnum.name());
+		}
+		return dto;
+	}
+
+	// TODO check platform version, checkPlatformVersion
+
+	// TODO here also session management BS, verifySessionData ..aarrrrgghhh
+
+	// TODO fill all ErrorStatus inside messages_error
+	private JSONServiceDTO getExceptionMessage(final Locale locale, final ErrorStatus errorStatus, final String serviceName) {
+		String message = messageSource.getMessage(errorStatus.getKey(), errorStatus.getParam(), errorStatus.getDefaultMessage(), locale);
+		JSONServiceDTO jsonToReturn = new JSONServiceDTO();
+		jsonToReturn.setError(new JSONServiceError(errorStatus.getCode(), message));
+		return jsonToReturn;
+	}
+}

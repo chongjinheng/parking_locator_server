@@ -1,0 +1,19 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Category;
+
+/**
+ * Category DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface CategoryDAO {
+
+	public Category getCategoryById(Long id, Long storeID);
+
+	public List<Category> getAllCategoriesInStore(Long storeID);
+
+}

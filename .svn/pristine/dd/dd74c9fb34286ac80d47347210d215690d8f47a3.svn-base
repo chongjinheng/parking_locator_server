@@ -1,0 +1,66 @@
+package com.softspace.test.service;
+
+import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.service.PosUserService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author chongjinheng
+ */
+public class PosUserServiceTest extends BaseTestCase {
+
+	@Autowired
+	private PosUserService posUserService;
+
+	@Autowired
+	private Properties testValue;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testDoSignUp() throws Exception {
+		dto = posUserService.doSignUp(testValue.getProperty("storeName"), testValue.getProperty("firstTimeSignupEmail"),
+				testValue.getProperty("password"));
+		Assert.assertNotNull("store id is not returned", dto.getStoreId());
+	}
+
+	@Test
+	public void testDoLogIn() throws Exception {
+		dto = posUserService.doLogIn(testValue.getProperty("userEmail"), testValue.getProperty("password"));
+		Assert.assertNotNull("store id is not returned", dto.getStoreId());
+		Assert.assertNotNull("login mode is not returned", dto.getLoginMode());
+
+		if (dto.getLoginMode() == 10) {
+			Assert.assertNull("userProfile object exist", dto.getUserProfile());
+		} else if (dto.getLoginMode() == 20) {
+			Assert.assertNotNull("userProfile object is null", dto.getUserProfile());
+			Assert.assertEquals("wrong user's store name", "my store 1", dto.getUserProfile().getStoreName());
+		}
+	}
+
+	@Test
+	public void testDoForgotPass() throws Exception {
+		dto = posUserService.doForgotPassword(testValue.getProperty("userEmail"));
+	}
+
+	@Test
+	public void testDoChangePass() throws Exception {
+		dto = posUserService.doChangePassword(testValue.getProperty("userEmail"), testValue.getProperty("oldPassword"),
+				testValue.getProperty("newPassword"), Boolean.valueOf(testValue.getProperty("forceChancePassword")));
+	}
+
+	@Test
+	public void testDoUpdateProfile() throws Exception {
+		posUserService.doUpdateProfile(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("newStoreName"), testValue.getProperty("storeImage"));
+	}
+}

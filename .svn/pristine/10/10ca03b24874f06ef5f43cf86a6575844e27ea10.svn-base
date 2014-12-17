@@ -1,0 +1,31 @@
+package com.softspace.test.dao;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.SalesRunningNumberDAO;
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for SalesRunningNumberDao.
+ * 
+ * @author cylim
+ */
+
+public class SalesRunningNumberDaoTest extends BaseTestCase {
+
+	@Autowired
+	private SalesRunningNumberDAO salesRunningNumberDAO;
+
+	private Long storeID = 1l;
+
+	@Test
+	public void testGetSalesById() {
+		SalesRunningNumber salesRunningNumber = salesRunningNumberDAO.getSalesRunningNumberByStoreId(storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", salesRunningNumber);
+	}
+
+}

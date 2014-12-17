@@ -1,0 +1,24 @@
+package com.softspace.pos.DAO;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.PosUser;
+
+/**
+ * Pos User DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class PosUserDAOImpl extends GenericDAO implements PosUserDAO {
+
+	@Override
+	public PosUser getUserByEmail(String email) {
+		return (PosUser) getSessionFactory().createCriteria(PosUser.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("email", email)).uniqueResult();
+	}
+}

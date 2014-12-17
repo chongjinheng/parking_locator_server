@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+    <head data-gwd-animation-mode="quickMode">
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <meta name="generator" content="Google Web Designer 1.0.6.0428">
+                <style type="text/css" id="" title="Temp" media="screen">
+                    .gwd-body {
+                    height: 100%;
+                    background-color: transparent;
+                    -webkit-transform-style: preserve-3d;
+                    -webkit-transform: perspective(1400px) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+                    }
+                </style>
+</head>
+<body class="gwd-body" style="position:absolute; width:auto;">
+    <div class="body">
+        <title></title>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td id="background" align="center" bgcolor="#000000">
+                        <table width="640" cellpadding="0" cellspacing="0" style="margin:0 10px;">
+                            <tbody>
+                                <tr>
+                                    <td width="640" height="15"></td>
+                                </tr>
+                                <tr>
+                                    <td width="640">
+                                        <table id="top-bar" height="10" width="640" style="background-color: #94ae3c;  border-top-left-radius: 6px;
+                                            border-top-right-radius: 6px;
+                                            border-bottom-right-radius: 0px;
+                                            border-bottom-left-radius: 0px;&gt;
+                                            &lt;tbody&gt;
+                                            &lt;tr height=" 10="" "=" ">
+</table>
+</td>
+</tr>
+<tr>
+    <td id="header " class=" " width="640 " height="100 " align="left " style="background-color: #D1D0CE ">
+        <table cellpadding="20 " cellspacing="0 ">
+            <tbody>
+                <tr>
+                    <td class=" ">
+                        <img src="https://db.tt/ov4A93bK " style="position:relative; WIDTH:224px; HEIGHT:64px " class=" ">
+</td>
+<td class=" ">
+    <strong>
+        <p style="font-size:21px; text-align:center; color:#41403D; -webkit-font-smoothing: subpixel-antialiased; " class=" ">Soft Space POS Mobile Application</p>
+    </strong>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+    <td height="5 " bgcolor="#ffffff " class=" "></td>
+</tr>
+<tr id="simple-content-row ">
+    <td class="w640 " width="640 " bgcolor="#ffffff ">
+        <table align="left " cellspacing="0 ">
+            <tbody>
+                <tr>
+                    <td width="30 "></td>
+                    <td>
+                       
+                            <table id="text-only" cellspacing="0 " border="0 ">
+                                <tbody>
+                                    <tr>
+                                        <td width="580">
+                                            <p></p>
+                                            <p style="color:#93ae3c; font-size:18px; font-weight:bold; margin-top: 0px; font-family: HelveticaNeue, sans-serif; ">Receipt for sales at ${info.time}</p>
+                                            <div align="left">
+                                                <p style="font-family: HelveticaNeue, font-size:12px sans-serif; ">Thank you for shopping at <a style="color:#00665E; font-weight:bold; font-size: 19px;">${info.storeName}</a>. <br> <br>
+                                                        
+                                                        <table>
+                                                            	<td>
+                                                                Receipt No:<br>
+                                                                Purchase Date:<br>
+                                                                </td>
+                                                                <td style="padding-left: 10px;">
+                                                                ${info.receiptNumber}<br>
+                                                                ${info.time}
+                                                                </td>   	
+                                                        </table>
+                                                        <hr>
+                                                        
+                                                        <table vertical-align:top;>
+																<td width="50px" style="text-align:left; vertical-align:top;">
+                                                                <strong>No.</strong><br>
+																 #set($temp = 1)
+                                                                 #foreach ($item in $info.cartItemList)
+																	$temp<br>
+																	#set($temp = $temp + 1)
+																#end
+                                                                </td>
+                                                                
+                                                            	<td width="150px" style="text-align:left; vertical-align:top;">
+                                                                <strong>Item</strong><br>
+                                                                 #foreach ($item in $info.cartItemList)
+    																$item.productName<br>
+																#end
+                                                                </td>
+                                                                
+																<td width="100px" style="text-align:center; vertical-align:top;">
+                                                                <strong>Quantity</strong><br>
+                                                                #foreach ($item in $info.cartItemList)
+    																$item.quantity<br>
+																#end
+                                                                </td>   
+                                                                
+                                                                <td width="100px" style="text-align:left; vertical-align:top;">
+                                                                <strong>Price</strong><br>
+                                                                #foreach ($item in $info.cartItemSubTotalList)
+																	RM $item<br>
+																#end
+                                                                
+                                                                
+                                                                </td>	
+                                                        </table>
+															
+														<table>
+															<hr width="75%" align="left">
+															<td width="40px"></td>
+															<td width="130px"></td>
+															${info.discountName}
+															<td width="130px" style="text-align:right; vertical-align:top;">
+															Subtotal Amount : <br>
+															Discount Amount : 
+															</td> 
+															<td width="100px" style="text-align:left; vertical-align:top;">
+															 RM $info.subTotalAmount <br>
+															 RM $info.discountAmount <br>
+															</td>
+														</table>
+														
+														<table>
+															<hr width="75%" align="left">
+															<td width="20px"></td>
+															<td width="150px" style="vertical-align:top;">Payment Method : ${info.paymentType}</td>
+															
+															
+															<td width="130px" style="text-align:right; vertical-align:top;">
+															Total Amount : <br>
+															Tender Amount : 
+															</td> 
+															<td width="100px" style="text-align:left; vertical-align:top;">
+															 RM $info.totalAmount <br>
+															 RM $info.tenderAmount 
+															</td>
+														</table>
+														
+														<table>
+															<hr width="75%" align="left">
+															<td width="20px"></td>
+															<td width="150px"></td>
+															<td width="130px" style="text-align:right; vertical-align:top;">
+															Change Amount :
+															</td> 
+															<td width="100px" style="text-align:left; vertical-align:top;">
+															 RM $info.changeAmount
+															</td>
+														</table>
+														<hr width="75%"; align="left">
+                                                            <br><br>
+</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</layout>
+                                        </td>
+                                        <td class="w30 " width="30 "></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+</td>
+</tr>
+<tr>
+    <td>
+        <table id="footer " cellspacing="0 " border="0 " style="background-color: #94AE3C; font-size:14px ">
+            <tbody>
+                <tr>
+                    <td class="w30 " width="30 "></td>
+                    <td class="w580 h0 " width="360 " height="10 "></td>
+                </tr>
+                <tr>
+                    <td class="w30 " width="30 "></td>
+                    <td class="w580 " width="360 " valign="top ">
+                        <p id="permission-reminder " align="left ">
+                            <span>
+                                <a href="http://www.softspace.com.my " style="text-decoration:none; font-weight:bold; color:#5C5448 ">Soft Space Homepage</a>
+                            </span>
+                            <br>
+                                <span class=" ">Copyright © 2014 Soft Space Sdn Bhd. <br>All Rights Reserved.</span>
+</p>
+</td>
+<td class="hide w0 " width="160 " valign="top ">
+</td>
+<td class="w30 " width="30 "></td>
+</tr>
+<tr>
+    <td class="w30 " width="30 "></td>
+    <td class="w580 h0 " width="360 " height="15 "></td>
+    <td class="w0 " width="60 "></td>
+    <td class="w0 " width="160 "></td>
+    <td class="w30 " width="30 "></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+    <td id="background-bottom-space " height="20 " class=" "></td>
+</tr>
+</tbody>
+</table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</div>
+</body>
+</html>

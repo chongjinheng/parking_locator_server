@@ -1,0 +1,73 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.apache.commons.lang.time.DateUtils;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Sales Running Number DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+@Repository
+@Transactional(readOnly = false)
+public class SalesRunningNumberDAOImpl extends GenericDAO implements SalesRunningNumberDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Override
+	public SalesRunningNumber getSalesRunningNumberByStoreId(Long ID) {
+		return (SalesRunningNumber) getSessionFactory().createCriteria(SalesRunningNumber.class).add(Restrictions.eq("store.id", ID))
+				.uniqueResult();
+	}
+
+	@Override
+	public Long createSalesRunningNumber(Long storeID) {
+		SalesRunningNumber salesRunningNumber = new SalesRunningNumber();
+		salesRunningNumber.setCurrentDate(new Date());
+		salesRunningNumber.setRunningNumber(0);
+		Store store = storeDAO.getStoreByStoreId(storeID);
+		salesRunningNumber.setStore(store);
+
+		return crudDAO.create(salesRunningNumber);
+	}
+
+	@Override
+	public Integer getNextRunningNumber(Long storeID) {
+		Date curDate = new Date();
+		SalesRunningNumber salesRunningNumber = new SalesRunningNumber();
+		salesRunningNumber = getSalesRunningNumberByStoreId(storeID);
+
+		if (!(DateUtils.isSameDay(curDate, salesRunningNumber.getCurrentDate()))) {
+			// if currently is a new day, replace it with the current date
+			salesRunningNumber.setCurrentDate(curDate);
+			// set to 1 as it includes the current transaction
+			salesRunningNumber.setRunningNumber(1);
+			crudDAO.update(salesRunningNumber);
+			return 1;
+		} else {
+			// if currently is still same with the latest record
+			// running number +1;
+			int tempSRN = salesRunningNumber.getRunningNumber() + 1;
+			salesRunningNumber.setRunningNumber(tempSRN);
+			// set for usage
+			crudDAO.update(salesRunningNumber);
+			return tempSRN;
+		}
+
+	}
+
+}

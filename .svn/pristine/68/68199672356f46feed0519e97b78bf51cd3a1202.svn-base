@@ -1,0 +1,46 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.CartItemDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Product;
+import com.softspace.test.controller.BaseTestCase;
+
+public class CartItemDaoTest extends BaseTestCase {
+
+	@Autowired
+	private CartItemDAO cartItemDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	@Test
+	public void testCreateCustomCartItem() {
+		CartItem cartItem = new CartItem();
+		cartItem.setAmount(22000l);
+		cartItem.setCustomAmountDescription("Aariefs jam");
+		cartItem.setQuantity(5);
+
+		cartItemDAO.createCustomCartItem(Long.valueOf(testValue.getProperty("salesID")), cartItem,
+				Long.valueOf(testValue.getProperty("storeID")), testValue.getProperty("userEmail"));
+	}
+
+	@Test
+	public void testCreateCartItem() {
+		Product product = productDAO.getProductById(Long.valueOf(testValue.getProperty("productIDforDAOtest")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		CartItem cartItem = new CartItem();
+		cartItem.setAmount(22000l);
+		cartItem.setQuantity(5);
+		cartItemDAO.createCartItem(Long.valueOf(testValue.getProperty("salesID")), cartItem,
+				Long.valueOf(testValue.getProperty("storeID")), product, testValue.getProperty("userEmail"));
+	}
+}

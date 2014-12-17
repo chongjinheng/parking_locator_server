@@ -1,0 +1,17 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.SalesRunningNumber;
+
+/**
+ * Sales Running Number DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+public interface SalesRunningNumberDAO {
+
+	public SalesRunningNumber getSalesRunningNumberByStoreId(Long ID);
+
+	public Long createSalesRunningNumber(Long storeID);
+
+}

@@ -1,0 +1,208 @@
+package com.softspace.pos.util;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import org.apache.commons.codec.binary.Base64;
+
+/**
+ * @author waikitchong
+ * @author edited by chengyang
+ */
+
+public class ImageUtils {
+
+	/**
+	 * Returns a resized BufferedImage
+	 * 
+	 * @param File resizedFile
+	 * @param int newWidth
+	 * @param float quality
+	 * @param BufferedImage bImage
+	 * @return BufferedImage
+	 * @throws Exception
+	 */
+	public static BufferedImage resize(final int newWidth, final int squareSize, final float quality, final BufferedImage bImage)
+			throws Exception {
+
+		if ((quality < 0) || (quality > 1)) {
+			throw new IllegalArgumentException("Quality has to be between 0 and 1");
+		}
+
+		ImageIcon ii = new ImageIcon(bImage);
+		Image i = ii.getImage();
+		Image resizedImage = null;
+
+		int iWidth = i.getWidth(null);
+		int iHeight = i.getHeight(null);
+
+		if (iWidth > iHeight) {
+			resizedImage = i.getScaledInstance(newWidth, (newWidth * iHeight) / iWidth, Image.SCALE_SMOOTH);
+		} else {
+			resizedImage = i.getScaledInstance((newWidth * iWidth) / iHeight, newWidth, Image.SCALE_SMOOTH);
+		}
+
+		BufferedImage bufferedImage = drawSquareThumbnail(resizedImage, squareSize, Color.black);
+
+		// Soften.
+		float softenFactor = 0.05f;
+		float[] softenArray = { 0, softenFactor, 0, softenFactor, 1 - (softenFactor * 4), softenFactor, 0, softenFactor, 0 };
+		Kernel kernel = new Kernel(3, 3, softenArray);
+		ConvolveOp cOp = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+		bufferedImage = cOp.filter(bufferedImage, null);
+
+		// saveImage(resizedFile, bufferedImage, quality);
+		return bufferedImage;
+
+	}
+
+	private static BufferedImage drawSquareThumbnail(final Image resizedImage, final int heightWidth, final Color bgColor) {
+		// This code ensures that all the pixels in the image are loaded.
+		Image temp = new ImageIcon(resizedImage).getImage();
+
+		// Create the buffered image.
+		BufferedImage bufferedImage = new BufferedImage(heightWidth, heightWidth, BufferedImage.TYPE_INT_RGB);
+
+		// Copy image to buffered image.
+		Graphics g = bufferedImage.createGraphics();
+
+		// Clear background and paint the image.
+		g.setColor(bgColor);
+		g.fillRect(0, 0, temp.getWidth(null), temp.getHeight(null));
+
+		if (temp.getWidth(null) > temp.getHeight(null)) {
+			g.drawImage(temp, 0, (heightWidth / 2) - (temp.getHeight(null) / 2), null);
+
+		} else {
+
+			g.drawImage(temp, (heightWidth / 2) - (temp.getWidth(null) / 2), 0, null);
+		}
+		g.dispose();
+
+		return bufferedImage;
+	}
+
+	/**
+	 * Save BufferedImage as a Jpeg file.
+	 * 
+	 * @param File file
+	 * @param BufferedImage bufferedImage
+	 * @param float quality
+	 * @throws Exception
+	 */
+	// public static void saveImage(final File file, final BufferedImage bufferedImage, final float quality) throws Exception {
+	// // Write the jpeg to a file.
+	// FileOutputStream out = new FileOutputStream(file);
+	//
+	// // Encodes image as a JPEG data stream
+	// JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+	//
+	// JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bufferedImage);
+	//
+	// param.setQuality(quality, true);
+	//
+	// encoder.setJPEGEncodeParam(param);
+	// encoder.encode(bufferedImage);
+	//
+	// out.close();
+	// }
+
+	/**
+	 * Convert BufferedImage to byteArray
+	 * 
+	 * @param bufferedImage
+	 * @return byte[]
+	 * @throws Exception
+	 */
+	public static byte[] BufferedImageToByteArray(final BufferedImage bufferedImage) throws Exception {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		ImageIO.write(bufferedImage, "jpg", baos);
+		baos.flush();
+		byte[] imageInByte = baos.toByteArray();
+		baos.close();
+
+		return imageInByte;
+	}
+
+	/**
+	 * Convert BufferedImage to Base64 string
+	 * 
+	 * @param BufferedImage bufferedImage
+	 * @return String
+	 * @throws Exception
+	 */
+	public static String BufferedImageToBase64(final BufferedImage bufferedImage) throws Exception {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		ImageIO.write(bufferedImage, "jpg", baos);
+		byte[] bytes = baos.toByteArray();
+
+		String base64bytes = Base64.encodeBase64String(bytes);
+		return base64bytes;
+	}
+
+	/**
+	 * Convert Image to BufferedImage
+	 * 
+	 * @param Image img
+	 * @return BufferedImage
+	 */
+	public static BufferedImage ConvertImageToBufferedImage(final Image img) {
+		BufferedImage bImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		bImage.createGraphics().drawImage(img, 0, 0, img.getWidth(null), img.getHeight(null), null);
+		return bImage;
+	}
+
+	/**
+	 * View image from byte[] via JOptionPane
+	 * 
+	 * @param byteArray
+	 * @throws Exception
+	 */
+	public static void ViewBufferedImageFromByteArray(final byte[] byteArray) throws Exception {
+
+		BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(byteArray));
+
+		JOptionPane.showMessageDialog(new JFrame(), new ImageIcon(bufferedImage));
+
+	}
+
+	public static byte[] base64Decode(final String base64Encoded) {
+
+		byte[] base64decoded;
+		base64decoded = Base64.decodeBase64(base64Encoded);
+		return base64decoded;
+		// base64Encoded = Base64.decode("");
+	}
+
+	public static BufferedImage byteArrayToBufferedImage(final byte[] byteArray) {
+		// convert byte array back to BufferedImage
+		InputStream in = new ByteArrayInputStream(byteArray);
+		BufferedImage bImageFromConvert = null;
+		try {
+			bImageFromConvert = ImageIO.read(in);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return bImageFromConvert;
+	}
+
+}

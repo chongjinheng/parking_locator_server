@@ -1,0 +1,130 @@
+package com.softspace.pos.bean;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.softspace.pos.util.JSONExclusion;
+
+/**
+ * Product table that consist all details of product sold. Each product belongs to multiple category IDs.<br>
+ * Field: code, name, description, price, thumbnail, categoryIDList, List productCategoryReference, store
+ * 
+ * @param String, String, String, Long, Sting, List, List, Store
+ * @author chengyang
+ */
+
+@Entity
+public class Product extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String code;
+
+	private String name;
+
+	private String description;
+
+	private Long price;
+
+	@Lob
+	private String thumbnail;
+
+	@Transient
+	@JSONExclusion
+	private List<Long> categoryIDList = new ArrayList<Long>();
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+	@Fetch(FetchMode.SUBSELECT)
+	private List<ProductCategoryReference> productCategoryReference = new ArrayList<ProductCategoryReference>();
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private Store store;
+
+	public void setID(Long id) {
+		this.id = id;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public List<ProductCategoryReference> getProductsCategoryReference() {
+		return productCategoryReference;
+	}
+
+	public void setProductsCategoryReference(List<ProductCategoryReference> productsCategoryReference) {
+		this.productCategoryReference = productsCategoryReference;
+	}
+
+	public Long getID() {
+		return id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Long getPrice() {
+		return price;
+	}
+
+	public void setPrice(Long price) {
+		this.price = price;
+	}
+
+	public String getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
+	public List<Long> getCategoryIDList() {
+		return categoryIDList;
+	}
+
+	public void setCategoryIDList(List<Long> categories) {
+		this.categoryIDList = categories;
+	}
+
+}

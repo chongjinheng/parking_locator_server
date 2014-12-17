@@ -1,0 +1,74 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.CategoryDAO;
+import com.softspace.pos.bean.Category;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for CategoryDao.
+ * 
+ * @author cylim
+ */
+
+public class CategoryDaoTest extends BaseTestCase {
+
+	@Autowired
+	private CategoryDAO categoryDAO;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${categoryID}")
+	private Long categoryID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${categoryName}")
+	private String categoryName;
+
+	@Test
+	public void testGetCategoryById() {
+		Category category = categoryDAO.getCategoryById(categoryID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", category);
+	}
+
+	@Test
+	public void testGetAllCategoriesInStore() {
+		List<Category> categoryList = categoryDAO.getAllCategoriesInStore(storeID);
+		Assert.assertNotNull("The list is null", categoryList);
+		Assert.assertTrue("no records inside list", categoryList.size() > 0);
+	}
+
+	@Test
+	public void testCreateCategory() {
+		Category category = new Category();
+		category.setName(categoryName);
+		Long i = categoryDAO.createCategory(category, userEmail, storeID);
+		Assert.assertNotNull("Category Failed to create", categoryDAO.getCategoryById(i, storeID));
+	}
+
+	@Test
+	public void testUpdateCategory() {
+		Category category = new Category();
+		category.setName(categoryName);
+		categoryDAO.updateCategory(category, userEmail, storeID, categoryDAO.getCategoryById(1l, storeID));
+		Category categoryTest = categoryDAO.getCategoryById(categoryID, storeID);
+		Assert.assertEquals(categoryName, categoryTest.getName());
+	}
+
+	@Test
+	public void testDeleteCategory() {
+		Category category = categoryDAO.getCategoryById(categoryID, storeID);
+		categoryDAO.deleteCategory(category, userEmail);
+		Assert.assertNull("Category havent delete", categoryDAO.getCategoryById(categoryID, storeID));
+	}
+}

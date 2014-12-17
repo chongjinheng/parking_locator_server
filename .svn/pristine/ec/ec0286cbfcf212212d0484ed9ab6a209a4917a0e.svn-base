@@ -1,0 +1,334 @@
+package com.softspace.pos.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.DAO.CartItemDAO;
+import com.softspace.pos.DAO.CrudDAO;
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.DAO.SalesDAO;
+import com.softspace.pos.DAO.SalesRunningNumberDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.EmailDetails;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+import com.softspace.pos.util.EmailService;
+import com.softspace.pos.util.Formatters;
+import com.softspace.pos.util.Generators;
+import com.softspace.pos.util.Validators;
+
+/**
+ * Sales Services
+ * 
+ * @author cylim
+ */
+@Service
+public class SalesServiceImpl implements SalesService {
+
+	private static final Logger logger = LoggerFactory.getLogger(SalesServiceImpl.class);
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private SalesDAO salesDAO;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Autowired
+	private CartItemDAO cartItemDAO;
+
+	@Autowired
+	private SalesRunningNumberDAO salesRunningNumberDAO;
+
+	@Autowired
+	private EmailService emailService;
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doConfirmSale(String email, Long storeID, String paymentType, Long subTotalAmount, Long totalAmount,
+			Long discountAmount, Long tenderAmount, Long changeAmount, Discount discountPackage, List<CartItem> cartList) throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+
+		try {
+			email = email.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(storeID);
+			Validators.sanityCheck(paymentType);
+			Validators.sanityCheck(subTotalAmount);
+			Validators.sanityCheck(totalAmount);
+			Validators.sanityCheck(tenderAmount);
+			Validators.sanityCheck(changeAmount);
+			if (cartList.size() == 0)
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :Transaction Details");
+
+			// If the discount is not null, go into the function
+			Long discountID = 0l;
+			if (discountPackage != null) {
+				// if it is custom discount
+				if (discountPackage.getID() == 0l) {
+					// create it and get the ID
+					discountID = discountDAO.createCustomDiscount(email, discountPackage);
+					logger.info("A custom discount is created. ID : " + discountID);
+				} else {
+					// take out the discount from db
+					Discount discount = discountDAO.getDiscountById(discountPackage.getID(), storeID);
+					discountID = discountPackage.getID();
+
+					// throw error if it is null
+					if (discount == null)
+						throw new SSPosMobileRequestException(ErrorStatus.ACCESS_DENIED, ErrorStatus.ACCESS_DENIED.getDefaultMessage()
+								+ "discount - doConfirmSale");
+				}
+			}
+
+			// get the next running number for the store
+			Integer currentRunningNumber = salesRunningNumberDAO.getNextRunningNumber(storeID);
+			if (currentRunningNumber == null || currentRunningNumber == 0) {
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ "running number missing - doConfirmSale");
+			}
+			logger.debug("Running number of : " + currentRunningNumber + " is pulled.");
+
+			// generates the receipt number
+			String receiptNumber = Generators.generateRecieptNumber(storeID, currentRunningNumber);
+			logger.debug("A receipt number of " + receiptNumber + " is created");
+
+			// pull the discount out with the id
+			Discount discount = discountDAO.getDiscountById(discountID, storeID);
+			if (discount == null) {
+				logger.warn("No discount is pulled from db");
+			}
+
+			// create sales
+			Long salesID = salesDAO.createSales(email, storeID, paymentType, subTotalAmount, totalAmount, discountAmount, tenderAmount,
+					changeAmount, discount, receiptNumber);
+			if (salesID == null)
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+						+ " salesID - doConfirmSales");
+			logger.info("The sales is created successfully");
+
+			String nullProductID = "ProductID -> ";
+			Boolean errorExists = false;
+
+			for (CartItem cI : cartList) {
+				if (cI.getProductID() == 0l) {
+					if (cI.getAmount() == null)
+						throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR,
+								ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage() + " MISSING FIELD FOR CUSTOM.");
+
+					Long cartItemID = cartItemDAO.createCustomCartItem(salesID, cI, storeID, email);
+					if (cartItemID == null)
+						throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage()
+								+ " cartItemID - doConfirmSales");
+					logger.info("Custom product is added into the cart successfully");
+				} else {
+					Product product = productDAO.getProductById(cI.getProductID(), storeID);
+					if (product == null) {
+						logger.warn("Product is not pulled from db");
+						errorExists = true;
+						nullProductID += String.valueOf(cI.getProductID()) + " ";
+					} else {
+						Long cartItemID = cartItemDAO.createCartItem(salesID, cI, storeID, product, email);
+						if (cartItemID == null)
+							throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR,
+									ErrorStatus.UNHANDLED_ERROR.getDefaultMessage() + "cartItem - doConfirmSales");
+						logger.info("Product is added into cart successfully");
+					}
+
+				}
+
+			}
+			if (errorExists) {
+				throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST,
+						ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage() + " :product does not exists, " + nullProductID);
+			}
+
+			outService.setReceiptNumber(receiptNumber);
+			outService.setSalesId(salesID);
+
+		} catch (Exception e) {
+			logger.error("Exception in confirmSales" + e);
+			throw e;
+		}
+
+		return outService;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doSendReciept(String email, Long storeID, String customerEmail, Long salesID) throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		customerEmail = customerEmail.trim();
+		email = email.trim();
+
+		logger.info("Store id: " + storeID + "\nSent From : " + email.trim() + "\nCustomer Email : " + customerEmail.trim());
+
+		System.out.println(email + " " + customerEmail);
+
+		/** Sanity Check **/
+		Validators.sanityCheck(customerEmail);
+		Validators.sanityCheck(email);
+		Validators.sanityCheck(storeID);
+		Validators.sanityCheck(salesID);
+
+		if (storeID == 0 || salesID == 0)
+			throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST, ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage());
+
+		Sales sales = new Sales();
+		sales = salesDAO.getSalesById(salesID, storeID);
+
+		if (sales == null) {
+			logger.warn("Sales id doesnt exists");
+			throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST, ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage());
+		}
+
+		logger.info("The Sales is pulled fom db successfully");
+
+		EmailDetails details = new EmailDetails();
+		details.setEmail(email);
+		details.setStoreName(sales.getStore().getStoreName());
+		details.setReceiptNumber(String.valueOf(sales.getReceiptNumber()));
+
+		if (sales.getPaymentType().equals("0"))
+			details.setPaymentType("Cash");
+		else
+			details.setPaymentType("Card");
+
+		details.setCartItemList(sales.getCartItem());
+
+		details.setTransactionDate(Formatters.formatOutputDate(sales.getTransactionDate()));
+		details.setSubTotalAmount(String.valueOf(sales.getSubTotalAmount()));
+		details.setTotalAmount(String.valueOf(sales.getTotalAmount()));
+		details.setDiscountAmount(String.valueOf(sales.getDiscountAmount()));
+
+		// getting discount name and sent data to email
+		Discount discount = sales.getDiscount();
+		if (discount != null) {
+			details.setDiscountName(discount.getName());
+		} else {
+			details.setDiscountName("");
+		}
+
+		details.setTenderAmount(String.valueOf(sales.getTenderAmount()));
+		details.setChangeAmount(String.valueOf(sales.getChangeAmount()));
+		if (!(sales.getDiscount() == null)) {
+			details.setDiscountName(sales.getDiscount().getName());
+		}
+
+		logger.info("Email sending...");
+		emailService.sendEmail(customerEmail, 3, details);
+
+		return outService;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO getSalesHistory(String email, Long storeID) throws Exception {
+		email = email.trim();
+		/** Sanity Check **/
+		Validators.sanityCheck(storeID);
+		Validators.sanityCheck(email);
+		PosUser posUser = new PosUser();
+		posUser = posUserDAO.getUserByEmail(email);
+		if (storeID == 0 || posUser.getStore() == null)
+			throw new SSPosMobileRequestException(ErrorStatus.TARGET_ITEM_NOT_EXIST, ErrorStatus.TARGET_ITEM_NOT_EXIST.getDefaultMessage()
+					+ "store - getSalesHistory");
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		// get a list of sales from the store
+		List<Sales> salesList = salesDAO.getSalesByShopID(storeID);
+		if (salesList == null || salesList.size() == 0)
+			logger.warn("Sales List is empty");
+		List<Sales> refinedSL = new ArrayList<Sales>();
+
+		for (Sales salesIterator : salesList) {
+			Sales tempSales = new Sales();
+			tempSales.setID(salesIterator.getID());
+			tempSales.setReceiptNumber(salesIterator.getReceiptNumber());
+			tempSales.setPaymentType(salesIterator.getPaymentType());
+			tempSales.setTotalAmount(salesIterator.getTotalAmount());
+			tempSales.setTransactionDate(salesIterator.getTransactionDate());
+			logger.info("Refined sales is created.");
+			refinedSL.add(tempSales);
+		}
+		outService.setSalesHistoryList(refinedSL);
+
+		return outService;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO getSalesHistoryDetails(String email, Long storeID, Long salesID) throws Exception {
+
+		email = email.trim();
+		/** Sanity Check **/
+		Validators.sanityCheck(email);
+		Validators.sanityCheck(storeID);
+		Validators.sanityCheck(salesID);
+
+		if (salesID == 0 || salesDAO.getSalesById(salesID, storeID) == null) {
+			logger.warn("Having error pulling Sales from database");
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+					+ "salesID - getSalesHistoryDetails");
+		}
+		JSONServiceDTO outService = new JSONServiceDTO();
+		Sales sales = new Sales();
+		sales = salesDAO.getSalesById(salesID, storeID);
+		logger.info("sales is pulled from db successfully. \nReceipt Number: " + sales.getReceiptNumber());
+		outService.setSalesId(salesID);
+		outService.setReceiptNumber(sales.getReceiptNumber());
+		outService.setPaymentType(sales.getPaymentType());
+		outService.setTransactionDate(sales.getTransactionDate());
+		outService.setSubTotalAmount(sales.getSubTotalAmount());
+		outService.setTotalAmount(sales.getTotalAmount());
+		outService.setDiscountAmount(sales.getDiscountAmount());
+		List<CartItem> cartItem = new ArrayList<CartItem>();
+		cartItem = sales.getCartItem();
+		List<CartItem> temp = new ArrayList<CartItem>();
+		for (CartItem cI : cartItem) {
+			CartItem tempCI = new CartItem();
+			if (cI.getProductID() == 0) {
+				tempCI.setCustomAmountDescription(cI.getCustomAmountDescription());
+			}
+
+			tempCI.setProductID(cI.getProductID());
+			tempCI.setProductCode(cI.getProductCode());
+			tempCI.setProductName(cI.getProductName());
+			tempCI.setThumbnail(cI.getThumbnail());
+			// tempCI.setCustomAmountDescription(cI.getCustomAmountDescription());
+			tempCI.setAmount(cI.getAmount());
+			tempCI.setQuantity(cI.getQuantity());
+			temp.add(tempCI);
+			logger.info("CartItem is refined ");
+		}
+		outService.setCartList(temp);
+
+		return outService;
+	}
+
+}

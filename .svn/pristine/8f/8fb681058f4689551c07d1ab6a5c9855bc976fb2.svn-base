@@ -1,0 +1,107 @@
+package com.softspace.pos.bean;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Store table
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "IMAGE" }) })
+public class Store extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String Name;
+
+	private String Image;
+
+	@JsonExclusion
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Category> categories;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Product> products;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Discount> discounts;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	@JsonExclusion
+	private List<Sales> sales;
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public List<Category> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+
+	public String getStoreName() {
+		return Name;
+	}
+
+	public void setStoreName(String storageName) {
+		this.Name = storageName;
+	}
+
+	public String getStoreImage() {
+		return Image;
+	}
+
+	public void setStoreImage(String storageImage) {
+		this.Image = storageImage;
+	}
+
+	public List<Discount> getDiscounts() {
+		return discounts;
+	}
+
+	public void setDiscounts(List<Discount> discounts) {
+		this.discounts = discounts;
+	}
+
+	public List<Sales> getSales() {
+		return sales;
+	}
+
+	public void setSales(List<Sales> sales) {
+		this.sales = sales;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+}

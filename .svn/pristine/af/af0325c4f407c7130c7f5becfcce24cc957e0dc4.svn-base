@@ -1,0 +1,26 @@
+package com.softspace.pos.service;
+
+import java.util.List;
+
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+
+/**
+ * Store Services
+ * 
+ * @author Darren
+ */
+public interface StoreService {
+
+	public JSONServiceDTO doGetInventoryList(String email, Long storeId) throws Exception;
+
+	public JSONServiceDTO doManageCategory(String email, Long storeId, String action, List<Category> category) throws Exception;
+
+	public JSONServiceDTO doManageCategoryItem(String email, Long storeId, Long categoryId, List<Long> productIDList) throws Exception;
+
+	public JSONServiceDTO doManageProduct(String email, Long storeId, String action, List<Product> productList) throws Exception;
+
+	public JSONServiceDTO doManageDiscount(String email, Long storeId, String action, List<Discount> discountList) throws Exception;
+}

@@ -1,0 +1,92 @@
+package com.softspace.pos.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
+
+import org.hibernate.annotations.Type;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Basic class that will be extended from other children classes
+ * 
+ * @author cylim
+ */
+@MappedSuperclass
+public abstract class BasicTable implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Version
+	@JsonExclusion
+	protected int version = 1;
+
+	@JsonExclusion
+	protected Date createdDate;
+
+	@JsonExclusion
+	protected Date modifiedDate;
+
+	@JsonExclusion
+	protected String createdBy;
+
+	@JsonExclusion
+	protected String modifiedBy;
+
+	@Column(columnDefinition = "TINYINT")
+	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@JsonExclusion
+	protected Boolean deleteFlag = false;
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Boolean getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(Boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+}

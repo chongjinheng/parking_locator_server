@@ -1,0 +1,38 @@
+package com.softspace.pos.DTOBeans;
+
+import java.util.List;
+
+/**
+ * @author Darren
+ */
+public class JSONCategory {
+
+	private String id;
+	private String name;
+	private List<String> productIDList;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setID(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<String> getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(List<String> productIDList) {
+		this.productIDList = productIDList;
+	}
+
+}

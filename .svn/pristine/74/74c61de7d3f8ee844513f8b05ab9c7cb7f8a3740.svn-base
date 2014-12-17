@@ -1,0 +1,47 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for ProductDAO.
+ * 
+ * @author azliabdullah
+ */
+public class ProductDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	private Long productID = 1l;
+	private Long storeID = 1l;
+
+	@Test
+	public void testGetProduct() {
+		Product product = productDAO.getProductById(productID, storeID);
+		Assert.assertNotNull("No Product with this Id", product);
+
+		List<ProductCategoryReference> pcrs = product.getProductsCategoryReference();
+		Assert.assertNotNull("pcrs is empty", pcrs);
+
+		for (ProductCategoryReference productCategoryReference : pcrs) {
+			System.out.println(productCategoryReference.getCategory().getName());
+		}
+	}
+
+	@Test
+	public void testGetAllProductsInStore() {
+		List<Product> productList = productDAO.getAllProductsInStore(storeID);
+		Assert.assertNotNull("its null", productList);
+		Assert.assertTrue("no records inside list", productList.size() > 0);
+	}
+}

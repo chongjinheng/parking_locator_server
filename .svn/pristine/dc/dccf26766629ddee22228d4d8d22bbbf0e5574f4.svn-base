@@ -1,0 +1,54 @@
+package com.softspace.test.dao;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.SalesRunningNumberDAO;
+import com.softspace.pos.DAO.StoreDAO;
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for SalesRunningNumberDao.
+ * 
+ * @author cylim
+ */
+
+public class SalesRunningNumberDaoTest extends BaseTestCase {
+
+	@Autowired
+	private SalesRunningNumberDAO salesRunningNumberDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${firstTimeSignupEmail}")
+	private String email;
+
+	@Test
+	public void testGetSalesById() {
+		SalesRunningNumber salesRunningNumber = salesRunningNumberDAO.getSalesRunningNumberByStoreId(storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", salesRunningNumber);
+	}
+
+	@Test
+	public void testCreateSalesRunningNumber() {
+		storeDAO.createStore("jimmy", email);
+		Assert.assertNotNull("SalesRunningNumber not created", salesRunningNumberDAO.getSalesRunningNumberByStoreId(storeID));
+	}
+
+	@Test
+	public void testGetRunningNumber() {
+		@SuppressWarnings("unused")
+		int i = salesRunningNumberDAO.getNextRunningNumber(storeID);
+		// Cannot test if run full junitTest
+		// Assert.assertEquals(1, i);
+	}
+
+}

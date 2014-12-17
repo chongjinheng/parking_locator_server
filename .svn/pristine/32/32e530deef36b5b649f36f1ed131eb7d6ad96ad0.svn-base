@@ -1,0 +1,26 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+
+/**
+ * PCR DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface ProductCategoryReferenceDAO {
+
+	public List<ProductCategoryReference> getPcrByCategoryId(Long id);
+
+	public ProductCategoryReference getPcrById(Long id);
+
+	public Long createProductCategoryReference(Product tempProduct, String userEmail, Category tempCategory);
+
+	public void updateProductCategoryReference(String userEmail, Category tempCategory, ProductCategoryReference tempPCR);
+
+	List<ProductCategoryReference> getPcrByProductID(Long id);
+}

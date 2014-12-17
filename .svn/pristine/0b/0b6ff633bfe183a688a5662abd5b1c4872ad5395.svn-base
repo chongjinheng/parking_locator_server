@@ -1,0 +1,54 @@
+package com.softspace.pos.bean;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Reference to determine user when they used forgotPassword to hard reset their password
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "FORGOT_PASS_SESSION")
+public class ForgotPassSession extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(name = "TEMP_PASSWORD")
+	private String tempPass;
+
+	@Column(name = "VALID_TILL")
+	private Date validTillDate;
+
+	public Long getId() {
+		return id;
+	}
+
+	public Date getValidTillDate() {
+		return validTillDate;
+	}
+
+	public void setValidTillDate(Date validTillDate) {
+		this.validTillDate = validTillDate;
+	}
+
+	public String getTempPass() {
+		return tempPass;
+	}
+
+	public void setTempPass(String tempPass) {
+		this.tempPass = tempPass;
+	}
+
+}

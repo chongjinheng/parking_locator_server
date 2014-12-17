@@ -1,0 +1,33 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Category;
+
+/**
+ * Category DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class CategoryDAOImpl extends GenericDAO implements CategoryDAO {
+
+	@Override
+	public Category getCategoryById(Long id, Long storeID) {
+		return (Category) getSessionFactory().createCriteria(Category.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).add(Restrictions.eq("id", id)).uniqueResult();
+	}
+
+	public List<Category> getAllCategoriesInStore(Long storeID) {
+		@SuppressWarnings("unchecked")
+		List<Category> categories = getSessionFactory().createCriteria(Category.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return categories;
+	}
+}

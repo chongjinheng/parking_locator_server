@@ -1,0 +1,51 @@
+package com.softspace.pos.DTO;
+
+public class JSONSalesHistory {
+
+	private String salesID;
+	private String receiptNumber;
+	private String paymentType;
+	private String totalAmount;
+	private String transactionDate;
+
+	public String getSalesID() {
+		return salesID;
+	}
+
+	public void setSalesID(String salesID) {
+		this.salesID = salesID;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public String getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(String totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getTransactionDate() {
+		return transactionDate;
+	}
+
+	public void setTransactionDate(String transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+}

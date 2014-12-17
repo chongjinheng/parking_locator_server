@@ -1,0 +1,61 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.PosUserSession;
+
+@Component
+@Repository
+// @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+@Transactional(readOnly = false)
+public class SessionDAOImpl {
+
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+	@Autowired
+	private SessionFactory sessionFactory;
+
+	protected Session getSessionFactory() {
+		return sessionFactory.getCurrentSession();
+	}
+
+	public void updateSession(String sessionKey, String username) {
+		PosUserSession session = getSessionBean(username);
+		session.setSessionValue(sessionKey);
+		getSessionFactory().saveOrUpdate(session);
+	}
+
+	public PosUserSession checkSessionValidity(String sessionKey, String username) {
+		Query query = getSessionFactory().createQuery(
+				"from c in class " + PosUserSession.class.getName() + " where c.username=:username and sessionValue=:sessionValue");
+		query.setString("sessionValue", sessionKey);
+		query.setString("userID", username);
+		return (PosUserSession) query.setMaxResults(1).uniqueResult();
+	}
+
+	private PosUserSession getSessionBean(String username) {
+		Query query = getSessionFactory().createQuery("from c in class " + PosUserSession.class.getName() + " where c.username=:username");
+		query.setString("username", username);
+		PosUserSession session = (PosUserSession) query.setMaxResults(1).uniqueResult();
+		if (session == null) {
+
+			System.out.println("sessoinBean::");
+			session = new PosUserSession();
+			session.setUsername(username);
+			session.setLastAccessTime(new Date());
+			getSessionFactory().save(session);
+		}
+		return session;
+
+	}
+
+}

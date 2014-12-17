@@ -1,0 +1,18 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Product;
+
+/**
+ * Product DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface ProductDAO {
+
+	public Product getProductById(Long id, Long storeID);
+
+	public List<Product> getAllProductsInStore(Long storeID);
+}

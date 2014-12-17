@@ -1,0 +1,24 @@
+package com.softspace.pos.service;
+
+import java.util.List;
+
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Discount;
+
+/**
+ * Sales Services
+ * 
+ * @author cylim
+ */
+public interface SalesService {
+
+	public JSONServiceDTO doConfirmSale(String email, Long storeID, String paymentType, Long subTotalAmount, Long totalAmount,
+			Long discountAmount, Long tenderAmount, Long changeAmount, Discount discountPackage, List<CartItem> cartList) throws Exception;
+
+	public JSONServiceDTO doSendReciept(String email, Long storeID, String customerEmail, Long salesID) throws Exception;
+
+	public JSONServiceDTO getSalesHistory(String email, Long storeID) throws Exception;
+
+	public JSONServiceDTO getSalesHistoryDetails(String email, Long storeID, Long salesID) throws Exception;
+}

@@ -1,0 +1,39 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.ProductCategoryReferenceDAO;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for ProductCategoryReferenceDAO.
+ * 
+ * @author azliabdullah
+ */
+public class ProductCategoryReferenceDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ProductCategoryReferenceDAO pcrDao;
+
+	private Long pcrID = 1l;
+	private Long categoryID = 1l;
+
+	@Test
+	public void testGetPcrByCategoryId() {
+		List<ProductCategoryReference> pcrs = pcrDao.getPcrByCategoryId(categoryID);
+		Assert.assertNotNull("its null", pcrs);
+		Assert.assertTrue("no records inside list", pcrs.size() > 0);
+	}
+
+	@Test
+	public void testGetPcrById() {
+		ProductCategoryReference pcr = pcrDao.getPcrById(pcrID);
+		Assert.assertNotNull("ProductCategoryReference with this id not exist", pcr);
+	}
+}

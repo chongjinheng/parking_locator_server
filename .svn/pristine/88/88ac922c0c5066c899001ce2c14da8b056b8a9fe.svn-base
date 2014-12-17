@@ -1,0 +1,151 @@
+package com.softspace.pos.bean;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+/**
+ * Sales table that contain all the sales details, contains a list of cartItem<br>
+ * Field: paymentType, subTotalAmount, discountAmount, totalAmount, tenderAmount, changeAmount, receiptNumber, transactionDate, discount,
+ * store, List CartItem
+ * 
+ * @param String, Long, Long, Long, Long, Long, String, Date, Discount, Store, List
+ * @author chengyang
+ */
+
+@Entity
+public class Sales extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String paymentType;
+
+	private Long subTotalAmount;
+
+	private Long discountAmount;
+
+	private Long totalAmount;
+
+	private Long tenderAmount;
+
+	private Long changeAmount;
+
+	private String receiptNumber;
+
+	private Date transactionDate;
+
+	@ManyToOne
+	private Discount discount;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private Store store;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sales")
+	private List<CartItem> cartItem = new ArrayList<CartItem>();
+
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+
+	public Long getID() {
+		return id;
+	}
+
+	public void setID(Long id) {
+		this.id = id;
+	}
+
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public Discount getDiscount() {
+		return discount;
+	}
+
+	public List<CartItem> getCartItem() {
+		return cartItem;
+	}
+
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
+	}
+
+	public Long getSubTotalAmount() {
+		return subTotalAmount;
+	}
+
+	public void setSubTotalAmount(Long subTotalAmount) {
+		this.subTotalAmount = subTotalAmount;
+	}
+
+	public Long getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(Long discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	public Long getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(Long totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public Long getTenderAmount() {
+		return tenderAmount;
+	}
+
+	public void setTenderAmount(Long tenderAmount) {
+		this.tenderAmount = tenderAmount;
+	}
+
+	public Long getChangeAmount() {
+		return changeAmount;
+	}
+
+	public void setChangeAmount(Long changeAmount) {
+		this.changeAmount = changeAmount;
+	}
+}

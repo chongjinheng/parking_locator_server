@@ -1,0 +1,100 @@
+package com.softspace.test.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.service.SalesService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author Darren
+ */
+public class SalesServiceTest extends BaseTestCase {
+
+	@Autowired
+	private SalesService salesService;
+
+	@Autowired
+	private Properties testValue;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testDoConfirmSales() throws Exception {
+		/** Object required for doConfirmSale **/
+		List<CartItem> cartList = new ArrayList<CartItem>();
+
+		String tempProductID = testValue.getProperty("productID");
+		String tempQuantity = testValue.getProperty("quantity");
+		String[] tempProductIDStore = tempProductID.split(",");
+		String[] tempQuantityStore = tempQuantity.split(",");
+
+		for (int i = 0; i < tempProductIDStore.length; i++) {
+			CartItem cI = new CartItem();
+			cI.setProductID(Long.valueOf(tempProductIDStore[i]));
+			cI.setQuantity(Integer.valueOf(tempQuantityStore[i]));
+			cartList.add(cI);
+		}
+
+		Double subTotalAmount = Double.valueOf(testValue.getProperty("subTotalAmount")) * 100;
+		Double totalAmount = Double.valueOf(testValue.getProperty("totalAmount")) * 100;
+		Double discountAmount = Double.valueOf(testValue.getProperty("discountAmount")) * 100;
+		Double tenderAmount = Double.valueOf(testValue.getProperty("tenderAmount")) * 100;
+		Double changeAmount = Double.valueOf(testValue.getProperty("changeAmount")) * 100;
+		Discount discount = new Discount();
+		discount = discountDAO.getDiscountById(Long.valueOf(testValue.getProperty("discountID")),
+				Long.valueOf(testValue.getProperty("storeID")));
+
+		dto = salesService.doConfirmSale(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("paymentType"), subTotalAmount.longValue(), totalAmount.longValue(), discountAmount.longValue(),
+				tenderAmount.longValue(), changeAmount.longValue(), discount, cartList);
+		Assert.assertNotNull("sales id is not returned", dto.getSalesId());
+		Assert.assertNotNull("receipt number is not returned", dto.getReceiptNumber());
+	}
+
+	@Test
+	public void testDoSendReceipt() throws Exception {
+		dto = salesService.doSendReciept(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				testValue.getProperty("email"), Long.valueOf(testValue.getProperty("salesID")));
+	}
+
+	@Test
+	public void testGetSalesHistory() throws Exception {
+		dto = salesService.getSalesHistory(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")));
+
+		List<Sales> salesHistoryList = dto.getSalesHistoryList();
+		Assert.assertTrue("sales history list is empty", salesHistoryList.size() > 0);
+	}
+
+	@Test
+	public void testGetSalesHistoryDetails() throws Exception {
+		dto = salesService.getSalesHistoryDetails(testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				Long.valueOf(testValue.getProperty("salesID")));
+
+		List<CartItem> cartList = dto.getCartList();
+		Assert.assertNotNull("sales id is not returned", dto.getSalesId());
+		Assert.assertNotNull("receipt number is not returned", dto.getReceiptNumber());
+		Assert.assertNotNull("payment type is not returned", dto.getPaymentType());
+		Assert.assertNotNull("transaction date is not returned", dto.getTransactionDate());
+		Assert.assertNotNull("sub total amount is not returned", dto.getSubTotalAmount());
+		Assert.assertNotNull("total amount is not returned", dto.getTotalAmount());
+		Assert.assertNotNull("discount amount is not returned", dto.getDiscountAmount());
+		Assert.assertTrue("cart list is empty", cartList.size() > 0);
+	}
+}

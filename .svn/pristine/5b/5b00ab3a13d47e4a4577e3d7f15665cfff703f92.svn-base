@@ -1,0 +1,20 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Discount;
+
+/**
+ * Discount DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface DiscountDAO {
+
+	public Discount getDiscountById(Long id, Long storeID);
+
+	public List<Discount> getAllDiscountsInStore(Long storeID);
+
+	public List<Discount> getAllDiscountsWOCustomInStore(Long storeID);
+}

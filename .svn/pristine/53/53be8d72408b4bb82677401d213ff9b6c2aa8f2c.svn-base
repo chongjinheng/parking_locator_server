@@ -1,0 +1,28 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+
+/**
+ * Product DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ * @author chengyang
+ */
+public interface ProductDAO {
+
+	public Product getProductById(Long id, Long storeID);
+
+	public List<Product> getAllProductsInStore(Long storeID);
+
+	public Long createProduct(Product product, String userEmail, Long storeID);
+
+	public void updateProduct(Product product, String userEmail, List<ProductCategoryReference> pcr, Product tempProduct);
+
+	public void deleteProduct(Product product, String userEmail);
+
+	public boolean checkProductCodeExists(Long storeID, String productCode);
+}

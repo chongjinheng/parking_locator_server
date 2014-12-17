@@ -1,0 +1,49 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.hibernate.Query;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.PosUserSession;
+
+/**
+ * Session DAO Class
+ * 
+ * @author original author
+ * @author chongjinheng
+ */
+@Component
+@Repository
+@Transactional(readOnly = false)
+public class SessionDAOImpl extends GenericDAO implements SessionDAO {
+
+	public void updateSession(String sessionKey, String username) {
+		PosUserSession session = getSessionBean(username);
+		session.setSessionValue(sessionKey);
+		getSessionFactory().saveOrUpdate(session);
+	}
+
+	public PosUserSession checkSessionValidity(String sessionKey, String username) {
+		return (PosUserSession) getSessionFactory().createCriteria(PosUserSession.class).add(Restrictions.eq("username", username))
+				.add(Restrictions.eq("sessionValue", sessionKey)).uniqueResult();
+	}
+
+	private PosUserSession getSessionBean(String username) {
+		Query query = getSessionFactory().createQuery("from c in class " + PosUserSession.class.getName() + " where c.username=:username");
+		query.setString("username", username);
+		PosUserSession session = (PosUserSession) query.setMaxResults(1).uniqueResult();
+		if (session == null) {
+			session = new PosUserSession();
+			session.setUsername(username);
+			session.setLastAccessTime(new Date());
+			getSessionFactory().save(session);
+		}
+		return session;
+
+	}
+
+}

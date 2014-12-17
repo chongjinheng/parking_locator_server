@@ -1,0 +1,23 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.PosUser;
+
+/**
+ * Pos User DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface PosUserDAO {
+
+	public PosUser getUserByEmail(String email);
+
+	public Long createPosUser(String userEmail, String hashedPassword, Long storeID);
+
+	public void updatePosUser(String userEmail, String hasedPassword);
+
+	public void updatePosUserForgetPasswordSession(String userEmail, Long forgotPasswordSessionID);
+
+	public void updatePosUserPassword(String userEmail, String newHashedPassword);
+
+}

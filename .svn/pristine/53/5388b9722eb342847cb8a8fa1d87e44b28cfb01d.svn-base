@@ -1,0 +1,63 @@
+package com.softspace.pos.bean;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Reference to break down many to many relationship between products and categories
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "PRODUCT_CATEGORY_REF", uniqueConstraints = { @UniqueConstraint(columnNames = { "PRODUCT_ID", "CATEGORY_ID" }) })
+public class ProductCategoryReference extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonExclusion
+	private Long id;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "CATEGORY_ID", nullable = false)
+	@JsonExclusion
+	private Category category;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "PRODUCT_ID", nullable = false)
+	@JsonExclusion
+	private Product product;
+
+	public Long getId() {
+		return id;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+}

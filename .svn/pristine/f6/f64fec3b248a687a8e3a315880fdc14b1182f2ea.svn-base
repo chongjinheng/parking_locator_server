@@ -1,0 +1,16 @@
+package com.softspace.pos.DAO;
+
+/**
+ * 
+ * @author chengyang
+ */
+
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Product;
+
+public interface CartItemDAO {
+
+	public Long createCustomCartItem(Long salesID, CartItem cartItem, Long storeID, String userEmail);
+
+	public Long createCartItem(Long salesID, CartItem cartItem, Long storeID, Product product, String userEmail);
+}

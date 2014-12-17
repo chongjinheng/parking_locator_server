@@ -1,0 +1,117 @@
+package com.softspace.test.service;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Store;
+import com.softspace.pos.service.StoreService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author Darren
+ */
+public class StoreServiceTest extends BaseTestCase {
+
+	@Autowired
+	private StoreService storeService;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	// @Mock
+	// List<Category> categoryList;
+	@Test
+	public void testGetInventoryList() throws Exception {
+		dto = storeService.doGetInventoryList("lim_chengyang@hotmail.com", 1l);
+		System.out.println("hehe" + dto.getProductList().get(0).getName());
+		List<Category> categoryList = dto.getCategoryList();
+		List<Product> productList = dto.getProductList();
+		List<Discount> discountList = dto.getDiscountList();
+
+		assertTrue("No category in list", categoryList.size() > 0 && !categoryList.isEmpty());
+		assertTrue("No product in list", productList.size() > 0);
+		assertTrue("No discount in list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testManageCategory() throws Exception {
+		/** Object required for manageCategory **/
+
+		List<Category> categoryList = new ArrayList<Category>();
+
+		Category category = new Category();
+		category.setName("Food");
+		categoryList.add(category);
+		// Create multiple object
+		Category category1 = new Category();
+		category1.setName("Drinks");
+		categoryList.add(category1);
+
+		dto = storeService.doManageCategory("lim_chengyang@hotmail.com", 1l, "0", categoryList);
+		assertNotNull("new category ID is not returned", dto.getNewCategoryID());
+	}
+
+	@Test
+	public void testManageCategoryItem() throws Exception {
+		/** Object needed for manageCategoryItem **/
+		List<Long> productIDList = new ArrayList<Long>();
+		productIDList.add(1l);
+
+		storeService.doManageCategoryItem("lim_chengyang@hotmail.com", 1l, 1l, productIDList);
+	}
+
+	@Test
+	public void testManageProduct() throws Exception {
+		/** Object required for manageProduct **/
+		List<Product> productList = new ArrayList<Product>();
+		Product product = new Product();
+		product.setCode("F002");
+		product.setName("Chicken Chop");
+		product.setDescription("Its tasty");
+		product.setPrice(1500l);
+		product.setThumbnail("SomeImageStringThatItsStringIsUnimaginableLong");
+
+		List<Long> categoryIDList = new ArrayList<Long>();
+		categoryIDList.add(1l);
+		// Add multiple categories
+		categoryIDList.add(2l);
+		product.setCategoryIDList(categoryIDList);
+		productList.add(product);
+
+		dto = storeService.doManageProduct("lim_chengyang@hotmail.com", 1l, "0", productList);
+		assertNotNull("new product id is not returned", dto.getNewProductID());
+	}
+
+	@Test
+	public void testManageDiscount() throws Exception {
+		/** Object required for manageDiscount **/
+		List<Discount> discountList = new ArrayList<Discount>();
+		Discount discount = new Discount();
+		Store store = posUserDAO.getUserByEmail("lim_chengyang@hotmail.com").getStore();
+
+		discount.setName("Thursday Promo");
+		discount.setType("1");
+		discount.setValue(2);
+		discount.setStore(store);
+		discountList.add(discount);
+
+		dto = storeService.doManageDiscount("lim_chengyang@hotmail.com", 1l, "0", discountList);
+		assertNotNull("new discount id is not returned", dto.getNewDiscountID());
+	}
+}

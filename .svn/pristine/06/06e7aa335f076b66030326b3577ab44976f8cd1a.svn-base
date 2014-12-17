@@ -1,0 +1,70 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Store;
+
+/**
+ * Category DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class CategoryDAOImpl extends GenericDAO implements CategoryDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private StoreDAO storeDAO;
+
+	@Override
+	public Category getCategoryById(Long id, Long storeID) {
+		return (Category) getSessionFactory().createCriteria(Category.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).add(Restrictions.eq("id", id)).uniqueResult();
+	}
+
+	public List<Category> getAllCategoriesInStore(Long storeID) {
+		@SuppressWarnings("unchecked")
+		List<Category> categories = getSessionFactory().createCriteria(Category.class).add(Restrictions.eq("deleteFlag", false))
+				.add(Restrictions.eq("store.id", storeID)).list();
+		return categories;
+	}
+
+	@Override
+	public Long createCategory(Category tempCategory, String userEmail, Long storeID) {
+		Category category = new Category();
+		category.setCreatedBy(userEmail);
+		category.setCreatedDate(new Date());
+		Store store = storeDAO.getStoreByStoreId(storeID);
+		category.setStore(store);
+
+		return crudDAO.create(category);
+	}
+
+	@Override
+	public void updateCategory(Category tempCategory, String userEmail, Long storeID, Category targetCatgeory) {
+		targetCatgeory.setName(tempCategory.getName());
+		targetCatgeory.setModifiedBy(userEmail);
+		targetCatgeory.setModifiedDate(new Date());
+		crudDAO.update(targetCatgeory);
+	}
+
+	@Override
+	public void deleteCategory(Category tempCategory, String userEmail) {
+		tempCategory.setDeleteFlag(true);
+		tempCategory.setModifiedBy(userEmail);
+		tempCategory.setModifiedDate(new Date());
+		crudDAO.update(tempCategory);
+	}
+}

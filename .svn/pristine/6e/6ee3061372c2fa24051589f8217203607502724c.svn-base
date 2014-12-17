@@ -1,0 +1,96 @@
+package com.softspace.pos.util;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.util.StringUtils;
+
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+
+/**
+ * Validators to ensure the String is in the correct format
+ * 
+ * @author chongjinheng
+ * @author chengyang
+ */
+public class Validators {
+
+	/**
+	 * Validations for email address format
+	 * 
+	 * @param inputEmail
+	 * @return boolean
+	 */
+	public static boolean validateEmail(String inputEmail) {
+		Pattern pattern;
+		Matcher matcher;
+
+		final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+		pattern = Pattern.compile(EMAIL_PATTERN);
+
+		matcher = pattern.matcher(inputEmail);
+		return matcher.matches();
+	}
+
+	/**
+	 * Check password and return true if its same
+	 * 
+	 * @param password
+	 * @param realPass
+	 * @param email
+	 * @return boolean
+	 */
+	public static boolean validatePassword(String password, String realPass, String email) {
+		if ((Encryptor.hashPassword(password, email).equals(realPass)))
+			return true;
+		else
+			return false;
+	}
+
+	public static boolean checkPasswordStyle(String password) {
+		Pattern pattern;
+		Matcher matcher;
+
+		final String PASSWORD_PATTERN = "^([0-9]+[a-zA-Z]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$";
+
+		pattern = Pattern.compile(PASSWORD_PATTERN);
+
+		matcher = pattern.matcher(password);
+		return matcher.matches();
+
+	}
+
+	/**
+	 * @param stringParam String
+	 * @throws SSPosMobileRequestException
+	 */
+	public static void sanityCheck(String stringParam) throws SSPosMobileRequestException {
+		stringParam = stringParam.trim();
+		if (StringUtils.isEmpty(stringParam)) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+	/**
+	 * @param longParam Long
+	 * @throws SSPosMobileRequestException
+	 */
+	public static void sanityCheck(Long longParam) throws SSPosMobileRequestException {
+		if (longParam == null) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+	/**
+	 * @param intParam Integer
+	 * @throws SSPosMobileRequestException
+	 */
+	public static void sanityCheck(Integer intParam) throws SSPosMobileRequestException {
+		if (intParam == null) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+}

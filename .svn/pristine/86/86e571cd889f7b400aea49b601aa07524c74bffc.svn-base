@@ -1,0 +1,23 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Sales;
+
+/**
+ * Sales DAO Class
+ * 
+ * @author original author
+ * @author cylim
+ */
+public interface SalesDAO {
+
+	public Sales getSalesById(Long id, Long storeID);
+
+	public List<Sales> getSalesByShopID(Long id);
+
+	public Long createSales(String userEmail, Long storeID, String paymentType, Long subTotalAmount, Long totalAmount, Long discountAmount,
+			Long tenderAmount, Long changeAmount, Discount discountPackage, String recieptNumber);
+
+}

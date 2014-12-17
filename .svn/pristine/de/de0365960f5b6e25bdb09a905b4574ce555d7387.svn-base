@@ -1,0 +1,87 @@
+package com.softspace.pos.bean;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.Type;
+
+import com.softspace.pos.util.JSONExclusion;
+
+/**
+ * Discount table <br>
+ * Field: name, type, value, customFlag, store
+ * 
+ * @param String, String, Double, Boolean, Store
+ * @author chengyang
+ */
+
+@Entity
+public class Discount extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String name;
+
+	private String type;
+
+	private Double value;
+
+	@Column(columnDefinition = "TINYINT")
+	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@JSONExclusion
+	private Boolean customFlag = false;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private Store store;
+
+	public void setID(Long id) {
+		this.id = id;
+	}
+
+	public void setCustomFlag(Boolean customFlag) {
+		this.customFlag = customFlag;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public Long getID() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+}

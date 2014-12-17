@@ -1,0 +1,72 @@
+package com.softspace.test.dao;
+
+import java.util.Properties;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.ForgotPasswordSessionDAO;
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.util.Encryptor;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for PosUserDao.
+ * 
+ * @author azliabdullah
+ * @author chengyang
+ */
+public class PosUserDaoTest extends BaseTestCase {
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Autowired
+	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	private String email = "lim_chengyang@hotmail.com";
+
+	@Test
+	public void testGetUserByEmail() throws Exception {
+		PosUser posUser = posUserDAO.getUserByEmail(email);
+		Assert.assertNotNull("Pos User with this email not exist", posUser);
+
+		// Test email not exist
+		// posUser = posUserDAO.getUserByEmail(emailNotExist);
+		// Assert.assertNull("Pos User with this email exist", posUser);
+
+	}
+
+	@Test
+	public void testCreatePosUser() {
+		posUserDAO.createPosUser(testValue.getProperty("firstTimeSignupEmail2"),
+				Encryptor.hashPassword("cyc12345", testValue.getProperty("firstTimeSignupEmail2")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		PosUser posUser = posUserDAO.getUserByEmail(testValue.getProperty("firstTimeSignupEmail2"));
+		Assert.assertNotNull("Created fail", posUser);
+	}
+
+	@Test
+	public void updatePosUserForgetPasswordSession() {
+		forgotPasswordSessionDAO.createForgetPasswordSession(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword(testValue.getProperty("newPassword"), testValue.getProperty("userEmail")));
+		posUserDAO.updatePosUserForgetPasswordSession(testValue.getProperty("userEmail"),
+				Long.valueOf(testValue.getProperty("forgotPasswordSessionID")));
+	}
+
+	@Test
+	public void testUpdatePosUserPassword() {
+		forgotPasswordSessionDAO.createForgetPasswordSession(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword(testValue.getProperty("newPassword"), testValue.getProperty("userEmail")));
+		posUserDAO.updatePosUserPassword(testValue.getProperty("userEmail"),
+				Encryptor.hashPassword("koi12345", testValue.getProperty("userEmail")));
+		PosUser posUser = posUserDAO.getUserByEmail(testValue.getProperty("userEmail"));
+		Assert.assertEquals(Encryptor.hashPassword("koi12345", testValue.getProperty("userEmail")), posUser.getPassword());
+	}
+}

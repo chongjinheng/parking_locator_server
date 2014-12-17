@@ -1,0 +1,34 @@
+package com.softspace.pos.DAO;
+
+import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.ProductCategoryReference;
+
+/**
+ * PCR DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+@Repository
+@Transactional(readOnly = true)
+public class ProductCategoryReferenceDAOImpl extends GenericDAO implements ProductCategoryReferenceDAO {
+
+	// TODO DAO return list not tested
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductCategoryReference> getPcrByCategoryId(Long id) {
+		return (List<ProductCategoryReference>) getSessionFactory().createCriteria(ProductCategoryReference.class)
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("category.id", id)).list();
+	}
+
+	@Override
+	public ProductCategoryReference getPcrById(Long id) {
+		return (ProductCategoryReference) getSessionFactory().createCriteria(ProductCategoryReference.class)
+				.add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("id", id)).uniqueResult();
+	}
+}

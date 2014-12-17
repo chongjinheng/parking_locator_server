@@ -1,0 +1,89 @@
+package com.softspace.test.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.ProductCategoryReference;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for ProductDAO.
+ * 
+ * @author azliabdullah
+ * @author chengyang
+ */
+public class ProductDaoTest extends BaseTestCase {
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	private Long productID = 1l;
+	private Long storeID = 1l;
+
+	@Test
+	public void testGetProduct() {
+		Product product = productDAO.getProductById(productID, storeID);
+		Assert.assertNotNull("No Product with this Id", product);
+
+		List<ProductCategoryReference> pcrs = product.getProductsCategoryReference();
+		Assert.assertNotNull("pcrs is empty", pcrs);
+
+		for (ProductCategoryReference productCategoryReference : pcrs) {
+			System.out.println(productCategoryReference.getCategory().getName());
+		}
+	}
+
+	@Test
+	public void testGetAllProductsInStore() {
+		List<Product> productList = productDAO.getAllProductsInStore(storeID);
+		Assert.assertNotNull("its null", productList);
+		Assert.assertTrue("no records inside list", productList.size() > 0);
+	}
+
+	@Test
+	public void testCreateProduct() {
+		Product product = new Product();
+		product.setName(testValue.getProperty("productName"));
+		product.setCode(testValue.getProperty("code"));
+		product.setDescription(testValue.getProperty("description"));
+		product.setPrice(Long.valueOf(testValue.getProperty("price")));
+		Long i = productDAO.createProduct(product, testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")));
+		Assert.assertNotNull("Product is not created", productDAO.getProductById(i, Long.valueOf(testValue.getProperty("storeID"))));
+	}
+
+	@Test
+	public void testUpdateProduct() {
+		Product tempProduct = new Product();
+		tempProduct.setName(testValue.getProperty("productName"));
+		tempProduct.setCode(testValue.getProperty("code"));
+		tempProduct.setDescription(testValue.getProperty("description"));
+		tempProduct.setPrice(Long.valueOf(testValue.getProperty("price")));
+		tempProduct.setThumbnail(testValue.getProperty("thumbnail"));
+		Product product = productDAO.getProductById(Long.valueOf(testValue.getProperty("productIDforDAOtest")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		List<ProductCategoryReference> pcr = new ArrayList<ProductCategoryReference>();
+		productDAO.updateProduct(product, testValue.getProperty("userEmail"), pcr, tempProduct);
+	}
+
+	@Test
+	public void testDeleteProduct() {
+		Product product = productDAO.getProductById(Long.valueOf(testValue.getProperty("productIDforDAOtest")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		productDAO.deleteProduct(product, testValue.getProperty("userEmail"));
+		Assert.assertNull(
+				"Product havent delete",
+				productDAO.getProductById(Long.valueOf(testValue.getProperty("productIDforDAOtest")),
+						Long.valueOf(testValue.getProperty("storeID"))));
+	}
+}

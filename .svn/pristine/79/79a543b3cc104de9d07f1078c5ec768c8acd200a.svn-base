@@ -1,0 +1,41 @@
+package com.softspace.pos.util;
+
+import org.hibernate.cfg.ImprovedNamingStrategy;
+
+public class CustomNamingStrategy extends ImprovedNamingStrategy {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// private static final String PLURAL_SUFFIX = "s";
+
+	@Override
+	public String classToTableName(String className) {
+		String tableNameInSingularForm = super.classToTableName(className);
+		return tableNameInSingularForm.toUpperCase();
+	}
+
+	@Override
+	public String propertyToColumnName(String propertyName) {
+		String test = super.propertyToColumnName(propertyName);
+		return test.toUpperCase();
+	}
+
+	@Override
+	public String foreignKeyColumnName(String propertyName, String propertyEntityName, String propertyTableName, String referencedColumnName) {
+		String test = super.foreignKeyColumnName(propertyName, propertyEntityName, propertyTableName, referencedColumnName);
+		return (test += "_FK").toUpperCase();
+
+	}
+
+	// private String transformToPluralForm(String tableNameInSingularForm) {
+	// StringBuilder pluralForm = new StringBuilder();
+	//
+	// pluralForm.append(tableNameInSingularForm);
+	// pluralForm.append(PLURAL_SUFFIX);
+	//
+	// return pluralForm.toString();
+	// }
+}

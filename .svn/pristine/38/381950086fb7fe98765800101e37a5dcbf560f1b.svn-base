@@ -1,0 +1,71 @@
+package com.softspace.pos.util;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.util.StringUtils;
+
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+
+/**
+ * Validator class
+ * 
+ * @authur Darren
+ * @author cylim
+ */
+public class Validators {
+
+	// validations used for email address syntax
+	public static boolean validateEmail(String inputEmail) {
+		Pattern pattern;
+		Matcher matcher;
+
+		final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+		pattern = Pattern.compile(EMAIL_PATTERN);
+
+		matcher = pattern.matcher(inputEmail);
+		return matcher.matches();
+	}
+
+	public static boolean validatePassword(String password, String realPass, String email) {
+		if ((Encryptor.encryptPass(password, email).equals(realPass)))
+			return true;
+		else
+			return false;
+	}
+
+	public static boolean checkPassStyle(String password) {
+		Pattern pattern;
+		Matcher matcher;
+
+		final String PASSWORD_PATTERN = "^([0-9]+[a-zA-Z]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$";
+
+		pattern = Pattern.compile(PASSWORD_PATTERN);
+
+		matcher = pattern.matcher(password);
+		return matcher.matches();
+
+	}
+
+	public static void sanityCheck(String stringParam) throws Exception {
+		stringParam = stringParam.trim();
+		if (StringUtils.isEmpty(stringParam)) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+	public static void sanityCheck(Long longParam) throws Exception {
+		if (longParam == null) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+	public static void sanityCheck(Integer intParam) throws Exception {
+		if (intParam == null) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		}
+	}
+
+}

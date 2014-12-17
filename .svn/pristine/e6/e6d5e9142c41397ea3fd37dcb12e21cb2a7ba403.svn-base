@@ -1,0 +1,124 @@
+package com.softspace.pos.bean;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Reference between product and sales in a single transaction
+ * 
+ * @author cylim
+ */
+@Entity
+public class CartItem extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonExclusion
+	private long id;
+
+	private long quantity;
+
+	private Long subTotal;
+
+	private String customAmountDescription;
+
+	private Long productId;
+
+	private String productCode;
+
+	private String productName;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false)
+	private Sales sales;
+
+	@Transient
+	private Long customAmount;
+
+	public float getSubTotal() {
+		return subTotal;
+	}
+
+	public void setSubTotal(Long subTotal) {
+		this.subTotal = subTotal;
+	}
+
+	public Sales getSales() {
+		return sales;
+	}
+
+	public void setSales(Sales sales) {
+		this.sales = sales;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public Long getCustomAmount() {
+		return customAmount;
+	}
+
+	public void setCustomAmount(Long customAmount) {
+		this.customAmount = customAmount;
+	}
+
+	public Long getProductID() {
+		return productId;
+	}
+
+	public void setProductID(Long productID) {
+		this.productId = productID;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(long quantity) {
+		this.quantity = quantity;
+	}
+
+	public float getAmount() {
+		return subTotal;
+	}
+
+	public void setAmount(Long amount) {
+		this.subTotal = amount;
+	}
+
+	public String getCustomAmountDescription() {
+		return customAmountDescription;
+	}
+
+	public void setCustomAmountDescription(String customAmountDescription) {
+		this.customAmountDescription = customAmountDescription;
+	}
+
+}

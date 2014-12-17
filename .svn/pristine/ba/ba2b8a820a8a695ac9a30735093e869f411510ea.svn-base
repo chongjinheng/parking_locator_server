@@ -1,0 +1,198 @@
+package com.softspace.test.service;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.service.StoreService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author chongjinheng
+ */
+public class StoreServiceTest extends BaseTestCase {
+
+	@Autowired
+	private StoreService storeService;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Value("${storeID}")
+	private Long storeID;
+
+	@Value("${userEmail}")
+	private String userEmail;
+
+	@Value("${categoryIDList}")
+	private String categoryIDList;
+
+	@Value("${productIDList}")
+	private String productIDList;
+
+	@Value("${name}")
+	private String name;
+
+	@Value("${action}")
+	private String action;
+
+	@Value("${categoryID}")
+	private Long categoryID;
+
+	@Value("${id}")
+	private String id;
+
+	@Value("${type}")
+	private String type;
+
+	@Value("${value}")
+	private Double value;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testGetInventoryList() throws Exception {
+		dto = storeService.doGetInventoryList(userEmail, storeID);
+		List<Category> categoryList = dto.getCategoryList();
+		List<Product> productList = dto.getProductList();
+		List<Discount> discountList = dto.getDiscountList();
+
+		assertTrue("No category in list", categoryList.size() > 0 && !categoryList.isEmpty());
+		assertTrue("No product in list", productList.size() > 0);
+		assertTrue("No discount in list", discountList.size() > 0);
+	}
+
+	@Test
+	public void testManageCategory() throws Exception {
+		/** Object required for manageCategory **/
+		List<Category> categoryList = new ArrayList<Category>();
+		String tempStringID = categoryIDList;
+		String tempStringName = name;
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+
+		if (action == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Category category = new Category();
+				category.setName(tempNameStore[i]);
+				categoryList.add(category);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Category category = new Category();
+				category.setID(Long.valueOf(tempIDStore[i]));
+				category.setName(tempNameStore[i]);
+				categoryList.add(category);
+			}
+		}
+
+		dto = storeService.doManageCategory(userEmail, storeID, action, categoryList);
+		assertNotNull("new category ID is not returned", dto.getNewCategoryID());
+	}
+
+	@Test
+	public void testManageCategoryItem() throws Exception {
+		/** Object needed for manageCategoryItem **/
+		String tempProductID = productIDList;
+		String[] tempIDStore = tempProductID.split(",");
+		List<String> productStringList = Arrays.asList(tempIDStore);
+		List<Long> productIDList = new ArrayList<Long>();
+		for (String s : productStringList) {
+			productIDList.add(Long.valueOf(s));
+		}
+		storeService.doManageCategoryItem(userEmail, storeID, categoryID, productIDList);
+	}
+
+	@Test
+	public void testManageProduct() throws Exception {
+		/** Object required for manageProduct **/
+		String tempStringID = productIDList;
+		String tempStringProID = categoryIDList;
+		String tempStringName = name;
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		String[] tempCatIDStore = tempStringProID.split(",");
+		List<Product> products = new ArrayList<Product>();
+
+		if (action == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Product product = new Product();
+				product.setName(tempNameStore[i]);
+				List<String> categoryStrings = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryStrings.add(s);
+				}
+				List<Long> categoryIDs = new ArrayList<Long>();
+				for (String s : categoryStrings) {
+					categoryIDs.add(Long.valueOf(s));
+				}
+				product.setCategoryIDList(categoryIDs);
+				products.add(product);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Product product = new Product();
+				product.setID(Long.valueOf(tempIDStore[i]));
+				product.setName(tempNameStore[i]);
+				List<String> categoryStrings = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryStrings.add(s);
+				}
+				List<Long> categoryIDs = new ArrayList<Long>();
+				for (String s : categoryStrings) {
+					categoryIDs.add(Long.valueOf(s));
+				}
+				product.setCategoryIDList(categoryIDs);
+				products.add(product);
+			}
+		}
+
+		dto = storeService.doManageProduct(userEmail, storeID, action, products);
+		assertNotNull("new product id is not returned", dto.getNewProductID());
+	}
+
+	@Test
+	public void testManageDiscount() throws Exception {
+		/** Object required for manageDiscount **/
+		String tempStringID = id;
+		String tempStringName = name;
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		List<Discount> discounts = new ArrayList<Discount>();
+
+		if (action == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Discount discount = new Discount();
+				discount.setName(tempNameStore[i]);
+				discounts.add(discount);
+			}
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				Discount discount = new Discount();
+				discount.setID(Long.valueOf(tempIDStore[i]));
+				discount.setName(tempNameStore[i]);
+				discount.setType(type);
+				discount.setValue(value);
+				discounts.add(discount);
+			}
+		}
+
+		dto = storeService.doManageDiscount(userEmail, storeID, action, discounts);
+		assertNotNull("new discount id is not returned", dto.getNewDiscountID());
+	}
+}

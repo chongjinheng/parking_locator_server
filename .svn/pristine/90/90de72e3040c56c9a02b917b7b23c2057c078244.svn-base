@@ -1,0 +1,70 @@
+package com.softspace.pos.bean;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.softspace.pos.util.JsonExclusion;
+
+/**
+ * Reference table to calculate the totals sale per day
+ * 
+ * @author cylim
+ */
+@Entity
+@Table(name = "SALES_RUNNING_NUMBER")
+public class SalesRunningNumber implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@JsonExclusion
+	private Long id;
+
+	@Column(name = "DATE")
+	private Date curDate;
+
+	@OneToOne
+	private Store store;
+
+	@Column(name = "RUNNING_NUMBER")
+	private Integer runningNumber;
+
+	public Store getStore() {
+		return store;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public Date getCurDate() {
+		return curDate;
+	}
+
+	public void setCurDate(Date curDate) {
+		this.curDate = curDate;
+	}
+
+	public Integer getRunningNumber() {
+		return runningNumber;
+	}
+
+	public void setRunningNumber(Integer runningNumber) {
+		this.runningNumber = runningNumber;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+}

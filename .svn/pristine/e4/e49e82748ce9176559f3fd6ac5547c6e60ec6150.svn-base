@@ -1,0 +1,73 @@
+package com.softspace.test.dao;
+
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.CategoryDAO;
+import com.softspace.pos.bean.Category;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for CategoryDao.
+ * 
+ * @author cylim
+ */
+
+public class CategoryDaoTest extends BaseTestCase {
+
+	@Autowired
+	private CategoryDAO categoryDAO;
+	private Long storeID = 1l;
+	private Long categoryID = 1l;
+
+	@Autowired
+	private Properties testValue;
+
+	@Test
+	public void testGetCategoryById() {
+		Category category = categoryDAO.getCategoryById(categoryID, storeID);
+		Assert.assertNotNull("Category with this id doesnt exists", category);
+	}
+
+	@Test
+	public void testGetAllCategoriesInStore() {
+		List<Category> categoryList = categoryDAO.getAllCategoriesInStore(storeID);
+		Assert.assertNotNull("The list is null", categoryList);
+		Assert.assertTrue("no records inside list", categoryList.size() > 0);
+	}
+
+	@Test
+	public void testCreateCategory() {
+		Category category = new Category();
+		category.setName("Darren");
+		Long i = categoryDAO.createCategory(category, testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")));
+		Assert.assertNotNull("Category Failed to create", categoryDAO.getCategoryById(i, Long.valueOf(testValue.getProperty("storeID"))));
+	}
+
+	@Test
+	public void testUpdateCategory() {
+		Category category = new Category();
+		category.setName("Darren");
+		categoryDAO.updateCategory(category, testValue.getProperty("userEmail"), Long.valueOf(testValue.getProperty("storeID")),
+				categoryDAO.getCategoryById(1l, Long.valueOf(testValue.getProperty("storeID"))));
+		Category categoryTest = categoryDAO.getCategoryById(Long.valueOf(testValue.getProperty("categoryID")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		Assert.assertEquals("Darren", categoryTest.getName());
+	}
+
+	@Test
+	public void testDeleteCategory() {
+		Category category = categoryDAO.getCategoryById(Long.valueOf(testValue.getProperty("categoryID")),
+				Long.valueOf(testValue.getProperty("storeID")));
+		categoryDAO.deleteCategory(category, testValue.getProperty("userEmail"));
+		Assert.assertNull(
+				"Category havent delete",
+				categoryDAO.getCategoryById(Long.valueOf(testValue.getProperty("categoryID")),
+						Long.valueOf(testValue.getProperty("storeID"))));
+	}
+}

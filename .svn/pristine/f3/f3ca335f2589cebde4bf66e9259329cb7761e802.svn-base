@@ -1,0 +1,85 @@
+package com.softspace.pos.enums;
+
+/**
+ * Client implementation specific error statuses.
+ * 
+ * @author ck
+ * @author azliabdullah
+ */
+public enum ErrorStatus {
+	INIT_ERROR(2001, "Initialization error", "error.initialization-fault"),
+	SESSION_TIMED_OUT(2002, "Session is expired.", "error.session-timed-out"),
+
+	APPLICATION_MERCHANT_NON_EXISTENCE(5010, "Invalid login, please try again or contact your Merchant System Administrator", "error.merchant.id-pin-mismatch"),
+	APPLICATION_PIN_LENGTH(5011, "User PIN has to be a 8 alphanumeric characters", "error.PIN.length"),
+	APPLICATION_OUTDATED(5020, "\"You are using an outdated application. Please update your version", "update.mobile.please"),
+	APPLICATION_SYSTEM_DOWN(5555, "System is currently not available. Please try again later", ""),
+
+	ERROR_SERVICE_NOT_FOUND(9010, "Invalid service name /version", "error.service-not-found"),
+	ERROR_METHOD_INVOCATION_ERROR(9011, "Method invocation error", "error.method-invocation"),
+
+	ERROR_CLIENT_DISCONNECTED(13002, "Error, client disconnected", "error.client-disconnected"),
+
+	DATA_CONVERSION_ERROR(13003, "Data conversion is incomplete or lost", "error.conversion-error"),
+
+	UNHANDLED_ERROR(10001, "Service is currently unavailable.Please try again,if the problem persists kindly contact our Merchant Hotline.", "error.unhandled-error"),
+
+	ERROR_CONNECTION_TIMED_OUT(14001, "Connection timed out", "error.connection-timed-out"),
+
+	/** POS_USER SERVICES **/
+	VALIDATION_ERROR(20009, "Either email or password entered is wrong.", "error.invalid-account"),
+	PASSWORD_STYLE_ERROR(20010, "Password is either not alphanumeric or <8 or >15 or contains special cases", "error.invalid-style"),
+	EMAIL_STYLE_ERROR(20011, "Email format incorrect", "error.email-format"),
+	EMAIL_EXISTS(20012, "Email is already exists", "error.email-exists"),
+	NULL_FIELD_ERROR(20013, "Empty field detected", "error.empty-field"),
+	PASSWORD_EXPIRED_ERROR(20014, "Validity of temporary password expired", "error.expired-password"),
+	PASSWORD_REQ_ERROR(20015, "Unable to change password when new and old password are the same", "error.pass-req-error"),
+	USER_DOES_NOT_EXIST(20014, "The username does not exist", "error.user-exist"),
+	AUTHORIZATION_ERROR(20015, "User does not have access to this field", "error.authorization-error"),
+
+	/** STORE SERVICES **/
+	ITEM_EXISTS(30001, "This item exists in database", "error.item-exists"),
+	INVENTORY_EMPTY(30002, "The selected inventory is empty", "error.inventory-empty"),
+	INVALID_ACTION(30003, "The action is invalid", "error.invalid-action"),
+	INVALID_INPUT(3004, "The data passed in is invalid", "error.invalid-input"),
+
+	/** SALES SERVICES **/
+	TARGET_ITEM_NOT_EXIST(40016, "Unable to retrieve target item from database", "error.missing-target"),
+	RUNNING_NO_DATE_ERROR(40017, "SalesRunningNumber's date is impossible.", "error.running-date"),
+	TARGET_MISMATCHED_ERROR(40018, "Intended targetID mismatch with its StoreID", "error.mismatched-target");
+
+	private final String defaultMessage;
+	private final String key;
+	private final Object[] param;
+	private int code;
+
+	ErrorStatus(final int code, final String defaultMessage, final String key) {
+		this.defaultMessage = defaultMessage;
+		this.code = code;
+		this.key = key;
+		param = null;
+	}
+
+	ErrorStatus(final int code, final String defaultMessage, final String key, final Object... param) {
+		this.defaultMessage = defaultMessage;
+		this.key = key;
+		this.param = param;
+		this.code = code;
+	}
+
+	public final String getDefaultMessage() {
+		return defaultMessage;
+	}
+
+	public final String getKey() {
+		return key;
+	}
+
+	public final Object[] getParam() {
+		return param;
+	}
+
+	public final int getCode() {
+		return code;
+	}
+}

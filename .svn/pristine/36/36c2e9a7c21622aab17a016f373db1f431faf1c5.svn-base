@@ -1,0 +1,362 @@
+package com.softspace.pos.service;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.DAO.CrudDAO;
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.bean.ForgotPassSession;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.pos.bean.SalesRunningNumber;
+import com.softspace.pos.bean.Store;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+import com.softspace.pos.util.EmailSetup;
+import com.softspace.pos.util.Encryptor;
+import com.softspace.pos.util.Validators;
+
+/**
+ * Pos User Services
+ * 
+ * @author Darren
+ * @author chengyang
+ */
+@Service
+public class PosUserServiceImpl implements PosUserService {
+
+	private static final Logger logger = LoggerFactory.getLogger(PosUserServiceImpl.class);
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doSignUp(String storeName, String email, String password) throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = email.trim();
+			password = password.trim();
+			storeName = storeName.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(password);
+			Validators.sanityCheck(storeName);
+
+			String encryptedPass = Encryptor.encryptPass(password, email);
+
+			// check for format
+			if (!Validators.validateEmail(email)) {
+				throw new SSPosMobileRequestException(ErrorStatus.EMAIL_STYLE_ERROR, ErrorStatus.EMAIL_STYLE_ERROR.getDefaultMessage());
+			}
+
+			if (posUserDAO.getUserByEmail(email) != null) {
+				throw new SSPosMobileRequestException(ErrorStatus.EMAIL_EXISTS, ErrorStatus.EMAIL_EXISTS.getDefaultMessage());
+			}
+
+			if (!(Validators.checkPassStyle(password) && password.length() >= 8 && password.length() <= 15)) {
+				throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_STYLE_ERROR,
+						ErrorStatus.PASSWORD_STYLE_ERROR.getDefaultMessage());
+			}
+			// TODO create another DAO layer
+			Store store = new Store();
+			store.setStoreName(storeName);
+			store.setCreatedBy(email);
+			store.setCreatedDate(new Date());
+			crudDAO.create(store);
+
+			outService.setStoreId(store.getId());
+			logger.info("Store created successfully");
+
+			// creates the running number after the store is being created
+			SalesRunningNumber salesRunningNumber = new SalesRunningNumber();
+			salesRunningNumber.setCurDate(new Date());
+			salesRunningNumber.setRunningNumber(0);
+			salesRunningNumber.setStore(store);
+			crudDAO.create(salesRunningNumber);
+			logger.info("A Running Number that is dedicated to the store is created successfully");
+
+			PosUser posUser = new PosUser();
+			posUser.setCreatedBy(email);
+			posUser.setEmail(email);
+			posUser.setCreatedDate(new Date());
+			posUser.setPassword(encryptedPass);
+			posUser.setStore(store);
+			crudDAO.create(posUser);
+			List<String> info = new ArrayList<String>();
+			info.add("");
+			info.add(storeName);
+			info.add(password);
+			EmailSetup.sendEmail(email, 101, info);
+			logger.info("User created sucessfully");
+
+		} catch (Exception e) {
+			logger.error("Exception in doSignUp" + e);
+			throw e;
+		}
+		return outService;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doLogIn(String email, String password) throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = email.trim();
+			password = password.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(password);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+
+			if (posUser == null) {
+				throw new SSPosMobileRequestException(ErrorStatus.USER_DOES_NOT_EXIST, ErrorStatus.USER_DOES_NOT_EXIST.getDefaultMessage());
+			}
+
+			// if password not same with the main password
+			if (!(Validators.validatePassword(password, posUser.getPassword(), email))) {
+				// check if there is an temporary password
+				// if temp password doesnt exists
+				if (posUser.getForgotPasswordSession() == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.VALIDATION_ERROR, ErrorStatus.VALIDATION_ERROR.getDefaultMessage());
+				}
+				// if temp password exists
+				else if (!(posUser.getForgotPasswordSession() == null)) {
+					// temp pass doesnt match
+					if (!(Validators.validatePassword(password, posUser.getForgotPasswordSession().getTempPass(), email))) {
+						throw new SSPosMobileRequestException(ErrorStatus.VALIDATION_ERROR,
+								ErrorStatus.VALIDATION_ERROR.getDefaultMessage());
+					}
+					// temp pass matches //then login
+					else {
+						// TODO forgot pass should die soon
+						// check validity of the date
+						Date curDate = new Date();
+						Date passDate = posUser.getForgotPasswordSession().getValidTillDate();
+						if (curDate.after(passDate)) {
+							throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_EXPIRED_ERROR,
+									ErrorStatus.PASSWORD_EXPIRED_ERROR.getDefaultMessage());
+						} // if temp password has already been used
+						else if (posUser.getForgotPasswordSession().getDeleteFlag() == true) {
+							logger.info("Temporary Password has already been used");
+							throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_EXPIRED_ERROR,
+									ErrorStatus.PASSWORD_EXPIRED_ERROR.getDefaultMessage());
+						} else {
+							logger.info("Logged in using temp password");
+							outService.setLoginMode(10);
+							return outService;
+						}
+
+					}
+				}
+			} else if ((Validators.validatePassword(password, posUser.getPassword(), email))) {
+				outService.setLoginMode(20);
+				logger.info("Logged in using normal password");
+
+				outService.setStoreId(posUser.getStore().getId());
+				outService.setUserProfile(posUser.getStore());
+				return outService;
+			}
+
+		} catch (Exception e) {
+			logger.error("Exception in doLogIn" + e);
+			throw e;
+		}
+		return outService;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	// TODO changed it to longer PASSWORD
+	public JSONServiceDTO doForgotPass(String email) throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = email.trim();
+			Validators.sanityCheck(email);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+
+			if (posUser == null) {
+				throw new SSPosMobileRequestException(ErrorStatus.APPLICATION_MERCHANT_NON_EXISTENCE,
+						ErrorStatus.APPLICATION_MERCHANT_NON_EXISTENCE.getDefaultMessage());
+			}
+
+			// TODO cy you decide tempP
+			String tempP = RandomStringUtils.randomAlphanumeric(8);
+			// TODO cy, here decide again haha
+			String encryptedTempPass = Encryptor.encryptPass(tempP, email);
+			// if there is no previous record of forgot_session
+			if (posUser.getForgotPasswordSession() == null) {
+				ForgotPassSession fpsession = new ForgotPassSession();
+
+				Calendar c = Calendar.getInstance();
+				// TODO don't hardcode this date, should inject fun stuff
+				c.add(Calendar.DATE, 1);
+				Date validDate = c.getTime();
+
+				fpsession.setTempPass(encryptedTempPass);
+				fpsession.setCreatedBy(email);
+				fpsession.setCreatedDate(new Date());
+				fpsession.setValidTillDate(validDate);
+				posUser.setForgotPasswordSession(fpsession);
+				posUser.setModifiedBy(email);
+				posUser.setModifiedDate(new Date());
+				crudDAO.update(posUser);
+				logger.info("posUser forgotPassSession changed");
+				crudDAO.create(fpsession);
+				logger.info("Temp Password created successfully");
+			} // if there is previous record
+			else if (posUser.getForgotPasswordSession() != null) {
+				Calendar c = Calendar.getInstance();
+				c.add(Calendar.DATE, 1);
+				Date validDate = c.getTime();
+
+				ForgotPassSession fpsession = posUser.getForgotPasswordSession();
+				fpsession.setTempPass(encryptedTempPass);
+				fpsession.setModifiedBy(email);
+				fpsession.setModifiedDate(new Date());
+				fpsession.setValidTillDate(validDate);
+				fpsession.setDeleteFlag(false);
+				crudDAO.update(fpsession);
+				logger.info("Temp Password updated");
+
+			} else {
+				logger.error("Exception in forgot pass creating tempPass");
+				throw new SSPosMobileRequestException(ErrorStatus.UNHANDLED_ERROR, ErrorStatus.UNHANDLED_ERROR.getDefaultMessage());
+
+			}
+			List<String> info = new ArrayList<String>();
+			info.add(tempP);
+			EmailSetup.sendEmail(email, 102, info);
+
+		} catch (Exception e) {
+			logger.info("Exception in doForgotPass" + e);
+			throw e;
+		}
+		return outService;
+
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doChangePass(String email, String oldPassword, String newPassword, Boolean isForceChangePassword)
+			throws Exception {
+
+		JSONServiceDTO outService = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			oldPassword = oldPassword.trim();
+			newPassword = newPassword.trim();
+			email = email.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(oldPassword);
+			Validators.sanityCheck(newPassword);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+
+			if (!Validators.checkPassStyle(newPassword) && newPassword.length() >= 8 && newPassword.length() <= 15) {
+				throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_STYLE_ERROR,
+						ErrorStatus.PASSWORD_STYLE_ERROR.getDefaultMessage());
+			} else if (isForceChangePassword == true) {
+				if (posUser.getForgotPasswordSession() == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.APPLICATION_MERCHANT_NON_EXISTENCE,
+							ErrorStatus.APPLICATION_MERCHANT_NON_EXISTENCE.getDefaultMessage());
+				}
+
+				if (Validators.validatePassword(oldPassword, posUser.getForgotPasswordSession().getTempPass(), email)) {
+					posUser.setPassword(Encryptor.encryptPass(newPassword, email));
+					posUser.setModifiedDate(new Date());
+					posUser.setModifiedBy(email);
+					crudDAO.update(posUser);
+					ForgotPassSession forgotPassSession = posUser.getForgotPasswordSession();
+					forgotPassSession.setDeleteFlag(true);
+					crudDAO.update(forgotPassSession);
+					logger.info("Password Changed");
+					logger.info("Force password = true, Store is returned");
+					List<String> info = new ArrayList<String>();
+					info.add(""); // TODO send wrong email
+					EmailSetup.sendEmail(email, 103, info);
+					outService.setUserProfile(posUser.getStore());
+				} else
+					throw new SSPosMobileRequestException(ErrorStatus.VALIDATION_ERROR, ErrorStatus.VALIDATION_ERROR.getDefaultMessage());
+			} else if (oldPassword.equals(newPassword)) {
+				throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_REQ_ERROR, ErrorStatus.PASSWORD_REQ_ERROR.getDefaultMessage());
+			} else if (Validators.validatePassword(oldPassword, posUser.getPassword(), email)) {
+				posUser.setPassword(Encryptor.encryptPass(newPassword, email));
+				posUser.setModifiedDate(new Date());
+				posUser.setModifiedBy(email);
+				logger.info("Password Changed");
+				crudDAO.update(posUser);
+				List<String> info = new ArrayList<String>();
+				info.add("");
+				EmailSetup.sendEmail(email, 103, info);
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.VALIDATION_ERROR, ErrorStatus.VALIDATION_ERROR.getDefaultMessage());
+			}
+		} catch (Exception e) {
+			logger.error("Exception in doChangePass" + e);
+			throw e;
+		}
+		return outService;
+
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doUpdateProfile(String email, Long storeId, String storeName, String storeImage) throws Exception {
+		JSONServiceDTO outService = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			storeName = storeName.trim();
+			email = email.trim();
+			Validators.sanityCheck(email);
+			Validators.sanityCheck(storeName);
+
+			PosUser posUser = posUserDAO.getUserByEmail(email);
+			Store store = new Store();
+
+			if (posUser != null) {
+				store = posUser.getStore();
+				if (store == null) {
+					throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+							+ " :user dont have store");
+				} else if (store.getId() != storeId) {
+					throw new SSPosMobileRequestException(ErrorStatus.AUTHORIZATION_ERROR,
+							ErrorStatus.AUTHORIZATION_ERROR.getDefaultMessage());
+				}
+			} else {
+				throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage()
+						+ " :user not registered");
+			}
+
+			store.setStoreName(storeName);
+			store.setStoreImage(storeImage);
+			store.setModifiedBy(email);
+			store.setModifiedDate(new Date());
+			crudDAO.update(store);
+			logger.info("Profile updated successfully");
+		} catch (Exception e) {
+			logger.error("Exception in doUpdateProfile");
+			throw e;
+		}
+		return outService;
+	}
+}

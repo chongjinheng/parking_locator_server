@@ -1,0 +1,87 @@
+package com.softspace.pos.controller;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import com.softspace.pos.DTO.JSONMobileDTO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.enums.ServiceNames;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+import com.softspace.pos.exceptions.SSRecoverableException;
+import com.softspace.pos.util.JSONConverter;
+import com.softspace.pos.util.JSONFactory;
+
+public abstract class AbstractController {
+
+	private static final Logger logger = LoggerFactory.getLogger(AbstractController.class);
+
+	/**
+	 * Perform checking if the service requested is valid
+	 * 
+	 * @param dto
+	 * @return
+	 * @throws SSPosMobileRequestException if service name is invalid
+	 */
+	protected ServiceNames extractServiceName(final JSONServiceDTO dto) throws SSPosMobileRequestException {
+		String serviceNameString = null;
+		try {
+			serviceNameString = dto.getServiceName();
+			if (!StringUtils.hasText(serviceNameString)) {
+				// no text?
+				throw new IllegalArgumentException("invalid service name");
+			}
+			return ServiceNames.valueOf(serviceNameString);
+		} catch (IllegalArgumentException e) {
+			String msg = "service name : " + serviceNameString + " is not found";
+			logger.error(msg, e);
+
+			throw new SSPosMobileRequestException(ErrorStatus.ERROR_SERVICE_NOT_FOUND, msg);
+		}
+	}
+
+	protected String generateAndSetSessionKey(final JSONServiceDTO dto) {
+		String sessionKey = generateSessionKey();
+
+		// set session key into dto
+		dto.setSessionKey(sessionKey);
+
+		return sessionKey;
+	}
+
+	protected String generateSessionKey() {
+		// generate new session key
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * Sends the response back to the client. Phase 1,publicKey no encryption needed
+	 */
+	protected void flushResponse(final HttpServletResponse response, final JSONServiceDTO respObj) throws SSRecoverableException,
+			SSPosMobileRequestException {
+		try {
+			JSONMobileDTO respMObj = JSONConverter.toMobile(respObj);
+			String responseJSON = JSONFactory.toJson(respMObj);
+
+			logger.debug("\nJSON to return to mobile app: {}", responseJSON);
+
+			response.setContentType("text/plain");
+			response.getWriter().println(responseJSON);
+			response.flushBuffer();
+
+			response.getWriter().println("   ");
+			response.flushBuffer();
+		} catch (IOException e) {
+			throw new SSRecoverableException(ErrorStatus.ERROR_CLIENT_DISCONNECTED.getCode(),
+					ErrorStatus.ERROR_CLIENT_DISCONNECTED.getDefaultMessage());
+		}
+	}
+
+	// TODO big badass todo here, session, cookie management, refer mPOS
+}

@@ -1,0 +1,422 @@
+package com.softspace.pos.DTO;
+
+import java.util.List;
+
+import com.softspace.pos.bean.Store;
+
+/**
+ * General JSON Transfer Object
+ * 
+ * @author original author
+ */
+public class JSONDTO {
+
+	/****** INIT ******/
+	private String device;
+	private String platform;
+	private String versionNo;
+	private String pkXML;
+
+	/****** GENERAL ******/
+	private String serviceName;
+	private JSONServiceError error;
+	private String language;
+	private String sessionKey;
+
+	/***** IDs *****/
+	private String storeID;
+	private String productID;
+	private String categoryID;
+	private String productCategoryReferenceID;
+	private String cartItemID;
+	private String discountID;
+	private String forgotPassSessionID;
+	private String salesID;
+
+	/****** ACTIVATION/LOGIN ******/
+	private String userEmail;// email
+	private String storeName;
+	private String password;
+	private String newPassword;
+	private Boolean isForceChangePassword;
+	private Integer loginMode;
+	private Store userProfile;// a store class check if convert into Json
+
+	/**** STORE & INVENTORY ****/
+	private String storeImage;
+	private String action;
+	private List<String> productIDList;
+	private List<JSONProduct> productList;
+	private List<JSONCategory> categoryList;
+	private List<JSONDiscount> discountList;
+	private String newCategoryID;
+	private String newProductID;
+	private String newDiscountID;
+
+	/*** SALES ***/
+	private String email; // customerEmail in disguise
+	private List<JSONCart> cartList;
+	private String paymentType;
+	private String subTotalAmount;
+	private String totalAmount;
+	private String discountAmount;
+	private String tenderAmount;
+	private String changeAmount;
+	private JSONDiscount discountPackage;
+	private String receiptNumber;
+	private List<JSONSalesHistory> salesHistoryList;
+	private String transactionDate;
+
+	public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	public String getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(String platform) {
+		this.platform = platform;
+	}
+
+	public String getVersionNo() {
+		return versionNo;
+	}
+
+	public void setVersionNo(String versionNo) {
+		this.versionNo = versionNo;
+	}
+
+	public String getPkXML() {
+		return pkXML;
+	}
+
+	public void setPkXML(String pkXML) {
+		this.pkXML = pkXML;
+	}
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public JSONServiceError getError() {
+		return error;
+	}
+
+	public void setError(JSONServiceError error) {
+		this.error = error;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getSessionKey() {
+		return sessionKey;
+	}
+
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
+	public String getStoreID() {
+		return storeID;
+	}
+
+	public void setStoreID(String storeID) {
+		this.storeID = storeID;
+	}
+
+	public String getProductID() {
+		return productID;
+	}
+
+	public void setProductID(String productID) {
+		this.productID = productID;
+	}
+
+	public String getCategoryID() {
+		return categoryID;
+	}
+
+	public void setCategoryID(String categoryID) {
+		this.categoryID = categoryID;
+	}
+
+	public String getProductCategoryReferenceID() {
+		return productCategoryReferenceID;
+	}
+
+	public void setProductCategoryReferenceID(String productCategoryReferenceID) {
+		this.productCategoryReferenceID = productCategoryReferenceID;
+	}
+
+	public String getCartItemID() {
+		return cartItemID;
+	}
+
+	public void setCartItemID(String cartItemID) {
+		this.cartItemID = cartItemID;
+	}
+
+	public String getDiscountID() {
+		return discountID;
+	}
+
+	public void setDiscountID(String discountID) {
+		this.discountID = discountID;
+	}
+
+	public String getForgotPassSessionID() {
+		return forgotPassSessionID;
+	}
+
+	public void setForgotPassSessionID(String forgotPassSessionID) {
+		this.forgotPassSessionID = forgotPassSessionID;
+	}
+
+	public String getSalesID() {
+		return salesID;
+	}
+
+	public void setSalesID(String salesID) {
+		this.salesID = salesID;
+	}
+
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
+	}
+
+	public String getStoreName() {
+		return storeName;
+	}
+
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public Boolean getIsForceChangePassword() {
+		return isForceChangePassword;
+	}
+
+	public void setIsForceChangePassword(Boolean isForceChangePassword) {
+		this.isForceChangePassword = isForceChangePassword;
+	}
+
+	public Integer getLoginMode() {
+		return loginMode;
+	}
+
+	public void setLoginMode(Integer loginMode) {
+		this.loginMode = loginMode;
+	}
+
+	public Store getUserProfile() {
+		return userProfile;
+	}
+
+	public void setUserProfile(Store userProfile) {
+		this.userProfile = userProfile;
+	}
+
+	public String getStoreImage() {
+		return storeImage;
+	}
+
+	public void setStoreImage(String storeImage) {
+		this.storeImage = storeImage;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public List<String> getProductIDList() {
+		return productIDList;
+	}
+
+	public void setProductIDList(List<String> productIDList) {
+		this.productIDList = productIDList;
+	}
+
+	public List<JSONProduct> getProductList() {
+		return productList;
+	}
+
+	public void setProductList(List<JSONProduct> productList) {
+		this.productList = productList;
+	}
+
+	public String getNewCategoryID() {
+		return newCategoryID;
+	}
+
+	public void setNewCategoryID(String newCategoryID) {
+		this.newCategoryID = newCategoryID;
+	}
+
+	public String getNewProductID() {
+		return newProductID;
+	}
+
+	public void setNewProductID(String newProductID) {
+		this.newProductID = newProductID;
+	}
+
+	public String getNewDiscountID() {
+		return newDiscountID;
+	}
+
+	public void setNewDiscountID(String newDiscountID) {
+		this.newDiscountID = newDiscountID;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public String getSubTotalAmount() {
+		return subTotalAmount;
+	}
+
+	public void setSubTotalAmount(String subTotalAmount) {
+		this.subTotalAmount = subTotalAmount;
+	}
+
+	public String getTotalAmount() {
+		return totalAmount;
+	}
+
+	public void setTotalAmount(String totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+
+	public String getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(String discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	public String getTenderAmount() {
+		return tenderAmount;
+	}
+
+	public void setTenderAmount(String tenderAmount) {
+		this.tenderAmount = tenderAmount;
+	}
+
+	public String getChangeAmount() {
+		return changeAmount;
+	}
+
+	public void setChangeAmount(String changeAmount) {
+		this.changeAmount = changeAmount;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
+	}
+
+	public String getTransactionDate() {
+		return transactionDate;
+	}
+
+	public void setTransactionDate(String transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+	public List<JSONCategory> getCategoryList() {
+		return categoryList;
+	}
+
+	public void setCategoryList(List<JSONCategory> categoryList) {
+		this.categoryList = categoryList;
+	}
+
+	public List<JSONDiscount> getDiscountList() {
+		return discountList;
+	}
+
+	public void setDiscountList(List<JSONDiscount> discountList) {
+		this.discountList = discountList;
+	}
+
+	public List<JSONCart> getCartList() {
+		return cartList;
+	}
+
+	public void setCartList(List<JSONCart> cartList) {
+		this.cartList = cartList;
+	}
+
+	public JSONDiscount getDiscountPackage() {
+		return discountPackage;
+	}
+
+	public void setDiscountPackage(JSONDiscount discountPackage) {
+		this.discountPackage = discountPackage;
+	}
+
+	public List<JSONSalesHistory> getSalesHistoryList() {
+		return salesHistoryList;
+	}
+
+	public void setSalesHistoryList(List<JSONSalesHistory> salesHistoryList) {
+		this.salesHistoryList = salesHistoryList;
+	}
+
+}

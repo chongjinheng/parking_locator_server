@@ -1,0 +1,30 @@
+package com.softspace.pos.util;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+/**
+ * JSON Factory serialization and deserialization
+ * 
+ * @author original author
+ */
+public class JSONFactory {
+
+	public static Gson create() {
+		GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
+
+		gsonBuilder.setExclusionStrategies(new JsonExclusionStrategy(String.class));
+
+		return gsonBuilder.disableHtmlEscaping().create();
+	}
+
+	public static String toJson(final Object dto) {
+		return create().toJson(dto);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Object fromJSON(final String secret, @SuppressWarnings("rawtypes") final Class clazz) {
+		return create().fromJson(secret, clazz);
+	}
+
+}

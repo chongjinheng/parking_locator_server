@@ -1,0 +1,58 @@
+package com.softspace.test.service;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.service.PosUserService;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author Darren
+ */
+public class PosUserServiceTest extends BaseTestCase {
+
+	@Autowired
+	private PosUserService posUserService;
+
+	JSONServiceDTO dto = new JSONServiceDTO();
+
+	@Test
+	public void testDoSignUp() throws Exception {
+		dto = posUserService.doSignUp("My Store", "azli.abdullah@softspace.com.my", "cyc12345");
+		Assert.assertNotNull("store id is not returned", dto.getStoreId());
+	}
+
+	@Test
+	public void testDoLogIn() throws Exception {
+		dto = posUserService.doLogIn("lim_chengyang@hotmail.com", "cyc12345");
+		Assert.assertNotNull("store id is not returned", dto.getStoreId());
+		Assert.assertNotNull("login mode is not returned", dto.getLoginMode());
+		
+		if (dto.getLoginMode() == 10) {
+			Assert.assertNull("userProfile object exist", dto.getUserProfile());
+		} else if (dto.getLoginMode() == 20) {
+			Assert.assertNotNull("userProfile object is null", dto.getUserProfile());
+			Assert.assertEquals("wrong user's store name", "my store 1", dto.getUserProfile().getStoreName());
+		}
+	}
+
+	@Test
+	public void testDoForgotPass() throws Exception {
+		dto = posUserService.doForgotPass("lim_chengyang@hotmail.com");
+	}
+
+	@Test
+	public void testDoChangePass() throws Exception {
+		dto = posUserService.doChangePass("lim_chengyang@hotmail.com", "cyc12345", "aarief12345", false);
+	}
+
+	@Test
+	public void testDoUpdateProfile() throws Exception {
+		posUserService.doUpdateProfile("lim_chengyang@hotmail.com", 1l, "His Store", "SomeImageStringThatItsStringIsUnimaginableLong");
+	}
+}

@@ -1,0 +1,65 @@
+package com.softspace.pos.DAO;
+
+import java.util.Date;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Sales;
+/**
+ * 
+ * @author chengyang
+ */
+import org.springframework.beans.factory.annotation.Autowired;
+
+@Repository
+@Transactional(readOnly = true)
+public class CartItemDAOImpl extends GenericDAO implements CartItemDAO {
+
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private CrudDAO crudDAO;
+
+	@Autowired
+	private SalesDAO salesDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Override
+	public void createCustomCartItem(Long salesID, CartItem cartItem, Long storeID, String userEmail) {
+		CartItem tempCartItem = new CartItem();
+		tempCartItem.setCreatedBy(userEmail);
+		tempCartItem.setCreatedDate(new Date());
+		tempCartItem.setProductID(0l);
+		tempCartItem.setProductCode("**NO-CODE**");
+		tempCartItem.setProductName("**CUSTOM**");
+		tempCartItem.setAmount(cartItem.getAmount());
+		tempCartItem.setCustomAmountDescription(cartItem.getCustomAmountDescription().trim());
+		tempCartItem.setQuantity(cartItem.getQuantity());
+		Sales sales = salesDAO.getSalesById(salesID, storeID);
+		tempCartItem.setSales(sales);
+		crudDAO.create(tempCartItem);
+	}
+
+	@Override
+	public void createCartItem(Long salesID, CartItem cartItem, Long storeID, Product product, String userEmail) {
+		CartItem tempCartItem = new CartItem();
+		tempCartItem.setCreatedBy(userEmail);
+		tempCartItem.setCreatedDate(new Date());
+		tempCartItem.setProductID(product.getID());
+		tempCartItem.setQuantity(cartItem.getQuantity());
+		tempCartItem.setProductCode(product.getCode());
+		tempCartItem.setProductName(product.getName());
+		// calculate for total amount for the product and set
+		Long totalQ = 0l;
+		totalQ = product.getPrice() * cartItem.getQuantity();
+		tempCartItem.setAmount(totalQ);
+		Sales sales = salesDAO.getSalesById(salesID, storeID);
+		tempCartItem.setSales(sales);
+		crudDAO.create(tempCartItem);
+	}
+
+}

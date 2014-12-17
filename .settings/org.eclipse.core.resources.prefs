@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//src/test/java/com/jinheng/test/controller/MobileRequestControllerTest.java=UTF-8
+encoding//src/test/resources/emailTemplates/changePassword.vm=UTF-8
+encoding//src/test/resources/emailTemplates/forgotPassword.vm=UTF-8
+encoding//src/test/resources/emailTemplates/sendReceipt.vm=UTF-8
+encoding//src/test/resources/emailTemplates/signUp.vm=UTF-8

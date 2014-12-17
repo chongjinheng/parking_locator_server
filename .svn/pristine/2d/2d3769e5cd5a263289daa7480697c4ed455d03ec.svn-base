@@ -1,0 +1,357 @@
+package com.softspace.test.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+
+import com.softspace.pos.DAO.DiscountDAO;
+import com.softspace.pos.DAO.ProductDAO;
+import com.softspace.pos.DTO.JSONDTO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.DTOBeans.JSONCategory;
+import com.softspace.pos.DTOBeans.JSONDiscount;
+import com.softspace.pos.DTOBeans.JSONProduct;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.controller.MobileRequestController;
+import com.softspace.pos.enums.ServiceNames;
+import com.softspace.pos.util.JSONConverter;
+import com.softspace.pos.util.JSONFactory;
+
+/**
+ * A unit test for MobileRequestController.<br/>
+ * In this unit test, we can test a mobile service requested from mobile app.
+ * 
+ * @author azliabdullah
+ */
+public class MobileRequestControllerTest extends BaseTestCase {
+
+	@Autowired
+	private MobileRequestController ctlr = null;
+	private MockHttpServletRequest request;
+
+	@Autowired
+	private DiscountDAO discountDAO;
+
+	@Autowired
+	private ProductDAO productDAO;
+
+	@Autowired
+	private Properties testValue;
+
+	public void signUp() throws Exception {
+		/**
+		 * Here we are mocking the json from mobile <br/>
+		 * Fill in the dto according to JSON FIELD NAME from POS Service Integration doc.
+		 */
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.SIGN_UP.name());
+		dto.setStoreName(testValue.getProperty("storeName"));
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setPassword(testValue.getProperty("password"));
+
+		// Convert the dto to json string.
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void login() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.LOGIN.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setPassword(testValue.getProperty("password"));
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void forgotPass() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.FORGOT_PASSWORD.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void changePass() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.CHANGE_PASSWORD.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setPassword(testValue.getProperty("oldPassword"));
+		dto.setNewPassword(testValue.getProperty("newPassword"));
+		dto.setIsForceChangePassword(false);
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void getInventoryList() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.GET_INVENTORY_LIST.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setStoreID(testValue.getProperty("storeID"));
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void manageCategory() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.MANAGE_CATEGORY.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setStoreID(testValue.getProperty("storeID"));
+		dto.setAction(testValue.getProperty("action"));
+
+		String tempStringID = testValue.getProperty("categoryIDList");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		List<JSONCategory> jsonCategories = new ArrayList<JSONCategory>();
+
+		if (testValue.getProperty("action") == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONCategory category = new JSONCategory();
+				category.setName(tempNameStore[i]);
+				jsonCategories.add(category);
+			}
+			dto.setCategoryList(jsonCategories);
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONCategory category = new JSONCategory();
+				category.setID(tempIDStore[i]);
+				category.setName(tempNameStore[i]);
+				jsonCategories.add(category);
+			}
+			dto.setCategoryList(jsonCategories);
+		}
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void manageProduct() throws Exception {
+		// TODO null pointer no code
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.MANAGE_PRODUCT.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setStoreID(testValue.getProperty("storeID"));
+		dto.setAction(testValue.getProperty("action"));
+
+		String tempStringID = testValue.getProperty("productIDList");
+		String tempStringProID = testValue.getProperty("categoryIDList");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		String[] tempCatIDStore = tempStringProID.split(",");
+		List<JSONProduct> jsonProducts = new ArrayList<JSONProduct>();
+
+		if (testValue.getProperty("action") == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONProduct product = new JSONProduct();
+				product.setName(tempNameStore[i]);
+				List<String> categoryIDs = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryIDs.add(s);
+				}
+				product.setCategoryIDList(categoryIDs);
+				jsonProducts.add(product);
+			}
+			dto.setProductList(jsonProducts);
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONProduct product = new JSONProduct();
+				product.setID(tempIDStore[i]);
+				product.setName(tempNameStore[i]);
+				List<String> categoryIDs = new ArrayList<String>();
+				for (String s : tempCatIDStore) {
+					categoryIDs.add(s);
+				}
+				product.setCategoryIDList(categoryIDs);
+				jsonProducts.add(product);
+			}
+			dto.setProductList(jsonProducts);
+		}
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void manageDiscount() throws Exception {
+		// TODO null pointer no value
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.MANAGE_DISCOUNT.name());
+		dto.setUserEmail(testValue.getProperty("userEmail"));
+		dto.setStoreID(testValue.getProperty("storeID"));
+		dto.setAction(testValue.getProperty("action"));
+
+		String tempStringID = testValue.getProperty("discountIDList");
+		String tempStringName = testValue.getProperty("name");
+		String[] tempIDStore = tempStringID.split(",");
+		String[] tempNameStore = tempStringName.split(",");
+		List<JSONDiscount> jsonDiscounts = new ArrayList<JSONDiscount>();
+
+		if (testValue.getProperty("action") == "0") {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONDiscount discount = new JSONDiscount();
+				discount.setName(tempNameStore[i]);
+				jsonDiscounts.add(discount);
+			}
+			dto.setDiscountList(jsonDiscounts);
+		} else {
+			for (int i = 0; i < tempIDStore.length; i++) {
+				JSONDiscount discount = new JSONDiscount();
+				discount.setID(tempIDStore[i]);
+				discount.setName(tempNameStore[i]);
+				jsonDiscounts.add(discount);
+			}
+			dto.setDiscountList(jsonDiscounts);
+		}
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+	}
+
+	public void updateUserProfile() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.UPDATE_USER_PROFILE.name());
+		dto.setEmail("lim_chengyang@hotmail.com");
+		dto.setStoreID("1");
+		dto.setStoreName("RANGERNOO");
+		dto.setStoreImage("NO");
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+
+	}
+
+	public void confirmSale() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.CONFIRM_SALES.name());
+		dto.setEmail("lim_chengyang@hotmail.com");
+		dto.setStoreID("1");
+
+		dto.setPaymentType("0");
+		// dto.setSubTotalAmount(500l);
+		// dto.setTotalAmount(550l);
+		// dto.setTenderAmount(1000l);
+
+		// dto.setChangeAmount(450l);
+
+		// check discount (NOT CUSTOM)
+		// dto.setDiscountAmount(30l);
+		// dto.setChangeAmount(480l);
+		// dto.setDiscountPackage(discountDAO.getDiscountById(1l));
+
+		// check discount (CUSTOM)
+		// dto.setDiscountAmount(50l);
+		// dto.setChangeAmount(500l);
+		// Discount discount = new Discount();
+		// discount.setId(0l);
+		// discount.setName("Aarief's order");
+		// discount.setType("1");
+		// discount.setValue(0.5);
+		//
+		// dto.setDiscountPackage(discount);
+
+		List<CartItem> cartList = new ArrayList<CartItem>();
+		CartItem cI = new CartItem();
+		cI.setProductID(1l);
+		cI.setQuantity(2);
+		cartList.add(cI);
+		CartItem cI1 = new CartItem();
+		cI1.setProductID(2l);
+		cI1.setQuantity(1);
+		// cI1.setCustomAmount(400l);
+		// cI1.setCustomAmountDescription("BULLSHITS");
+		cartList.add(cI1);
+
+		// dto.setCartList(cartList);
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+
+	}
+
+	public void sendReciept() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.SEND_RECEIPT.name());
+		dto.setEmail("lim_chengyang@hotmail.com");
+		dto.setStoreID("1");
+		dto.setEmail("jinheng.chong@softspace.com.my");
+		dto.setSalesID("1");
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+
+	}
+
+	public void salesHistory() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.GET_SALES_HISTORY.name());
+		dto.setEmail("lim_chengyang@hotmail.com");
+		dto.setStoreID("1");
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+
+	}
+
+	public void salesHistoryDetails() throws Exception {
+		JSONDTO dto = new JSONDTO();
+		dto.setServiceName(ServiceNames.GET_SALES_HISTORY_DETAILS.name());
+		dto.setEmail("lim_chengyang@hotmail.com");
+		dto.setStoreID("1");
+		dto.setSalesID("1");
+
+		JSONServiceDTO dtofm = JSONConverter.fromMobile(dto);
+		String jsonFromMobile = JSONFactory.toJson(dtofm);
+		request = newMobileRequest();
+		ctlr.doProcessMobileRequest(request, jsonFromMobile, newResponse(), newLocale("en"));
+
+	}
+
+	@Test
+	public void testService() throws Exception {
+		/** User Services **/
+		// signUp();
+		// login();
+		// forgotPass();
+		// changePass();
+		// getInventoryList();
+		// manageCategory();
+		// manageProduct();
+		manageDiscount();
+		// confirmSale();
+		// sendReciept();
+		// salesHistory();
+		// salesHistoryDetails();
+	}
+}

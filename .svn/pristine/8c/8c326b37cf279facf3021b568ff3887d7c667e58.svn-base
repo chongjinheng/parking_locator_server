@@ -1,0 +1,15 @@
+package com.softspace.pos.DAO;
+
+import com.softspace.pos.bean.PosUser;
+
+/**
+ * Pos User DAO Class
+ * 
+ * @author original author
+ * @author Darren
+ */
+public interface PosUserDAO {
+
+	public PosUser getUserByEmail(String email);
+
+}

@@ -1,0 +1,34 @@
+package com.softspace.test.dao;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.softspace.pos.DAO.PosUserDAO;
+import com.softspace.pos.bean.PosUser;
+import com.softspace.test.controller.BaseTestCase;
+
+/**
+ * A unit test for PosUserDao.
+ * 
+ * @author azliabdullah
+ */
+public class PosUserDaoTest extends BaseTestCase {
+
+	@Autowired
+	private PosUserDAO posUserDAO;
+
+	private String email = "lim_chengyang@hotmail.com";
+
+	@Test
+	public void testGetUserByEmail() throws Exception {
+		PosUser posUser = posUserDAO.getUserByEmail(email);
+		Assert.assertNotNull("Pos User with this email not exist", posUser);
+
+		// Test email not exist
+		// posUser = posUserDAO.getUserByEmail(emailNotExist);
+		// Assert.assertNull("Pos User with this email exist", posUser);
+
+	}
+}

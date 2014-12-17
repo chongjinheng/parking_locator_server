@@ -1,0 +1,433 @@
+package com.softspace.pos.util;
+
+import java.sql.Date;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.softspace.pos.DTO.JSONDTO;
+import com.softspace.pos.DTO.JSONServiceDTO;
+import com.softspace.pos.DTOBeans.JSONCart;
+import com.softspace.pos.DTOBeans.JSONCategory;
+import com.softspace.pos.DTOBeans.JSONDiscount;
+import com.softspace.pos.DTOBeans.JSONProduct;
+import com.softspace.pos.DTOBeans.JSONSalesHistory;
+import com.softspace.pos.bean.CartItem;
+import com.softspace.pos.bean.Category;
+import com.softspace.pos.bean.Discount;
+import com.softspace.pos.bean.Product;
+import com.softspace.pos.bean.Sales;
+import com.softspace.pos.bean.Store;
+import com.softspace.pos.enums.ErrorStatus;
+import com.softspace.pos.exceptions.SSPosMobileRequestException;
+
+/**
+ * A layer to convert all resource into appropriate formate before processing it<br>
+ * Example: ID convert from String to Long from before servicing data from front end
+ * 
+ * @param All dto fields
+ * @author chongjinheng
+ * @author chengyang
+ */
+public class JSONConverter {
+
+	private static final Logger logger = LoggerFactory.getLogger(JSONConverter.class);
+
+	/**
+	 * Convert all String values into double or long or double before entering service
+	 * 
+	 * @author chengyang
+	 * @return dto
+	 */
+	public static JSONServiceDTO fromMobile(JSONDTO dto) throws NumberFormatException, NullPointerException, Exception {
+		JSONServiceDTO runningDTO = new JSONServiceDTO();
+
+		try {
+			/****** INIT ******/
+			runningDTO.setDevice(dto.getDevice());
+			runningDTO.setPlatform(dto.getPlatform());
+			runningDTO.setVersionNo(dto.getVersionNo());
+			runningDTO.setPkXML(dto.getPkXML());
+
+			/****** GENERAL ******/
+			runningDTO.setServiceName(dto.getServiceName());
+			runningDTO.setError(dto.getError());
+			runningDTO.setLanguage(dto.getLanguage());
+			runningDTO.setSessionKey(dto.getSessionKey());
+
+			/***** IDs *****/
+			if (dto.getStoreID() != null)
+				runningDTO.setStoreId(Long.valueOf(dto.getStoreID()));
+			if (dto.getProductID() != null)
+				runningDTO.setProductId(Long.valueOf(dto.getProductID()));
+			if (dto.getCategoryID() != null)
+				runningDTO.setCategoryId(Long.valueOf(dto.getCategoryID()));
+			if (dto.getProductCategoryReferenceID() != null)
+				runningDTO.setProductCategoryReferenceId(Long.valueOf(dto.getProductCategoryReferenceID()));
+			if (dto.getCartItemID() != null)
+				runningDTO.setCartItemId(Long.valueOf(dto.getCartItemID()));
+			if (dto.getDiscountID() != null)
+				runningDTO.setDiscountId(Long.valueOf(dto.getDiscountID()));
+			if (dto.getForgotPassSessionID() != null)
+				runningDTO.setForgotPassSessionId(Long.valueOf(dto.getForgotPassSessionID()));
+			if (dto.getSalesID() != null)
+				runningDTO.setSalesId(Long.valueOf(dto.getSalesID()));
+
+			/****** ACTIVATION/LOGIN ******/
+			runningDTO.setEmail(dto.getUserEmail());
+			runningDTO.setCustomerEmail(dto.getEmail());
+			runningDTO.setStoreName(dto.getStoreName());
+			runningDTO.setPassword(dto.getPassword());
+			runningDTO.setNewPassword(dto.getNewPassword());
+			runningDTO.setIsForceChangePassword(dto.getIsForceChangePassword());
+			runningDTO.setLoginMode(dto.getLoginMode());
+			// unused
+			runningDTO.setUserProfile(dto.getUserProfile());
+
+			/**** STORE & INVENTORY ****/
+			runningDTO.setStoreImage(dto.getStoreImage());
+			runningDTO.setAction(dto.getAction());
+
+			// List of productID need to convert 1 by 1 from
+			if (dto.getProductIDList() != null) {
+				List<String> tempPIDList = dto.getProductIDList();
+				List<Long> pIDList = new ArrayList<Long>();
+				for (String it : tempPIDList) {
+					pIDList.add(Long.valueOf(it));
+				}
+				runningDTO.setProductIDList(pIDList);
+			}
+
+			// dig from Product List
+			if (dto.getProductList() != null) {
+				List<Product> tempProducts = new ArrayList<Product>();
+				List<JSONProduct> jP = dto.getProductList();
+				for (JSONProduct jPit : jP) {
+					Product product = new Product();
+					if (jPit.getId() != null) {
+						product.setID(Long.valueOf(jPit.getId()));
+					}
+					product.setCode(jPit.getCode());
+					product.setName(jPit.getName());
+					product.setDescription(jPit.getDescription());
+					if (jPit.getPrice() != null) {
+						String s = jPit.getPrice().replace(",", "");
+						Double tempPrice = (Double.valueOf(s) * 100);
+						Long tempPrice1 = tempPrice.longValue();
+						product.setPrice(tempPrice1);
+					}
+					product.setThumbnail(jPit.getThumbnail());
+
+					List<String> tempCategoryList = jPit.getCategoryIDList();
+					List<Long> tempRealCategoryList = new ArrayList<Long>();
+
+					if (tempCategoryList != null) {
+						for (String tCLit : tempCategoryList) {
+							tempRealCategoryList.add(Long.valueOf(tCLit));
+						}
+						product.setCategoryIDList(tempRealCategoryList);
+					}
+					tempProducts.add(product);
+				}
+				runningDTO.setProductList(tempProducts);
+			}
+
+			// dig category list
+
+			if (dto.getCategoryList() != null) {
+				List<Category> tempCategoryList = new ArrayList<Category>();
+				List<JSONCategory> tempCL = dto.getCategoryList();
+
+				if (dto.getCategoryList() != null) {
+					for (JSONCategory jC : tempCL) {
+						Category category = new Category();
+						if (jC.getId() != null) {
+							category.setID(Long.valueOf(jC.getId()));
+						}
+						if (jC.getName() != null) {
+							category.setName(jC.getName());
+						}
+						tempCategoryList.add(category);
+					}
+					runningDTO.setCategoryList(tempCategoryList);
+				}
+			}
+
+			// dig Discount Package list
+			if (dto.getDiscountPackageList() != null) {
+				List<Discount> tempDiscountPackageList = new ArrayList<Discount>();
+				List<JSONDiscount> tempDL = dto.getDiscountPackageList();
+
+				for (JSONDiscount jD : tempDL) {
+					Discount discount = new Discount();
+					if (jD.getId() != null) {
+						discount.setID(Long.valueOf(jD.getId()));
+					}
+					discount.setName(jD.getName());
+					discount.setType(jD.getType());
+					String s = jD.getValue().replace(",", "");
+					discount.setValue(Double.valueOf(s));
+					tempDiscountPackageList.add(discount);
+				}
+				runningDTO.setDiscountPackageList(tempDiscountPackageList);
+			}
+
+			// dig Cart list
+			if (dto.getCartList() != null) {
+				List<CartItem> tempCartList = new ArrayList<CartItem>();
+				List<JSONCart> tempCL = dto.getCartList();
+
+				for (JSONCart jCL : tempCL) {
+					CartItem cartItem = new CartItem();
+					cartItem.setProductID(Long.valueOf(jCL.getProductID()));
+					cartItem.setCustomAmountDescription(jCL.getCustomAmountDescription());
+					if (jCL.getCustomAmount() != null) {
+						String s = jCL.getCustomAmount().replace(",", "");
+						Double tempCA = Double.valueOf(s);
+						cartItem.setCustomAmount(tempCA.longValue() * 100);
+					}
+					cartItem.setQuantity(jCL.getQuantity());
+					tempCartList.add(cartItem);
+				}
+				runningDTO.setCartList(tempCartList);
+			}
+
+			runningDTO.setPaymentType(dto.getPaymentType());
+
+			if (dto.getSubTotalAmount() != null) {
+				String s = dto.getSubTotalAmount().replace(",", "");
+				Double tempSTA = Double.valueOf(s);
+				runningDTO.setSubTotalAmount(tempSTA.longValue() * 100);
+			}
+
+			if (dto.getTotalAmount() != null) {
+				String s = dto.getTotalAmount().replace(",", "");
+				Double tempTA = Double.valueOf(s);
+				runningDTO.setTotalAmount(tempTA.longValue() * 100);
+			}
+
+			if (dto.getDiscountAmount() != null) {
+				String s = dto.getDiscountAmount().replace(",", "");
+				Double tempDA = Double.valueOf(s);
+				runningDTO.setDiscountAmount(tempDA.longValue() * 100);
+			}
+
+			if (dto.getTenderAmount() != null) {
+				String s = dto.getTenderAmount().replace(",", "");
+				Double tempTenA = Double.valueOf(s);
+				runningDTO.setTenderAmount(tempTenA.longValue() * 100);
+			}
+
+			if (dto.getSubTotalAmount() != null) {
+				String s = dto.getChangeAmount().replace(",", "");
+				Double tempCA = Double.valueOf(s);
+				runningDTO.setChangeAmount(tempCA.longValue() * 100);
+			}
+
+			if (dto.getDiscountPackage() != null) {
+				Discount tempDiscountPackage = new Discount();
+				tempDiscountPackage.setID(Long.valueOf(dto.getDiscountPackage().getId()));
+				tempDiscountPackage.setName(dto.getDiscountPackage().getName());
+				tempDiscountPackage.setType(dto.getDiscountPackage().getType());
+				String s = dto.getDiscountPackage().getValue().replace(",", "");
+				tempDiscountPackage.setValue(Double.valueOf(s));
+				runningDTO.setDiscountPackage(tempDiscountPackage);
+			}
+
+			runningDTO.setReceiptNumber(dto.getReceiptNumber());
+
+			if (dto.getTransactionDate() != null) {
+				runningDTO.setTransactionDate(Date.valueOf(dto.getTransactionDate()));
+			}
+
+		} catch (NumberFormatException e) {
+			throw e;
+		} catch (NullPointerException e) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		} catch (Exception e) {
+			throw e;
+		}
+		logger.info("Data converted from mobile to service successfully");
+		return runningDTO;
+
+	}
+
+	/**
+	 * Convert all Long and double values into String before flushing back to mobile
+	 * 
+	 * @author chongjinheng
+	 * @return dto
+	 */
+	public static JSONDTO toMobile(JSONServiceDTO dto) throws NumberFormatException, NullPointerException, Exception {
+		JSONDTO runningDTO = new JSONDTO();
+		DecimalFormat df = new DecimalFormat("###,###,##0.00");
+		try {
+
+			/*** INIT ***/
+			runningDTO.setPkXML(dto.getPkXML());
+			runningDTO.setError(dto.getError());
+			runningDTO.setLanguage(dto.getLanguage());
+			runningDTO.setSessionKey(dto.getSessionKey());
+			/*** IDs ***/
+			if (dto.getStoreId() != null) {
+				runningDTO.setStoreID(dto.getStoreId().toString());
+			}
+
+			if (dto.getSalesId() != null) {
+				runningDTO.setSalesID(dto.getSalesId().toString());
+			}
+			/*** LOGIN ***/
+
+			runningDTO.setLoginMode(dto.getLoginMode());
+
+			if (dto.getUserProfile() != null) {
+				Store store = dto.getUserProfile();
+				store.setStoreName(dto.getUserProfile().getStoreName());
+				store.setStoreImage(dto.getUserProfile().getStoreImage());
+				runningDTO.setUserProfile(store);
+			}
+
+			/*** STORE & INVENTORY ***/
+			if (dto.getProductList() != null) {
+				List<JSONProduct> jsonProducts = new ArrayList<JSONProduct>();
+				for (Product pro : dto.getProductList()) {
+					JSONProduct jsonProduct = new JSONProduct();
+					jsonProduct.setID(pro.getID().toString());
+					jsonProduct.setCode(pro.getCode());
+					jsonProduct.setName(pro.getName());
+					Double tempPrice = Long.valueOf(pro.getPrice()).doubleValue();
+					tempPrice /= 100;
+					jsonProduct.setPrice(df.format(tempPrice));
+					jsonProduct.setThumbnail(pro.getThumbnail());
+
+					if (pro.getCategoryIDList() != null) {
+						List<String> tempCatID = new ArrayList<String>();
+						for (Long catID : pro.getCategoryIDList()) {
+							tempCatID.add(catID.toString());
+						}
+						jsonProduct.setCategoryIDList(tempCatID);
+
+						jsonProducts.add(jsonProduct);
+					}
+				}
+				runningDTO.setProductList(jsonProducts);
+			}
+
+			if (dto.getCategoryList() != null) {
+				List<JSONCategory> jsonCategories = new ArrayList<JSONCategory>();
+				for (Category cat : dto.getCategoryList()) {
+					JSONCategory jsonCategory = new JSONCategory();
+					jsonCategory.setID(cat.getID().toString());
+					jsonCategory.setName(cat.getName());
+
+					if (cat.getProductIDList() != null) {
+						List<String> tempProID = new ArrayList<String>();
+						for (Long proID : cat.getProductIDList()) {
+							tempProID.add(proID.toString());
+						}
+						jsonCategory.setProductIDList(tempProID);
+					}
+					jsonCategories.add(jsonCategory);
+				}
+				runningDTO.setCategoryList(jsonCategories);
+			}
+
+			if (dto.getDiscountList() != null) {
+				List<JSONDiscount> jsonDiscounts = new ArrayList<JSONDiscount>();
+				for (Discount dis : dto.getDiscountList()) {
+					JSONDiscount jsonDiscount = new JSONDiscount();
+					jsonDiscount.setID(dis.getID().toString());
+					jsonDiscount.setName(dis.getName());
+					jsonDiscount.setType(dis.getType());
+					jsonDiscount.setValue(dis.getValue().toString());
+					jsonDiscount.setValue(df.format(dis.getValue()));
+					jsonDiscounts.add(jsonDiscount);
+				}
+				runningDTO.setDiscountList(jsonDiscounts);
+			}
+
+			if (dto.getNewCategoryID() != null) {
+				runningDTO.setNewCategoryID(dto.getNewCategoryID().toString());
+			}
+			if (dto.getNewProductID() != null) {
+				runningDTO.setNewProductID(dto.getNewProductID().toString());
+			}
+			if (dto.getNewDiscountID() != null) {
+				runningDTO.setNewDiscountID(dto.getNewDiscountID().toString());
+			}
+
+			/*** SALES ***/
+			if (dto.getCartList() != null) {
+				List<JSONCart> jsonCarts = new ArrayList<JSONCart>();
+				for (CartItem cart : dto.getCartList()) {
+					JSONCart jsonCart = new JSONCart();
+					jsonCart.setProductID(cart.getProductID().toString());
+					jsonCart.setProductCode(cart.getProductCode());
+					jsonCart.setCustomAmountDescription(cart.getCustomAmountDescription());
+					jsonCart.setQuantity(cart.getQuantity());
+
+					Double tempSubTotal = Long.valueOf(cart.getSubTotal()).doubleValue();
+					tempSubTotal /= 100;
+					jsonCart.setSubtotal(df.format(tempSubTotal));
+					jsonCarts.add(jsonCart);
+				}
+				runningDTO.setCartList(jsonCarts);
+			}
+
+			runningDTO.setPaymentType(dto.getPaymentType());
+
+			if (dto.getSubTotalAmount() != null) {
+				Double tempSubTotalAmount = Long.valueOf(dto.getSubTotalAmount()).doubleValue();
+				tempSubTotalAmount /= 100;
+				runningDTO.setSubTotalAmount(df.format(tempSubTotalAmount));
+			}
+
+			if (dto.getTotalAmount() != null) {
+				Double tempTotalAmount = Long.valueOf(dto.getTotalAmount()).doubleValue();
+				tempTotalAmount /= 100;
+				runningDTO.setTotalAmount(df.format(tempTotalAmount));
+			}
+
+			if (dto.getDiscountAmount() != null) {
+				Double tempDiscountAmount = Long.valueOf(dto.getDiscountAmount()).doubleValue();
+				tempDiscountAmount /= 100;
+				runningDTO.setDiscountAmount(df.format(tempDiscountAmount));
+			}
+
+			runningDTO.setReceiptNumber(dto.getReceiptNumber());
+
+			if (dto.getSalesHistoryList() != null) {
+				List<JSONSalesHistory> jsonSalesHistories = new ArrayList<JSONSalesHistory>();
+				for (Sales sales : dto.getSalesHistoryList()) {
+					JSONSalesHistory jsonSalesHistory = new JSONSalesHistory();
+					jsonSalesHistory.setSalesID(sales.getSalesID().toString());
+					jsonSalesHistory.setReceiptNumber(sales.getReceiptNumber());
+					jsonSalesHistory.setPaymentType(sales.getPaymentType());
+
+					Double tempTotalAmount1 = Long.valueOf(sales.getTotalAmount()).doubleValue();
+					tempTotalAmount1 /= 100;
+					jsonSalesHistory.setTotalAmount(df.format(tempTotalAmount1));
+
+					jsonSalesHistory.setTransactionDate(Formatters.formatOutputDate(sales.getTransactionDate()));
+					jsonSalesHistories.add(jsonSalesHistory);
+				}
+				runningDTO.setSalesHistoryList(jsonSalesHistories);
+			}
+
+			if (dto.getTransactionDate() != null) {
+				runningDTO.setTransactionDate(dto.getTransactionDate().toString());
+			}
+		} catch (NumberFormatException e) {
+			throw e;
+		} catch (NullPointerException e) {
+			throw new SSPosMobileRequestException(ErrorStatus.NULL_FIELD_ERROR, ErrorStatus.NULL_FIELD_ERROR.getDefaultMessage());
+		} catch (Exception e) {
+			throw e;
+		}
+		logger.info("Data converted from service to mobile successfully");
+		return runningDTO;
+	}
+}

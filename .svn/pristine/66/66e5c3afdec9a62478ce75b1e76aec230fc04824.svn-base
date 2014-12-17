@@ -1,0 +1,70 @@
+package com.softspace.pos.bean;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+/**
+ * Store table that contain all the details of the store. Contain lists of products, categories, discounts and sales<br>
+ * Field: name, image, List categories, List products, List discounts, List sales
+ * 
+ * @param String, String, List, List, List, List
+ * @author chengyang
+ */
+
+@Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "NAME", "IMAGE" }) })
+public class Store extends BasicTable {
+
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	private String name;
+
+	@Lob
+	private String image;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Category> categories;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Product> products;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Discount> discounts;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
+	private List<Sales> sales;
+
+	public long getID() {
+		return id;
+	}
+
+	public String getStoreName() {
+		return name;
+	}
+
+	public void setStoreName(String storageName) {
+		this.name = storageName;
+	}
+
+	public String getStoreImage() {
+		return image;
+	}
+
+	public void setStoreImage(String storageImage) {
+		this.image = storageImage;
+	}
+
+}
