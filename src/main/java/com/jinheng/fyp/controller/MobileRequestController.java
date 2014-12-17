@@ -68,8 +68,6 @@ public class MobileRequestController extends AbstractController {
 			throws Exception {
 		String serviceName = null;
 		try {
-			long startTime = System.nanoTime();
-
 			// TODO get rsa3, senderPublicKey from request's session. They are used for encryption/decryption. Not in Phase 1
 
 			StringBuilder newJsonFromMobile = Encryptor.hidePasswordFromMobile(jsonFromMobile);
@@ -142,10 +140,6 @@ public class MobileRequestController extends AbstractController {
 			// flushResponse will throw an IOException if client connection is dropped
 			flushResponse(response, respObj);
 
-			long endTime = System.nanoTime();
-			double timeInSeconds = (endTime - startTime);
-			logger.debug("Server response time: " + timeInSeconds + "  nano seconds");
-
 		} catch (MyMobileRequestException e) {
 			try {
 				if (e.getErrorStatus() == ErrorStatus.SESSION_TIMED_OUT) {
@@ -215,7 +209,7 @@ public class MobileRequestController extends AbstractController {
 				break;
 			case FB_LOGIN:
 				logger.debug("Entering {} service", ServiceNames.FB_LOGIN);
-				dto = parkingUserService.doFBLogin(dto.getFacebookUID());
+				dto = parkingUserService.doFBLogin(dto.getFacebookUID(), dto.getName());
 				break;
 
 			default:

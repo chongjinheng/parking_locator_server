@@ -14,7 +14,7 @@ public interface ParkingUserService {
 
 	public JSONServiceDTO doLogIn(String email, String password) throws Exception;
 
-	public JSONServiceDTO doFBLogin(String facebookUID) throws Exception;
+	public JSONServiceDTO doFBLogin(String facebookUID, String userName) throws Exception;
 
 	// public JSONServiceDTO doForgotPassword(String email) throws Exception;
 	//

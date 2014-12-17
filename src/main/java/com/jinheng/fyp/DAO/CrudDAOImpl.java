@@ -17,8 +17,9 @@ public class CrudDAOImpl<T> extends GenericDAO implements CrudDAO<T> {
 
 	@Override
 	@Transactional(readOnly = false)
-	public long create(Object object) {
-		return (Long) getSessionFactory().save(object);
+	public Long create(Object object) {
+		Integer i = (Integer) getSessionFactory().save(object);
+		return i.longValue();
 	}
 
 	@Override

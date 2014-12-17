@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public interface CrudDAO<T> {
 
-	public long create(Object object);
+	public Long create(Object object);
 
 	public void update(Object object);
 

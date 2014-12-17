@@ -19,7 +19,7 @@ import com.jinheng.fyp.bean.ParkingUser;
  * @author chengyang
  */
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 public class ParkingUserDAOImpl extends GenericDAO implements ParkingUserDAO {
 
 	@SuppressWarnings("rawtypes")
@@ -42,13 +42,23 @@ public class ParkingUserDAOImpl extends GenericDAO implements ParkingUserDAO {
 
 	@Override
 	public Long createPosUser(String userEmail, String hashedPassword, Long storeID) {
-		ParkingUser posUser = new ParkingUser();
-		posUser.setCreatedBy(userEmail);
-		posUser.setEmail(userEmail);
-		posUser.setCreatedDate(new Date());
-		posUser.setPassword(hashedPassword);
+		ParkingUser parkingUser = new ParkingUser();
+		parkingUser.setCreatedBy(userEmail);
+		parkingUser.setEmail(userEmail);
+		parkingUser.setCreatedDate(new Date());
+		parkingUser.setPassword(hashedPassword);
+		return crudDAO.create(parkingUser);
+	}
 
-		return crudDAO.create(posUser);
+	@Override
+	public Long createFacebookUser(String facebookUID, String userName) {
+		ParkingUser parkingUser = new ParkingUser();
+		parkingUser.setCreatedBy(userName);
+		parkingUser.setCreatedDate(new Date());
+		parkingUser.setFacebookUID(facebookUID);
+		parkingUser.setUserName(userName);
+		return crudDAO.create(parkingUser);
+
 	}
 
 	@Override

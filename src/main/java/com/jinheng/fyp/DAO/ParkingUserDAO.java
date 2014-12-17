@@ -21,4 +21,6 @@ public interface ParkingUserDAO {
 
 	public void updatePosUserPassword(String userEmail, String newHashedPassword);
 
+	public Long createFacebookUser(String facebookUID, String userName);
+
 }

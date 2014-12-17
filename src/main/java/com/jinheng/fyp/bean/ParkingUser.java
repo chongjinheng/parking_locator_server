@@ -16,13 +16,14 @@ public class ParkingUser extends BasicTable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer userID;
 
-	@Column(unique = true, nullable = false)
+	@Column(unique = true)
 	private String email;
 
 	private String userName;
 
 	private String password;
 
+	@Column(unique = true)
 	private String facebookUID;
 
 	@OneToOne

@@ -163,7 +163,7 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 	}
 
 	@Override
-	public JSONServiceDTO doFBLogin(String facebookUID) throws Exception {
+	public JSONServiceDTO doFBLogin(String facebookUID, String userName) throws Exception {
 		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
 		try {
 			/** Sanity Check **/
@@ -171,9 +171,10 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 
 			ParkingUser posUser = posUserDAO.getUserByFacebookUID(facebookUID);
 			if (posUser == null) {
-				// TODO change to create a new user if not exist
+				posUserDAO.createFacebookUser(facebookUID, userName);
+				logger.debug("New facebook user created");
 			}
-			logger.debug("Facebook ID" + facebookUID + " found in database");
+			logger.debug("Logged in with facebook");
 			dtoToReturn.setLoginMode(2);
 			return dtoToReturn;
 
