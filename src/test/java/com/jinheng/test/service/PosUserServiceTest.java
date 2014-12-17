@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.jinheng.fyp.DTO.JSONServiceDTO;
-import com.jinheng.fyp.service.PosUserService;
+import com.jinheng.fyp.service.ParkingUserService;
 import com.jinheng.test.controller.BaseTestCase;
 
 /**
@@ -18,7 +18,7 @@ import com.jinheng.test.controller.BaseTestCase;
 public class PosUserServiceTest extends BaseTestCase {
 
 	@Autowired
-	private PosUserService posUserService;
+	private ParkingUserService posUserService;
 
 	@Value("${userEmail}")
 	private String userEmail;

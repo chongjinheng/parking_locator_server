@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.jinheng.fyp.DAO.PosUserDAO;
+import com.jinheng.fyp.DAO.ParkingUserDAO;
 import com.jinheng.fyp.DTO.JSONServiceDTO;
 import com.jinheng.fyp.enums.ErrorStatus;
 import com.jinheng.fyp.enums.ServiceNames;
@@ -23,7 +23,7 @@ import com.jinheng.fyp.util.JSONFactory;
 public abstract class AbstractController {
 
 	@Autowired
-	private PosUserDAO posUserDAO;
+	private ParkingUserDAO posUserDAO;
 
 	// @Autowired
 	// private SessionService sessionService;

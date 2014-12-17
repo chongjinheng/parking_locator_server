@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.jinheng.fyp.DAO.ForgotPasswordSessionDAO;
-import com.jinheng.fyp.DAO.PosUserDAO;
+import com.jinheng.fyp.DAO.ParkingUserDAO;
 import com.jinheng.fyp.bean.ForgotPasswordSession;
 import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.test.controller.BaseTestCase;
@@ -17,7 +17,7 @@ public class ForgotPasswordSessionDaoTest extends BaseTestCase {
 	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;
 
 	@Autowired
-	private PosUserDAO posUserDAO;
+	private ParkingUserDAO posUserDAO;
 
 	@Value("${userEmail}")
 	private String userEmail;

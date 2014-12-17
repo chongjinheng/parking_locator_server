@@ -24,7 +24,7 @@ import com.jinheng.fyp.enums.ServiceNames;
 import com.jinheng.fyp.exceptions.MyMobileRequestException;
 import com.jinheng.fyp.exceptions.MyRecoverableException;
 import com.jinheng.fyp.exceptions.SessionTimedOutException;
-import com.jinheng.fyp.service.PosUserService;
+import com.jinheng.fyp.service.ParkingUserService;
 import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.fyp.util.JSONFactory;
 
@@ -45,7 +45,7 @@ public class MobileRequestController extends AbstractController {
 	// TODO later phase? smartdeviceversioning
 
 	@Autowired
-	private PosUserService posUserService;
+	private ParkingUserService parkingUserService;
 
 	// @Autowired
 	// private SessionService sessionService;
@@ -169,7 +169,6 @@ public class MobileRequestController extends AbstractController {
 			flushResponse(response, getExceptionMessage(locale, ErrorStatus.SESSION_TIMED_OUT, serviceName));
 		} catch (Exception e) {
 			try {
-
 				logger.error("Error in method invocation: ", e);
 				response.setStatus(HttpServletResponse.SC_REQUEST_TIMEOUT);
 
@@ -198,7 +197,7 @@ public class MobileRequestController extends AbstractController {
 				break;
 			case LOGIN:
 				logger.debug("Entering {} service", ServiceNames.LOGIN);
-				dto = posUserService.doLogIn(dto.getEmail(), dto.getPassword());
+				dto = parkingUserService.doLogIn(dto.getEmail(), dto.getPassword());
 				// persistToSession(dto, request, dto.getEmail());
 				logger.debug("Current user set in session");
 				break;
@@ -213,6 +212,10 @@ public class MobileRequestController extends AbstractController {
 			case CHANGE_PASSWORD:
 				logger.debug("Entering {} service", ServiceNames.CHANGE_PASSWORD);
 				// dto = posUserService.doChangePassword(dto.getEmail(), dto.getOldPassword(), dto.getNewPassword(), dto.isForceChangePassword());
+				break;
+			case FB_LOGIN:
+				logger.debug("Entering {} service", ServiceNames.FB_LOGIN);
+				dto = parkingUserService.doFBLogin(dto.getFacebookUID());
 				break;
 
 			default:

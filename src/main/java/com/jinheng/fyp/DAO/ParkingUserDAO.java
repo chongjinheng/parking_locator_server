@@ -9,9 +9,11 @@ import com.jinheng.fyp.bean.ParkingUser;
  * @author Darren
  * @author chengyang
  */
-public interface PosUserDAO {
+public interface ParkingUserDAO {
 
 	public ParkingUser getUserByEmail(String email);
+
+	public ParkingUser getUserByFacebookUID(String UID);
 
 	public Long createPosUser(String userEmail, String hashedPassword, Long storeID);
 

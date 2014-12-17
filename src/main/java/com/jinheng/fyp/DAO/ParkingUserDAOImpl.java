@@ -20,7 +20,7 @@ import com.jinheng.fyp.bean.ParkingUser;
  */
 @Repository
 @Transactional(readOnly = true)
-public class PosUserDAOImpl extends GenericDAO implements PosUserDAO {
+public class ParkingUserDAOImpl extends GenericDAO implements ParkingUserDAO {
 
 	@SuppressWarnings("rawtypes")
 	@Autowired
@@ -32,6 +32,12 @@ public class PosUserDAOImpl extends GenericDAO implements PosUserDAO {
 	@Override
 	public ParkingUser getUserByEmail(String email) {
 		return (ParkingUser) getSessionFactory().createCriteria(ParkingUser.class).add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("email", email)).uniqueResult();
+	}
+
+	@Override
+	public ParkingUser getUserByFacebookUID(String UID) {
+		return (ParkingUser) getSessionFactory().createCriteria(ParkingUser.class).add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("facebookUID", UID))
+				.uniqueResult();
 	}
 
 	@Override
@@ -69,4 +75,5 @@ public class PosUserDAOImpl extends GenericDAO implements PosUserDAO {
 		posUser.setPassword(newHashedPassword);
 		crudDAO.update(posUser);
 	}
+
 }

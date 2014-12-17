@@ -32,53 +32,6 @@ public enum ServiceNames {
 	 */
 	CHANGE_PASSWORD,
 
-	/**
-	 * service to perform fetch inventory list.
-	 */
-	GET_INVENTORY_LIST,
+	FB_LOGIN;
 
-	/**
-	 * service to manage category.
-	 */
-	MANAGE_CATEGORY,
-
-	/**
-	 * service to manage category item.
-	 */
-	MANAGE_CATEGORY_ITEM,
-
-	/**
-	 * service to manage product.
-	 */
-	MANAGE_PRODUCT,
-
-	/**
-	 * service to manage product.
-	 */
-	MANAGE_DISCOUNT,
-
-	/**
-	 * service to perform updater user profile.
-	 */
-	UPDATE_USER_PROFILE,
-
-	/**
-	 * service to confirm sales.
-	 */
-	CONFIRM_SALE,
-
-	/**
-	 * service to perform send receipt.
-	 */
-	SEND_RECEIPT,
-
-	/**
-	 * service to view sales history
-	 */
-	SALES_HISTORY,
-
-	/**
-	 * service to view sales history details
-	 */
-	SALES_HISTORY_DETAIL
 }

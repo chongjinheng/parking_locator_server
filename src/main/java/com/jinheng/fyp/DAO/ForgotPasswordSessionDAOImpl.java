@@ -26,7 +26,7 @@ public class ForgotPasswordSessionDAOImpl extends GenericDAO implements ForgotPa
 	private CrudDAO crudDAO;
 
 	@Autowired
-	private PosUserDAO posUserDAO;
+	private ParkingUserDAO posUserDAO;
 
 	@Override
 	public Long createForgetPasswordSession(String email, String hasedTempPassword) {

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jinheng.fyp.DAO.CrudDAO;
 import com.jinheng.fyp.DAO.ForgotPasswordSessionDAO;
-import com.jinheng.fyp.DAO.PosUserDAO;
+import com.jinheng.fyp.DAO.ParkingUserDAO;
 import com.jinheng.fyp.DTO.JSONServiceDTO;
 import com.jinheng.fyp.bean.ParkingUser;
 import com.jinheng.fyp.enums.ErrorStatus;
@@ -23,9 +23,9 @@ import com.jinheng.fyp.util.Validators;
  * @author chongjinheng
  */
 @Service
-public class PosUserServiceImpl implements PosUserService {
+public class ParkingUserServiceImpl implements ParkingUserService {
 
-	private static final Logger logger = LoggerFactory.getLogger(PosUserServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(ParkingUserServiceImpl.class);
 
 	@SuppressWarnings("rawtypes")
 	@Autowired
@@ -35,7 +35,7 @@ public class PosUserServiceImpl implements PosUserService {
 	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;
 
 	@Autowired
-	private PosUserDAO posUserDAO;
+	private ParkingUserDAO posUserDAO;
 
 	// @Autowired
 	// private EmailService emailService;
@@ -160,6 +160,29 @@ public class PosUserServiceImpl implements PosUserService {
 			throw e;
 		}
 		return dtoToReturn;
+	}
+
+	@Override
+	public JSONServiceDTO doFBLogin(String facebookUID) throws Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			facebookUID = Validators.sanityCheck(facebookUID);
+
+			ParkingUser posUser = posUserDAO.getUserByFacebookUID(facebookUID);
+			if (posUser == null) {
+				// TODO change to create a new user if not exist
+			}
+			logger.debug("Facebook ID" + facebookUID + " found in database");
+			dtoToReturn.setLoginMode(2);
+			return dtoToReturn;
+
+		} catch (MyMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception - doLogIn " + e);
+			throw e;
+		}
 	}
 }
 
