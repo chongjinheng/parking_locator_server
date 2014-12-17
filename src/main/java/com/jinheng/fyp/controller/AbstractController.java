@@ -28,7 +28,7 @@ public abstract class AbstractController {
 	// @Autowired
 	// private SessionService sessionService;
 
-	private int SESSION_TIME_OUT = 60 * 60 * 24;
+	// private int SESSION_TIME_OUT = 60 * 60 * 24;
 
 	// public enum SESSION_KEYS {
 	// KEY_PAIRS, SENDER_PUBLIC_KEY, CURRENT_LOGIN_STAFF

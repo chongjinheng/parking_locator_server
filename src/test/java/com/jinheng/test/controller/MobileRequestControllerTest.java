@@ -5,13 +5,11 @@ import java.io.ByteArrayInputStream;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.Cookie;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
 
 import com.jinheng.fyp.DTO.JSONServiceDTO;
 import com.jinheng.fyp.controller.MobileRequestController;
@@ -31,8 +29,6 @@ public class MobileRequestControllerTest extends BaseTestCase {
 	private MobileRequestController ctlr = null;
 	private MockHttpServletRequest request;
 	private MockHttpServletResponse response;
-	private MockHttpSession session;
-	private Cookie[] cookies;
 
 	@Autowired
 	private Properties testValue;
@@ -73,8 +69,6 @@ public class MobileRequestControllerTest extends BaseTestCase {
 		request.setCookies(response.getCookies());
 		response = newResponse();
 		ctlr.doProcessMobileRequest(request, jsonFromMobile, response, newLocale("en"));
-		cookies = response.getCookies();
-		session = (MockHttpSession) request.getSession();
 	}
 
 	// public void forgotPass() throws Exception {
