@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jinheng.fyp.DAO.CrudDAO;
 import com.jinheng.fyp.DAO.ForgotPasswordSessionDAO;
 import com.jinheng.fyp.DAO.ParkingUserDAO;
 import com.jinheng.fyp.DTO.JSONServiceDTO;
@@ -26,10 +25,6 @@ import com.jinheng.fyp.util.Validators;
 public class ParkingUserServiceImpl implements ParkingUserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ParkingUserServiceImpl.class);
-
-	@SuppressWarnings("rawtypes")
-	@Autowired
-	private CrudDAO crudDAO;
 
 	@Autowired
 	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;

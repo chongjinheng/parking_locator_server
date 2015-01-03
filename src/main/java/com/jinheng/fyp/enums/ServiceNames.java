@@ -32,6 +32,8 @@ public enum ServiceNames {
 	 */
 	CHANGE_PASSWORD,
 
-	FB_LOGIN;
+	FB_LOGIN,
+
+	GET_PARKING_LOTS;
 
 }

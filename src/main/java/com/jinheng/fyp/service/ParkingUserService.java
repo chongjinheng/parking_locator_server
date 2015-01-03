@@ -2,12 +2,6 @@ package com.jinheng.fyp.service;
 
 import com.jinheng.fyp.DTO.JSONServiceDTO;
 
-/**
- * Pos User Services
- * 
- * @author Darren
- * @author cylim
- */
 public interface ParkingUserService {
 
 	// public JSONServiceDTO doSignUp(String storeName, String email, String password) throws Exception;

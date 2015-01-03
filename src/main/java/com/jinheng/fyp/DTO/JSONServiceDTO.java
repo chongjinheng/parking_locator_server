@@ -1,5 +1,9 @@
 package com.jinheng.fyp.DTO;
 
+import java.util.List;
+
+import com.jinheng.fyp.bean.Lot;
+
 /**
  * General JSON Transfer Object
  * 
@@ -22,6 +26,61 @@ public class JSONServiceDTO {
 	private String password;
 	private String newPassword;
 	private Integer loginMode;
+
+	/****** MAPS ******/
+	private Double longitude;
+	private Double latitude;
+	private String groupType;
+	private String criteria;
+	private List<Lot> parkingLots;
+
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
+
+	public String getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(String criteria) {
+		this.criteria = criteria;
+	}
+
+	public List<Lot> getParkingLots() {
+		return parkingLots;
+	}
+
+	public void setParkingLots(List<Lot> parkingLots) {
+		this.parkingLots = parkingLots;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitute(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitute(Double latitude) {
+		this.latitude = latitude;
+	}
 
 	public String getServiceName() {
 		return serviceName;

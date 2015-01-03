@@ -19,9 +19,9 @@ public class Lot extends BasicTable {
 
 	private String lotType;
 
-	private String longitute;
+	private Double longitude;
 
-	private String latitute;
+	private Double latitude;
 
 	private String address;
 
@@ -31,8 +31,32 @@ public class Lot extends BasicTable {
 
 	private String availability;
 
+	private String city;
+
+	private String state;
+
 	@OneToOne
 	private Price price;
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
 	public String getLotName() {
 		return lotName;
@@ -50,20 +74,20 @@ public class Lot extends BasicTable {
 		this.lotType = lotType;
 	}
 
-	public String getLongitute() {
-		return longitute;
+	public Double getLongitude() {
+		return longitude;
 	}
 
-	public void setLongitute(String longitute) {
-		this.longitute = longitute;
+	public void setLongitute(Double longitude) {
+		this.longitude = longitude;
 	}
 
-	public String getLatitute() {
-		return latitute;
+	public Double getLatitude() {
+		return latitude;
 	}
 
-	public void setLatitute(String latitute) {
-		this.latitute = latitute;
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
 	}
 
 	public String getAddress() {

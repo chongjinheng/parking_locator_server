@@ -24,6 +24,7 @@ import com.jinheng.fyp.enums.ServiceNames;
 import com.jinheng.fyp.exceptions.MyMobileRequestException;
 import com.jinheng.fyp.exceptions.MyRecoverableException;
 import com.jinheng.fyp.exceptions.SessionTimedOutException;
+import com.jinheng.fyp.service.MapService;
 import com.jinheng.fyp.service.ParkingUserService;
 import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.fyp.util.JSONFactory;
@@ -46,6 +47,9 @@ public class MobileRequestController extends AbstractController {
 
 	@Autowired
 	private ParkingUserService parkingUserService;
+
+	@Autowired
+	private MapService mapService;
 
 	// @Autowired
 	// private SessionService sessionService;
@@ -210,6 +214,10 @@ public class MobileRequestController extends AbstractController {
 			case FB_LOGIN:
 				logger.debug("Entering {} service", ServiceNames.FB_LOGIN);
 				dto = parkingUserService.doFBLogin(dto.getFacebookUID(), dto.getName());
+				break;
+			case GET_PARKING_LOTS:
+				logger.debug("Entering {} service", ServiceNames.GET_PARKING_LOTS);
+				dto = mapService.getParkingLots(dto.getLatitude(), dto.getLongitude(), dto.getGroupType(), dto.getCriteria());
 				break;
 
 			default:
