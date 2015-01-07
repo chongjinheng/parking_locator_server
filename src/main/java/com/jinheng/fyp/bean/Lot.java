@@ -27,6 +27,10 @@ public class Lot extends BasicTable {
 
 	private String operationHour;
 
+	private Integer openHour;
+
+	private Integer closeHour;
+
 	private Integer capacity;
 
 	private String availability;
@@ -35,8 +39,34 @@ public class Lot extends BasicTable {
 
 	private String state;
 
+	private String nearbyAttraction;
+
 	@OneToOne
 	private Price price;
+
+	public Integer getOpenHour() {
+		return openHour;
+	}
+
+	public void setOpenHour(Integer openHour) {
+		this.openHour = openHour;
+	}
+
+	public Integer getCloseHour() {
+		return closeHour;
+	}
+
+	public void setCloseHour(Integer closeHour) {
+		this.closeHour = closeHour;
+	}
+
+	public String getNearbyAttraction() {
+		return nearbyAttraction;
+	}
+
+	public void setNearbyAttraction(String nearbyAttraction) {
+		this.nearbyAttraction = nearbyAttraction;
+	}
 
 	public String getCity() {
 		return city;

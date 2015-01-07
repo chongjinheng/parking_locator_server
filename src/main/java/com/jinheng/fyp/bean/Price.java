@@ -14,43 +14,53 @@ public class Price extends BasicTable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer priceID;
 
-	private Double flatRate;
+	private Long flatRate;
 
-	private Double firstHour;
+	private Long firstHour;
 
-	private Double subsHour;
+	private Long subsHour;
 
-	private Double lostTicPenalty;
+	private Long lostTicPenalty;
 
-	public Double getFlatRate() {
+	private String priceType;
+
+	public String getPriceType() {
+		return priceType;
+	}
+
+	public void setPriceType(String priceType) {
+		this.priceType = priceType;
+	}
+
+	public Long getFlatRate() {
 		return flatRate;
 	}
 
-	public void setFlatRate(Double flatRate) {
+	public void setFlatRate(Long flatRate) {
 		this.flatRate = flatRate;
 	}
 
-	public Double getFirstHour() {
+	public Long getFirstHour() {
 		return firstHour;
 	}
 
-	public void setFirstHour(Double firstHour) {
+	public void setFirstHour(Long firstHour) {
 		this.firstHour = firstHour;
 	}
 
-	public Double getSubsHour() {
+	public Long getSubsHour() {
 		return subsHour;
 	}
 
-	public void setSubsHour(Double subsHour) {
+	public void setSubsHour(Long subsHour) {
 		this.subsHour = subsHour;
 	}
 
-	public Double getLostTicPenalty() {
+	public Long getLostTicPenalty() {
 		return lostTicPenalty;
 	}
 
-	public void setLostTicPenalty(Double lostTicPenalty) {
+	public void setLostTicPenalty(Long lostTicPenalty) {
 		this.lostTicPenalty = lostTicPenalty;
 	}
 
