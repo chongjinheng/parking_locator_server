@@ -1,5 +1,7 @@
 package com.jinheng.fyp.bean;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -16,6 +18,8 @@ public class Slot extends BasicTable {
 	private Integer floorLevel;
 
 	private String status;
+
+	private Date parkTime;
 
 	@OneToOne
 	private ParkingUser user;

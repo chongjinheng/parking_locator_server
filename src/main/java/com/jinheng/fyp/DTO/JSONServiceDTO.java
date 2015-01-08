@@ -1,5 +1,6 @@
 package com.jinheng.fyp.DTO;
 
+import java.util.Date;
 import java.util.List;
 
 import com.jinheng.fyp.bean.Lot;
@@ -33,6 +34,9 @@ public class JSONServiceDTO {
 	private String groupType;
 	private String criteria;
 	private List<Lot> parkingLots;
+
+	/****** VEHICLE ******/
+	private Date parkTime;
 
 	public String getGroupType() {
 		return groupType;

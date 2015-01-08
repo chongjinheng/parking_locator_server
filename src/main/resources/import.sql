@@ -12,5 +12,5 @@ INSERT INTO LOT VALUES (7,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,
 INSERT INTO LOT VALUES (8,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Teknokrat 5, 63000','U',200,'Cyberjaya',0,2.921234,101.656954,'Prima Avenue','O','Old Town White Coffee, Padi House, Tokio Cafe, Kitchen Village, Where Else Delights, Starbucks Coffee, Maybank, CIMB Bank',0,'24 Hour','Selangor',1);
 INSERT INTO LOT VALUES (9,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Usahawan, 63000','U',200,'Cyberjaya',0,2.920673,101.651090,'The Street Mall','O','QThai, Indian Cuisine, Melaka Kitchen',0,'24 Hour','Selangor',1);
 INSERT INTO LOT VALUES (10,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','U',200,'Cyberjaya',0,2.938505,101.645278,'The Street Mall','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
-
+INSERT INTO LOT VALUES (11,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','L',200,'Cyberjaya',0,2.923232,101.637657,'Cyberia','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
 

@@ -34,6 +34,8 @@ public enum ServiceNames {
 
 	FB_LOGIN,
 
-	GET_PARKING_LOTS;
+	GET_PARKING_LOTS,
+
+	PARK_VEHICLE;
 
 }

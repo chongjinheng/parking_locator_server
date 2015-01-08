@@ -219,6 +219,10 @@ public class MobileRequestController extends AbstractController {
 				logger.debug("Entering {} service", ServiceNames.GET_PARKING_LOTS);
 				dto = mapService.getParkingLots(dto.getLatitude(), dto.getLongitude(), dto.getGroupType(), dto.getCriteria());
 				break;
+			case PARK_VEHICLE:
+				logger.debug("Entering {} service", ServiceNames.PARK_VEHICLE);
+				// dto = mapService.parkVehicle(dto.getLatitude(), dto.getLongitude(), dto.getGroupType(), dto.getCriteria());
+				break;
 
 			default:
 				logger.error("Service name not found: " + serviceNameEnum);
