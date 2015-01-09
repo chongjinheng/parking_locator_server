@@ -1,9 +1,9 @@
 package com.jinheng.fyp.DTO;
 
-import java.util.Date;
 import java.util.List;
 
 import com.jinheng.fyp.bean.Lot;
+import com.jinheng.fyp.bean.Slot;
 
 /**
  * General JSON Transfer Object
@@ -19,6 +19,7 @@ public class JSONServiceDTO {
 	private String sessionKey;
 
 	/***** IDs *****/
+	private Long ID;
 	private String facebookUID;
 
 	/****** ACTIVATION/LOGIN ******/
@@ -36,10 +37,44 @@ public class JSONServiceDTO {
 	private List<Lot> parkingLots;
 
 	/****** VEHICLE ******/
-	private Date parkTime;
+	private Slot slot;
+	private Boolean alreadyParkedThere;
+	private Boolean forceRepark;
+
+	public Boolean isForceRepark() {
+		return forceRepark;
+	}
+
+	public void setForceRepark(Boolean forceRepark) {
+		this.forceRepark = forceRepark;
+	}
+
+	public Boolean isAlreadyParkedThere() {
+		return alreadyParkedThere;
+	}
+
+	public void setAlreadyParkedThere(Boolean parked) {
+		this.alreadyParkedThere = parked;
+	}
+
+	public Slot getSlot() {
+		return slot;
+	}
+
+	public void setSlot(Slot slot) {
+		this.slot = slot;
+	}
 
 	public String getGroupType() {
 		return groupType;
+	}
+
+	public Long getID() {
+		return ID;
+	}
+
+	public void setID(Long ID) {
+		this.ID = ID;
 	}
 
 	public void setGroupType(String groupType) {

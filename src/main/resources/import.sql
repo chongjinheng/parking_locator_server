@@ -1,4 +1,5 @@
-INSERT INTO PARKING_USER VALUES (1,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'chongjinheng@gmail.com','10152571410180787','c8315dee1872c102f7b431ccbfd192d64c5f54b3773005a01c090d3b1f01382969467b19b58944e9fd4f0c54f36157bbcc7a4f416999049b65da520a4e2ce993',NULL,NULL);
+INSERT INTO PARKING_USER VALUES (1,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'chongjinheng@gmail.com','10152571410180787','NULL',NULL,NULL);
+INSERT INTO PARKING_USER VALUES (2,'admin@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'admin@gmail.com',NULL,'b396b8b52c1af73338f753c178d04c432258f1905a9a3a6e71061a85a4c901fad930ec135ba6da3d15843775864ea32b7963e3d3a6bb8980c3acbaa29e7a3d67','admin',NULL);
 
 INSERT INTO PRICE VALUES (1,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'300','500','5000','FLAT','200');
 
@@ -13,4 +14,5 @@ INSERT INTO LOT VALUES (8,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,
 INSERT INTO LOT VALUES (9,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Usahawan, 63000','U',200,'Cyberjaya',0,2.920673,101.651090,'The Street Mall','O','QThai, Indian Cuisine, Melaka Kitchen',0,'24 Hour','Selangor',1);
 INSERT INTO LOT VALUES (10,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','U',200,'Cyberjaya',0,2.938505,101.645278,'The Street Mall','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
 INSERT INTO LOT VALUES (11,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','L',200,'Cyberjaya',0,2.923232,101.637657,'Cyberia','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (12,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','L',200,'Cyberjaya',0,2.9242392,101.639867,'Cyberia','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
 

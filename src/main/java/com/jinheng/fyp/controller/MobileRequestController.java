@@ -221,7 +221,15 @@ public class MobileRequestController extends AbstractController {
 				break;
 			case PARK_VEHICLE:
 				logger.debug("Entering {} service", ServiceNames.PARK_VEHICLE);
-				// dto = mapService.parkVehicle(dto.getLatitude(), dto.getLongitude(), dto.getGroupType(), dto.getCriteria());
+				dto = mapService.parkVehicle(dto.getSlot(), dto.getEmail(), dto.isForceRepark());
+				break;
+			case CHECK_VEHICLE:
+				logger.debug("Entering {} service", ServiceNames.CHECK_VEHICLE);
+				dto = mapService.checkUserParked(dto.getEmail());
+				break;
+			case REMOVE_VEHICLE:
+				logger.debug("Entering {} service", ServiceNames.REMOVE_VEHICLE);
+				dto = mapService.removeVehicle(dto.getEmail());
 				break;
 
 			default:

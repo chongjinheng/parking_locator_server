@@ -36,6 +36,8 @@ public enum ServiceNames {
 
 	GET_PARKING_LOTS,
 
-	PARK_VEHICLE;
+	PARK_VEHICLE,
+
+	CHECK_VEHICLE, REMOVE_VEHICLE;
 
 }

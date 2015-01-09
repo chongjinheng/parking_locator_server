@@ -3,6 +3,8 @@ package com.jinheng.fyp.bean;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -13,7 +15,8 @@ public class Slot extends BasicTable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private Integer slotID;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long slotID;
 
 	private Integer floorLevel;
 
@@ -26,6 +29,14 @@ public class Slot extends BasicTable {
 
 	@ManyToOne
 	private Lot lot;
+
+	public Date getParkTime() {
+		return parkTime;
+	}
+
+	public void setParkTime(Date parkTime) {
+		this.parkTime = parkTime;
+	}
 
 	public Integer getFloorLevel() {
 		return floorLevel;
@@ -51,7 +62,7 @@ public class Slot extends BasicTable {
 		this.lot = lot;
 	}
 
-	public Integer getSlotID() {
+	public Long getSlotID() {
 		return slotID;
 	}
 
@@ -63,7 +74,7 @@ public class Slot extends BasicTable {
 		this.user = user;
 	}
 
-	public void setSlotID(Integer slotID) {
+	public void setSlotID(Long slotID) {
 		this.slotID = slotID;
 	}
 

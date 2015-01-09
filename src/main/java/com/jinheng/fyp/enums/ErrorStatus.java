@@ -47,7 +47,9 @@ public enum ErrorStatus {
 
 	TARGET_ITEM_NOT_EXIST("8106", "Item has been modified by a different user\nPlease login again", "error.missing-target"),
 
-	DUPLICATE_PRODUCT_CODE("8107", "Product code is already registered", "error.duplicate-code");
+	DUPLICATE_PRODUCT_CODE("8107", "Product code is already registered", "error.duplicate-code"),
+
+	USER_PARKED("8108", "You have already parked your vehicle elsewhere.\n\nProceed to park in this parking lot?", "error.user-parked");
 
 	private final String defaultMessage;
 	private final String key;

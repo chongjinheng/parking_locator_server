@@ -14,6 +14,7 @@ import com.jinheng.fyp.DTO.JSONServiceDTO;
 import com.jinheng.fyp.bean.ParkingUser;
 import com.jinheng.fyp.enums.ErrorStatus;
 import com.jinheng.fyp.exceptions.MyMobileRequestException;
+import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.fyp.util.Validators;
 
 /**
@@ -101,6 +102,7 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 				throw new MyMobileRequestException(ErrorStatus.USER_DOES_NOT_EXIST, ErrorStatus.USER_DOES_NOT_EXIST.getDefaultMessage() + " - doLogin");
 			}
 			logger.debug(email + " found in database");
+			logger.debug(Encryptor.hashPassword(password, email));
 
 			// if password entered is not same with the main password
 			if (!(Validators.validatePassword(password, posUser.getPassword(), email))) {
