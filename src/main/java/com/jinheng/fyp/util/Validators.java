@@ -53,7 +53,7 @@ public class Validators {
 		Pattern pattern;
 		Matcher matcher;
 
-		final String PASSWORD_PATTERN = "^([0-9]+[a-zA-Z]+|[a-zA-Z]+[0-9]+)[0-9a-zA-Z]*$";
+		final String PASSWORD_PATTERN = "^[\\p{L}\\p{N}]{8,15}$";
 
 		pattern = Pattern.compile(PASSWORD_PATTERN);
 
@@ -65,7 +65,8 @@ public class Validators {
 	/**
 	 * Check whether a String is null and trim it.
 	 * 
-	 * @param stringParam String
+	 * @param stringParam
+	 *            String
 	 * @throws MyMobileRequestException
 	 * @return String
 	 */
@@ -83,7 +84,8 @@ public class Validators {
 	/**
 	 * Check whether a Long is null
 	 * 
-	 * @param longParam Long
+	 * @param longParam
+	 *            Long
 	 * @throws MyMobileRequestException
 	 */
 	public static void sanityCheck(Long longParam) throws MyMobileRequestException {
@@ -95,7 +97,8 @@ public class Validators {
 	/**
 	 * Check whether an Integer is null
 	 * 
-	 * @param intParam Integer
+	 * @param intParam
+	 *            Integer
 	 * @throws MyMobileRequestException
 	 */
 	public static void sanityCheck(Integer intParam) throws MyMobileRequestException {

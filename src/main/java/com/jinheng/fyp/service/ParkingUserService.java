@@ -4,7 +4,7 @@ import com.jinheng.fyp.DTO.JSONServiceDTO;
 
 public interface ParkingUserService {
 
-	// public JSONServiceDTO doSignUp(String storeName, String email, String password) throws Exception;
+	public JSONServiceDTO doRegister(String email, String password) throws Exception;
 
 	public JSONServiceDTO doLogIn(String email, String password) throws Exception;
 

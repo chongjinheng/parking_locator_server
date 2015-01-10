@@ -129,9 +129,9 @@ public class MobileRequestController extends AbstractController {
 					// setCookieToSession(request.getSession(), cookie);
 					// logger.debug("Cookie set in session");
 
-					if (respObj.getEmail() == null) {
-						respObj.setEmail(requestObj.getEmail());
-					}
+					// if (respObj.getEmail() == null) {
+					// respObj.setEmail(requestObj.getEmail());
+					// }
 					respObj.setServiceName(requestObj.getServiceName());
 
 					// this is the part where you pass current cookie data into the new session
@@ -187,9 +187,9 @@ public class MobileRequestController extends AbstractController {
 		ServiceNames serviceNameEnum = extractServiceName(dto);
 		try {
 			switch (serviceNameEnum) {
-			case SIGN_UP:
-				logger.debug("Entering {} service", ServiceNames.SIGN_UP);
-				// dto = posUserService.doSignUp(dto.getStoreName(), dto.getEmail(), dto.getPassword());
+			case REGISTER:
+				logger.debug("Entering {} service", ServiceNames.REGISTER);
+				dto = parkingUserService.doRegister(dto.getEmail(), dto.getPassword());
 				// persistToSession(dto, request, dto.getEmail());
 				logger.debug("Current user set in session");
 				break;

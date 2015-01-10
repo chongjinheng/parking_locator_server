@@ -31,61 +31,56 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 	private ForgotPasswordSessionDAO forgotPasswordSessionDAO;
 
 	@Autowired
-	private ParkingUserDAO posUserDAO;
+	private ParkingUserDAO parkingUserDAO;
 
 	// @Autowired
 	// private EmailService emailService;
 
-	// @Override
-	// @Transactional(rollbackFor = Exception.class)
-	// public JSONServiceDTO doSignUp(String storeName, String email, String password) throws SSPosMobileRequestException, Exception {
-	// JSONServiceDTO dtoToReturn = new JSONServiceDTO();
-	// try {
-	// /** Sanity Check **/
-	// email = Validators.sanityCheck(email);
-	// password = Validators.sanityCheck(password);
-	// storeName = Validators.sanityCheck(storeName);
-	//
-	// String encryptedPassword = Encryptor.hashPassword(password, email);
-	//
-	// // check for format
-	// if (!Validators.validateEmail(email)) {
-	// throw new SSPosMobileRequestException(ErrorStatus.EMAIL_STYLE_ERROR, ErrorStatus.EMAIL_STYLE_ERROR.getDefaultMessage() + " - doSignup");
-	// }
-	//
-	// if (posUserDAO.getUserByEmail(email) != null) {
-	// throw new SSPosMobileRequestException(ErrorStatus.EMAIL_EXISTS, ErrorStatus.EMAIL_EXISTS.getDefaultMessage());
-	// }
-	//
-	// if (!(Validators.checkPasswordStyle(password) && password.length() >= 8 && password.length() <= 15)) {
-	// throw new SSPosMobileRequestException(ErrorStatus.PASSWORD_STYLE_ERROR, ErrorStatus.PASSWORD_STYLE_ERROR.getDefaultMessage() + " - doSignup");
-	// }
-	//
-	// Long storeID = storeDAO.createStore(storeName, email);
-	// dtoToReturn.setStoreId(storeID);
-	// logger.info("Store created successfully");
-	//
-	// salesRunningNumberDAO.createSalesRunningNumber(storeID);
-	// logger.info("A Running Number that is dedicated to the store is created successfully");
-	//
-	// posUserDAO.createPosUser(email, encryptedPassword, storeID);
-	// logger.info("User created sucessfully");
-	//
-	// dtoToReturn.setEmail(email);
-	//
-	// EmailDetails details = new EmailDetails();
-	// details.setEmail(email);
-	// logger.info("Email sending....");
-	// emailService.sendEmail(email, 0, details);
-	//
-	// } catch (SSPosMobileRequestException e) {
-	// throw e;
-	// } catch (Exception e) {
-	// logger.error("Exception found - doSignUp " + e);
-	// throw e;
-	// }
-	// return dtoToReturn;
-	// }
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public JSONServiceDTO doRegister(String email, String password) throws MyMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		try {
+			/** Sanity Check **/
+			email = Validators.sanityCheck(email);
+			password = Validators.sanityCheck(password);
+
+			String encryptedPassword = Encryptor.hashPassword(password, email);
+
+			// check for format
+			if (!Validators.validateEmail(email)) {
+				throw new MyMobileRequestException(ErrorStatus.EMAIL_STYLE_ERROR, ErrorStatus.EMAIL_STYLE_ERROR.getDefaultMessage() + " - doSignup");
+			}
+
+			if (parkingUserDAO.getUserByEmail(email) != null) {
+				throw new MyMobileRequestException(ErrorStatus.EMAIL_EXISTS, ErrorStatus.EMAIL_EXISTS.getDefaultMessage());
+			}
+
+			if (!(Validators.checkPasswordStyle(password) && password.length() >= 8 && password.length() <= 15)) {
+				throw new MyMobileRequestException(ErrorStatus.PASSWORD_STYLE_ERROR, ErrorStatus.PASSWORD_STYLE_ERROR.getDefaultMessage() + " - doSignup");
+			}
+			// salesRunningNumberDAO.createSalesRunningNumber(storeID);
+			// logger.info("A Running Number that is dedicated to the store is created successfully");
+			else {
+				parkingUserDAO.createParkingUser(email, encryptedPassword);
+				logger.info("User created sucessfully");
+
+				dtoToReturn.setEmail(email);
+				dtoToReturn.setLoginMode(0);
+				// EmailDetails details = new EmailDetails();
+				// details.setEmail(email);
+				// logger.info("Email sending....");
+				// emailService.sendEmail(email, 0, details);
+				return dtoToReturn;
+			}
+
+		} catch (MyMobileRequestException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Exception found - doSignUp " + e);
+			throw e;
+		}
+	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -97,7 +92,7 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 			email = Validators.sanityCheck(email);
 			password = Validators.sanityCheck(password);
 
-			ParkingUser posUser = posUserDAO.getUserByEmail(email);
+			ParkingUser posUser = parkingUserDAO.getUserByEmail(email);
 			if (posUser == null) {
 				throw new MyMobileRequestException(ErrorStatus.USER_DOES_NOT_EXIST, ErrorStatus.USER_DOES_NOT_EXIST.getDefaultMessage() + " - doLogin");
 			}
@@ -166,9 +161,9 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 			/** Sanity Check **/
 			facebookUID = Validators.sanityCheck(facebookUID);
 
-			ParkingUser posUser = posUserDAO.getUserByFacebookUID(facebookUID);
+			ParkingUser posUser = parkingUserDAO.getUserByFacebookUID(facebookUID);
 			if (posUser == null) {
-				posUserDAO.createFacebookUser(facebookUID, userName);
+				parkingUserDAO.createFacebookUser(facebookUID, userName);
 				logger.debug("New facebook user created");
 			}
 			logger.debug("Logged in with facebook");

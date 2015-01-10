@@ -51,7 +51,7 @@ public class PosUserDaoTest extends BaseTestCase {
 
 	@Test
 	public void testCreatePosUser() {
-		posUserDAO.createPosUser(email, Encryptor.hashPassword(password, email));
+		posUserDAO.createParkingUser(email, Encryptor.hashPassword(password, email));
 		ParkingUser posUser = posUserDAO.getUserByEmail(email);
 		Assert.assertNotNull("Created fail", posUser);
 	}

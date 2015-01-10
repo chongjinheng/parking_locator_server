@@ -15,7 +15,7 @@ public interface ParkingUserDAO {
 
 	public ParkingUser getUserByFacebookUID(String UID);
 
-	public Long createPosUser(String userEmail, String hashedPassword);
+	public Long createParkingUser(String userEmail, String hashedPassword);
 
 	public void updatePosUserForgetPasswordSession(String userEmail, Long forgotPasswordSessionID);
 
