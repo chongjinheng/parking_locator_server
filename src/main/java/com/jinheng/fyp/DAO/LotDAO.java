@@ -4,6 +4,8 @@ import com.jinheng.fyp.bean.Lot;
 
 public interface LotDAO {
 
-	public Lot getLotByID(Integer id);
+	public Lot getLotByID(Long id);
+
+	public void updateAvailability(Lot currentLot);
 
 }

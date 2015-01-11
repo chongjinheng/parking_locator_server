@@ -2,6 +2,7 @@ package com.jinheng.fyp.DAO;
 
 import java.util.Date;
 
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -42,4 +43,24 @@ public class SlotDAOImpl extends GenericDAO implements SlotDAO {
 		crudDao.delete(slot);
 	}
 
+	@Override
+	public Long getOccupiedSlotCount(Long lotID) {
+		return (Long) getSessionFactory().createCriteria(Slot.class).setProjection(Projections.rowCount()).add(Restrictions.eq("lot.lotID", lotID)).uniqueResult();
+	}
+
+	@Override
+	public Long getOccupiedSlotByStatus(Long lotID, String status) {
+		return (Long) getSessionFactory().createCriteria(Slot.class).setProjection(Projections.rowCount()).add(Restrictions.eq("lot.lotID", lotID))
+				.add(Restrictions.eq("status", status)).uniqueResult();
+	}
+
+	@Override
+	public Slot getSlotByID(Long slotID) {
+		return (Slot) getSessionFactory().createCriteria(Slot.class).add(Restrictions.eq("deleteFlag", false)).add(Restrictions.eq("slotID", slotID)).uniqueResult();
+	}
+
+	@Override
+	public void updateSlot(Slot slot) {
+		crudDao.update(slot);
+	}
 }

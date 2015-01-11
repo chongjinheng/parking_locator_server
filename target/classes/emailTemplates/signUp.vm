@@ -27,7 +27,7 @@
                                 </tr>
                                 <tr>
                                     <td width="640">
-                                        <table id="top-bar" height="10" width="640" style="background-color: #94ae3c;  border-top-left-radius: 6px;
+                                        <table id="top-bar" height="10" width="640" style="background-color: #1565c0;  border-top-left-radius: 6px;
                                             border-top-right-radius: 6px;
                                             border-bottom-right-radius: 0px;
                                             border-bottom-left-radius: 0px;&gt;
@@ -37,17 +37,17 @@
 </td>
 </tr>
 <tr>
-    <td id="header " class=" " width="640 " height="100 " align="left " style="background-color: #D1D0CE ">
-        <table cellpadding="20 " cellspacing="0 ">
+    <td id="header " width="640 " height="100 " align="center " style="background-color: #90caf9 ">
+        <table cellpadding="10 " cellspacing="0 ">
             <tbody>
                 <tr>
-                    <td class=" ">
-                        <img src="https://db.tt/ov4A93bK " style="position:relative; WIDTH:224px; HEIGHT:64px " class=" ">
-</td>
+                    <td><td>
+                       <td><img src="https://dl.dropboxusercontent.com/u/50305707/logo_masked.png" style="position:relative; WIDTH:110px; HEIGHT:70px"></td>
 <td class=" ">
-    <strong>
-        <p style="font-size:21px; text-align:center; color:#41403D; -webkit-font-smoothing: subpixel-antialiased; " class=" ">Soft Space POS Mobile Application</p>
-    </strong>
+    
+        <div style="font-size:21px; text-align:center; color:#DE000000; -webkit-font-smoothing: subpixel-antialiased; "><strong>Parking Locator</strong></div>
+		<div style ="font-size:17px; text-align:center; color:#42000000; text-indent:30px; -webkit-font-smoothing: subpixel-antialiased; ">your one stop parking solution.
+    
 </td>
 </tr>
 </tbody>
@@ -71,10 +71,10 @@
                                         <tr>
                                             <td width="580">
                                                 <p></p>
-                                                <p style="color:#93ae3c; font-size:18px; font-weight:bold; margin-top: 0px; font-family: HelveticaNeue, sans-serif; ">Account Registration</p>
+                                                <p style="color:#1565c0; font-size:18px; font-weight:bold; margin-top: 0px; font-family: HelveticaNeue, sans-serif; ">Account Registration</p>
                                                 <div align="left">
                                                     <p style="font-weight:bold;">Congratulations!</p>
-                                                    <p style="font-family: HelveticaNeue, font-size:12px sans-serif; ">You have successfully registered with Soft Space Mobile POS system.
+                                                    <p style="font-family: HelveticaNeue, font-size:12px sans-serif; ">You have successfully registered with Parking Locator.
                                                         <br>Your username: ${info.email}<br><br>
                                                     </p>
 												</div>
@@ -82,39 +82,8 @@
 										</tr>
 									</tbody>
 								</table>
-						
-                        
-						
-   							 <table id="text-with-image" cellpadding="0 " cellspacing="0 ">
-       							 <tbody>
-        						    <tr>
-               							 <td>
-                    						<p style="font-size:18px; -webkit-font-smoothing: subpixel-antialiased; line-height:0px; ">Getting Started with your own POS system</p>
-                                          </td>
-                                    </tr>
-                                 </tbody>
-                              </table>
-                   								 
-                            <table cellspacing="0 " align="right ">
-                   				 <tbody>
-                            		<tr>
-                              		   <td style="vertical-align:top; padding-right:20px; ">
-                                    		<p style="font-size:13.5px; text-align:justify; text-justify:inter-word; ">
-                                        		One of the many advantages to running your business with a cloud-based POS system like Soft Space POS is that you have easy access to all of your data no matter where you are
-                                        		<br>
-                                          		  <br>Want to hear more about how we can help you in business?
-                                                	<br>Contact us at <a href="mailto:support@softspace.com.my " style="color:#00665E; font-weight:bold; text-decoration:none; ">support@softspace.com.my</a>
-											</p>
-										</td>
-										<td>
-   											 <img src="https://db.tt/lvD8zI6h" style="position:relative; width:160px; height:160px ">
-										</td>
-									</tr>
-								</tbody>
-							</table>
-                                
-					
-				</td>
+
+					</td>
 
 <td class="w30 " width="30 "></td>
 </tr>
@@ -124,7 +93,7 @@
 </tr>
 <tr>
     <td>
-        <table id="footer " cellspacing="0 " border="0 " style="background-color: #94AE3C; font-size:14px ">
+        <table id="footer " cellspacing="0 " border="0 " style="background-color: #1565c0; font-size:14px ">
             <tbody>
                 <tr>
                     <td class="w30 " width="30 "></td>
@@ -135,10 +104,9 @@
                     <td class="w580 " width="360 " valign="top ">
                         <p id="permission-reminder " align="left ">
                             <span>
-                                <a href="http://www.softspace.com.my " style="text-decoration:none; font-weight:bold; color:#5C5448 ">Soft Space Homepage</a>
+                                <div style="text-decoration:none; font-weight:bold; color:#8A000000 ">Parking Locator</div>
                             </span>
-                            <br>
-                                <span class=" ">Copyright &#169; 2014 Soft Space Sdn Bhd. <br>All Rights Reserved.</span>
+                                <span><a href="mailto:parking.locator@gmail.com" style="text-decoration: none; color:#000000">Contact: parking.locator@gmail.com</a></span>
                     </p>
                 </td>
                 <td class="hide w0 " width="160 " valign="top ">

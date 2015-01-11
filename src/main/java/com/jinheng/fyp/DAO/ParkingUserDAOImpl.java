@@ -41,7 +41,7 @@ public class ParkingUserDAOImpl extends GenericDAO implements ParkingUserDAO {
 	}
 
 	@Override
-	public Long createPosUser(String userEmail, String hashedPassword) {
+	public Long createParkingUser(String userEmail, String hashedPassword) {
 		ParkingUser parkingUser = new ParkingUser();
 		parkingUser.setCreatedBy(userEmail);
 		parkingUser.setEmail(userEmail);

@@ -14,7 +14,7 @@ public class ParkingUser extends BasicTable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer userID;
+	private Long userID;
 
 	@Column(unique = true)
 	private String email;
@@ -29,11 +29,22 @@ public class ParkingUser extends BasicTable {
 	@OneToOne
 	private ForgotPasswordSession forgotPasswordSession;
 
-	public Integer getUserID() {
+	@OneToOne
+	private Admin admin;
+
+	public Admin getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(Admin admin) {
+		this.admin = admin;
+	}
+
+	public Long getUserID() {
 		return userID;
 	}
 
-	public void setUserID(Integer userID) {
+	public void setUserID(Long userID) {
 		this.userID = userID;
 	}
 

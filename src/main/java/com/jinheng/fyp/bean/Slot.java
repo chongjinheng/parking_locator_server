@@ -18,9 +18,11 @@ public class Slot extends BasicTable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long slotID;
 
-	private Integer floorLevel;
+	private String floorLevel;
 
 	private String status;
+
+	private String position;
 
 	private Date parkTime;
 
@@ -30,6 +32,14 @@ public class Slot extends BasicTable {
 	@ManyToOne
 	private Lot lot;
 
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
 	public Date getParkTime() {
 		return parkTime;
 	}
@@ -38,11 +48,11 @@ public class Slot extends BasicTable {
 		this.parkTime = parkTime;
 	}
 
-	public Integer getFloorLevel() {
+	public String getFloorLevel() {
 		return floorLevel;
 	}
 
-	public void setFloorLevel(Integer floorLevel) {
+	public void setFloorLevel(String floorLevel) {
 		this.floorLevel = floorLevel;
 	}
 
