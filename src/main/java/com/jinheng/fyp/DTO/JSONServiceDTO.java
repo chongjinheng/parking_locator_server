@@ -29,6 +29,10 @@ public class JSONServiceDTO {
 	private String newPassword;
 	private Integer loginMode;
 
+	/****** CHANGE PASSWORD ******/
+	private String oldPassword;
+	private Boolean isForceChangePassword;
+
 	/****** MAPS ******/
 	private Double longitude;
 	private Double latitude;
@@ -40,6 +44,30 @@ public class JSONServiceDTO {
 	private Slot slot;
 	private Boolean alreadyParkedThere;
 	private Boolean forceRepark;
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
+
+	public Boolean isForceChangePassword() {
+		return isForceChangePassword;
+	}
+
+	public void setIsForceChangePassword(Boolean isForceChangePassword) {
+		this.isForceChangePassword = isForceChangePassword;
+	}
+
+	public Boolean getAlreadyParkedThere() {
+		return alreadyParkedThere;
+	}
+
+	public Boolean getForceRepark() {
+		return forceRepark;
+	}
 
 	public Boolean isForceRepark() {
 		return forceRepark;

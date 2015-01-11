@@ -35,13 +35,13 @@ public enum ErrorStatus {
 
 	PASSWORD_STYLE_ERROR("8101", "Your password must be 8 to 15 characters.", "error.invalid-style"),
 
-	PASSWORD_INVALID("8107", "Old password does not match", "error.password-invalid"),
+	PASSWORD_INVALID("8107", "Current password is invalid.", "error.password-invalid"),
 
 	EMAIL_STYLE_ERROR("8102", "Please enter a valid email address.", "error.email-format"),
 
 	EMAIL_EXISTS("8103", "This email is registered\nPlease use another email.", "error.email-exists"),
 
-	PASSWORD_REQ_ERROR("8104", "You have used this password before\nPlease enter a different password", "error.pass-req-error"),
+	PASSWORD_REQ_ERROR("8104", "You have used this password before.\n\nPlease enter a different password", "error.pass-req-error"),
 
 	USER_DOES_NOT_EXIST("8105", "This email is not registered\nPlease register before logging in", "error.user-exist"),
 

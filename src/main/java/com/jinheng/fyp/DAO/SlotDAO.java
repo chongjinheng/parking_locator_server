@@ -12,5 +12,13 @@ public interface SlotDAO {
 
 	public Slot getSlotByUserEmail(String userEmail);
 
+	public Slot getSlotByID(Long slotID);
+
+	public void updateSlot(Slot slot);
+
 	public void removeSlotByByUserEmail(String userEmail);
+
+	public Long getOccupiedSlotCount(Long lotID);
+
+	public Long getOccupiedSlotByStatus(Long lotID, String status);
 }

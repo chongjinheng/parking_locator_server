@@ -29,6 +29,17 @@ public class ParkingUser extends BasicTable {
 	@OneToOne
 	private ForgotPasswordSession forgotPasswordSession;
 
+	@OneToOne
+	private Admin admin;
+
+	public Admin getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(Admin admin) {
+		this.admin = admin;
+	}
+
 	public Long getUserID() {
 		return userID;
 	}

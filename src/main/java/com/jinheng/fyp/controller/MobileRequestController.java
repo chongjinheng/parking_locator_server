@@ -205,11 +205,11 @@ public class MobileRequestController extends AbstractController {
 				break;
 			case FORGOT_PASSWORD:
 				logger.debug("Entering {} service", ServiceNames.FORGOT_PASSWORD);
-				// dto = posUserService.doForgotPassword(dto.getEmail());
+				dto = parkingUserService.doForgotPassword(dto.getEmail());
 				break;
 			case CHANGE_PASSWORD:
 				logger.debug("Entering {} service", ServiceNames.CHANGE_PASSWORD);
-				// dto = posUserService.doChangePassword(dto.getEmail(), dto.getOldPassword(), dto.getNewPassword(), dto.isForceChangePassword());
+				dto = parkingUserService.doChangePassword(dto.getEmail(), dto.getOldPassword(), dto.getPassword(), dto.isForceChangePassword());
 				break;
 			case FB_LOGIN:
 				logger.debug("Entering {} service", ServiceNames.FB_LOGIN);
@@ -225,7 +225,7 @@ public class MobileRequestController extends AbstractController {
 				break;
 			case CHECK_VEHICLE:
 				logger.debug("Entering {} service", ServiceNames.CHECK_VEHICLE);
-				dto = mapService.checkUserParked(dto.getEmail());
+				dto = mapService.checkVehicle(dto.getEmail());
 				break;
 			case REMOVE_VEHICLE:
 				logger.debug("Entering {} service", ServiceNames.REMOVE_VEHICLE);

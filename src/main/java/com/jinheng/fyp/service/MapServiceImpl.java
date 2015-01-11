@@ -75,19 +75,30 @@ public class MapServiceImpl implements MapService {
 			Lot lot = lotDao.getLotByID(slot.getLot().getLotID());
 			ParkingUser parkingUser = parkingUserDao.getUserByEmail(userEmail);
 
+			// user is parked somewhere else
 			if (checker != null) {
 				if (checker.getLot().getLotID() == lot.getLotID()) {
 					dtoToReturn.setAlreadyParkedThere(true);
 				} else {
 					if (forceRepark) {
-						slotDao.removeSlotByByUserEmail(userEmail);
-						slotDao.createSlot(userEmail, slot.getStatus(), lot, parkingUser, slot.getParkTime());
+						// repark in current parking lot
+						// check lot type first, paid and basement parking do not delete slot
+						if (lot.getLotType().equals("P") || lot.getLotType().equals("B")) {
+							checker.setCreatedBy(null);
+							slotDao.updateSlot(checker);
+						} else {
+							slotDao.removeSlotByByUserEmail(userEmail);
+							slotDao.createSlot(userEmail, slot.getStatus(), lot, parkingUser, slot.getParkTime());
+						}
+						lotDao.updateAvailability(lot);
 					} else {
 						throw new MyMobileRequestException(ErrorStatus.USER_PARKED, ErrorStatus.USER_PARKED.getDefaultMessage());
 					}
 				}
 			} else {
+				// parked successfully
 				slotDao.createSlot(userEmail, slot.getStatus(), lot, parkingUser, slot.getParkTime());
+				lotDao.updateAvailability(lot);
 				dtoToReturn.setAlreadyParkedThere(false);
 			}
 			return dtoToReturn;
@@ -97,7 +108,7 @@ public class MapServiceImpl implements MapService {
 	}
 
 	@Override
-	public JSONServiceDTO checkUserParked(String email) {
+	public JSONServiceDTO checkVehicle(String email) {
 		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
 		try {
 			Slot slot = slotDao.getSlotByUserEmail(email);
@@ -117,7 +128,11 @@ public class MapServiceImpl implements MapService {
 	public JSONServiceDTO removeVehicle(String email) {
 		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
 		try {
+			Slot slot = slotDao.getSlotByUserEmail(email);
+			Lot lot = slot.getLot();
+
 			slotDao.removeSlotByByUserEmail(email);
+			lotDao.updateAvailability(lot);
 			dtoToReturn.setForceRepark(true);
 
 		} catch (Exception e) {
@@ -125,4 +140,37 @@ public class MapServiceImpl implements MapService {
 		}
 		return dtoToReturn;
 	}
+
+	@Override
+	public void updateAvailabilityOnSensorChanged(Long slotID, Boolean parked) {
+		try {
+			if (parked) {
+				Slot slot = slotDao.getSlotByID(slotID);
+				slot.setStatus("F");
+				slotDao.updateSlot(slot);
+			} else {
+				Slot slot = slotDao.getSlotByID(slotID);
+				slot.setStatus("E");
+				slotDao.updateSlot(slot);
+			}
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	@Override
+	public JSONServiceDTO saveParkedSlotDetails(String email, Slot slot) {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+
+		// remove previously saved slot first and proceed to updating current slot status
+		// TODO null pointer chance
+		slotDao.removeSlotByByUserEmail(email);
+		// just update straight, slot from NFC/QR contain slotID
+		slot.setCreatedBy(email);
+		slotDao.updateSlot(slot);
+		dtoToReturn.setSlot(slot);
+
+		return dtoToReturn;
+	}
+
 }

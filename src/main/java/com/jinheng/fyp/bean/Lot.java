@@ -13,7 +13,7 @@ public class Lot extends BasicTable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer lotID;
+	private Long lotID;
 
 	private String lotName;
 
@@ -160,7 +160,7 @@ public class Lot extends BasicTable {
 		this.price = price;
 	}
 
-	public Integer getLotID() {
+	public Long getLotID() {
 		return lotID;
 	}
 
