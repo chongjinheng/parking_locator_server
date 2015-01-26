@@ -231,6 +231,10 @@ public class MobileRequestController extends AbstractController {
 				logger.debug("Entering {} service", ServiceNames.REMOVE_VEHICLE);
 				dto = mapService.removeVehicle(dto.getEmail());
 				break;
+			case QR_SCANNED:
+				logger.debug("Entering {} service", ServiceNames.QR_SCANNED);
+				dto = mapService.updateOnQRScanned(dto.getSlot(), dto.getEmail());
+				break;
 
 			default:
 				logger.error("Service name not found: " + serviceNameEnum);

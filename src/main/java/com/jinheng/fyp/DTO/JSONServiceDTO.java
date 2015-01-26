@@ -44,6 +44,15 @@ public class JSONServiceDTO {
 	private Slot slot;
 	private Boolean alreadyParkedThere;
 	private Boolean forceRepark;
+	private Boolean slotUpdated;
+
+	public Boolean isSlotUpdated() {
+		return slotUpdated;
+	}
+
+	public void setSlotUpdated(Boolean slotUpdated) {
+		this.slotUpdated = slotUpdated;
+	}
 
 	public String getOldPassword() {
 		return oldPassword;

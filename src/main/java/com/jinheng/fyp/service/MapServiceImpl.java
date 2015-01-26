@@ -81,14 +81,19 @@ public class MapServiceImpl implements MapService {
 					dtoToReturn.setAlreadyParkedThere(true);
 				} else {
 					if (forceRepark) {
-						// repark in current parking lot
+						// repark in another parking lot
 						// check lot type first, paid and basement parking do not delete slot
-						if (lot.getLotType().equals("P") || lot.getLotType().equals("B")) {
+						if (checker.getStatus().equals("E") || checker.getStatus().equals("F")) {
 							checker.setCreatedBy(null);
+							checker.setStatus("E");
+							checker.setParkTime(null);
 							slotDao.updateSlot(checker);
+							slotDao.createSlot(userEmail, slot.getStatus(), lot, parkingUser, slot.getParkTime());
+							dtoToReturn.setAlreadyParkedThere(false);
 						} else {
 							slotDao.removeSlotByByUserEmail(userEmail);
 							slotDao.createSlot(userEmail, slot.getStatus(), lot, parkingUser, slot.getParkTime());
+							dtoToReturn.setAlreadyParkedThere(false);
 						}
 						lotDao.updateAvailability(lot);
 					} else {
@@ -131,7 +136,14 @@ public class MapServiceImpl implements MapService {
 			Slot slot = slotDao.getSlotByUserEmail(email);
 			Lot lot = slot.getLot();
 
-			slotDao.removeSlotByByUserEmail(email);
+			if (slot.getStatus().equals("U")) {
+				slotDao.removeSlotByByUserEmail(email);
+			} else {
+				slot.setStatus("E");
+				slot.setParkTime(null);
+				slot.setCreatedBy(null);
+				slotDao.updateSlot(slot);
+			}
 			lotDao.updateAvailability(lot);
 			dtoToReturn.setForceRepark(true);
 
@@ -151,6 +163,7 @@ public class MapServiceImpl implements MapService {
 			} else {
 				Slot slot = slotDao.getSlotByID(slotID);
 				slot.setStatus("E");
+				slot.setCreatedBy(null);
 				slotDao.updateSlot(slot);
 			}
 		} catch (Exception e) {
@@ -158,18 +171,36 @@ public class MapServiceImpl implements MapService {
 		}
 	}
 
-	@Override
-	public JSONServiceDTO saveParkedSlotDetails(String email, Slot slot) {
+	// sensor function, TEMPORARY TRIGGER BY QR and remove vehicle
+	public JSONServiceDTO updateSlotStatus(Long slotID, Boolean filled) {
 		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
-
-		// remove previously saved slot first and proceed to updating current slot status
-		// TODO null pointer chance
-		slotDao.removeSlotByByUserEmail(email);
-		// just update straight, slot from NFC/QR contain slotID
-		slot.setCreatedBy(email);
+		Slot slot;
+		slot = slotDao.getSlotByID(slotID);
+		if (filled) {
+			slot.setStatus("F");
+		} else {
+			slot.setStatus("E");
+		}
 		slotDao.updateSlot(slot);
-		dtoToReturn.setSlot(slot);
+		return dtoToReturn;
+	}
 
+	@Override
+	public JSONServiceDTO updateOnQRScanned(Slot slot, String email) throws MyMobileRequestException, Exception {
+		JSONServiceDTO dtoToReturn = new JSONServiceDTO();
+		Slot dbSlot = slotDao.getSlotByID(slot.getSlotID());
+
+		Slot currentParkedSlot = slotDao.getSlotByUserEmail(email);
+		if (currentParkedSlot.getStatus().equals("U")) {
+			slotDao.removeSlotByByUserEmail(email);
+		}
+
+		dbSlot.setCreatedBy(email);
+		dbSlot.setParkTime(slot.getParkTime());
+		slotDao.updateSlot(dbSlot);
+
+		updateSlotStatus(dbSlot.getSlotID(), true);
+		dtoToReturn.setSlotUpdated(true);
 		return dtoToReturn;
 	}
 
