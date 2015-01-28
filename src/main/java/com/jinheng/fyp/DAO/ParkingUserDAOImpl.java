@@ -11,13 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jinheng.fyp.bean.ForgotPasswordSession;
 import com.jinheng.fyp.bean.ParkingUser;
 
-/**
- * Pos User DAO Class
- * 
- * @author original author
- * @author Darren
- * @author chengyang
- */
 @Repository
 @Transactional
 public class ParkingUserDAOImpl extends GenericDAO implements ParkingUserDAO {

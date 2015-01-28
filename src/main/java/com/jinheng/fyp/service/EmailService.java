@@ -20,12 +20,6 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.jinheng.fyp.bean.EmailDetails;
 
-/**
- * Setup email protocol and send email. Specify email to be sent according to mode<br>
- * Field: targetEmail, mode, List info
- * 
- * @author chongjinheng
- */
 @Service
 public class EmailService {
 
@@ -40,12 +34,8 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender mailSender;
 
-	/**
-	 * Setup email protocol and send email. Specify email to be sent according to mode<br>
-	 * 
-	 * @author chongjinheng
-	 */
 	public void sendEmail(final String targetEmail, final int mode, final EmailDetails info) throws MailException {
+
 		class MultithreadEmail implements Runnable {
 
 			final Map<String, Object> model = new HashMap<String, Object>();
@@ -80,5 +70,33 @@ public class EmailService {
 		Thread t = new Thread(new MultithreadEmail());
 		t.start();
 
+	}
+
+	public void sendEmail(final String targetEmail, final EmailDetails info) throws MailException {
+		class MultithreadEmail implements Runnable {
+			@Override
+			public void run() {
+				try {
+
+					MimeMessagePreparator preparator = new MimeMessagePreparator() {
+
+						public void prepare(MimeMessage mimeMessage) throws Exception {
+							MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true);
+							message.setTo(targetEmail);
+							message.setFrom(new InternetAddress("noreply@parking.locator.gmail.com"));
+							message.setSubject("Feedback");
+							message.setText(info.getFeedback());
+						}
+					};
+					mailSender.send(preparator);
+					logger.info("Email Sent to " + targetEmail);
+
+				} catch (MailException e) {
+					logger.error("Error in sendEmail :" + e);
+				}
+			}
+		}
+		Thread t = new Thread(new MultithreadEmail());
+		t.start();
 	}
 }

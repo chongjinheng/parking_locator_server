@@ -2,12 +2,6 @@ package com.jinheng.fyp.DAO;
 
 import java.io.Serializable;
 
-/**
- * CrudDAO Class
- * 
- * @author original author
- * @author waikit chong
- */
 public interface CrudDAO<T> {
 
 	public Long create(Object object);

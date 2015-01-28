@@ -11,14 +11,6 @@ import org.hibernate.annotations.Type;
 
 import com.jinheng.fyp.util.JSONExclusion;
 
-/**
- * Basic class that will be extended from other children classes. <br>
- * Field: createdDate, modifiedDate, createdBy, modifiedBy
- * 
- * @param Date, Date, String, String
- * @author chengyang
- */
-
 @MappedSuperclass
 public abstract class BasicTable implements Serializable {
 

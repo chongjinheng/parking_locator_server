@@ -1,11 +1,5 @@
 package com.jinheng.fyp.DAO;
 
-/**
- * 
- * @author chengyang
- * 
- */
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,7 +20,7 @@ public class ForgotPasswordSessionDAOImpl extends GenericDAO implements ForgotPa
 	private CrudDAO crudDAO;
 
 	@Autowired
-	private ParkingUserDAO posUserDAO;
+	private ParkingUserDAO parkingUserDao;
 
 	@Override
 	public Long createForgetPasswordSession(String email, String hasedTempPassword) {
@@ -50,7 +44,7 @@ public class ForgotPasswordSessionDAOImpl extends GenericDAO implements ForgotPa
 
 	@Override
 	public void updateForgetPasswordSession(String hashedTempPassword, String userEmail) {
-		ParkingUser posUser = posUserDAO.getUserByEmail(userEmail);
+		ParkingUser posUser = parkingUserDao.getUserByEmail(userEmail);
 
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DATE, 1);
@@ -67,7 +61,7 @@ public class ForgotPasswordSessionDAOImpl extends GenericDAO implements ForgotPa
 
 	@Override
 	public void deleteForgetPasswordSession(String userEmail) {
-		ParkingUser posUser = posUserDAO.getUserByEmail(userEmail);
+		ParkingUser posUser = parkingUserDao.getUserByEmail(userEmail);
 		ForgotPasswordSession forgotPassSession = posUser.getForgotPasswordSession();
 		forgotPassSession.setDeleteFlag(true);
 		crudDAO.update(forgotPassSession);

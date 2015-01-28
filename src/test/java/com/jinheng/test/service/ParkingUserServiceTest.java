@@ -9,31 +9,16 @@ import com.jinheng.fyp.DTO.JSONServiceDTO;
 import com.jinheng.fyp.service.ParkingUserService;
 import com.jinheng.test.controller.BaseTestCase;
 
-/**
- * A unit test for MobileRequestController.<br/>
- * In this unit test, we can test a mobile service requested from mobile app.
- * 
- * @author chongjinheng
- */
-public class PosUserServiceTest extends BaseTestCase {
+public class ParkingUserServiceTest extends BaseTestCase {
 
 	@Autowired
 	private ParkingUserService posUserService;
 
-	@Value("${userEmail}")
+	@Value("${email}")
 	private String userEmail;
-
-	@Value("${storeID}")
-	private Long storeID;
-
-	@Value("${storeName}")
-	private String storeName;
 
 	@Value("${password}")
 	private String password;
-
-	@Value("${firstTimeSignupEmail}")
-	private String email;
 
 	@Value("${oldPassword}")
 	private String oldPassword;
@@ -44,17 +29,10 @@ public class PosUserServiceTest extends BaseTestCase {
 	@Value("${forceChangePassword}")
 	private Boolean forceChangePassword;
 
-	@Value("${newStoreName}")
-	private String newStoreName;
-
-	@Value("${productImage3}")
-	private String storeImage;
-
 	JSONServiceDTO dto = new JSONServiceDTO();
 
 	@Test
 	public void testDoSignUp() throws Exception {
-		// dto = posUserService.doSignUp(storeName, email, password);
 	}
 
 	@Test
@@ -70,16 +48,9 @@ public class PosUserServiceTest extends BaseTestCase {
 
 	@Test
 	public void testDoForgotPass() throws Exception {
-		// dto = posUserService.doForgotPassword(userEmail);
 	}
 
 	@Test
 	public void testDoChangePass() throws Exception {
-		// dto = posUserService.doChangePassword(userEmail, oldPassword, newPassword, forceChangePassword);
-	}
-
-	@Test
-	public void testDoUpdateProfile() throws Exception {
-		// posUserService.doUpdateProfile(userEmail, storeID, newStoreName, storeImage);
 	}
 }

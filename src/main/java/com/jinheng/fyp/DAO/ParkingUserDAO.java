@@ -2,13 +2,6 @@ package com.jinheng.fyp.DAO;
 
 import com.jinheng.fyp.bean.ParkingUser;
 
-/**
- * Pos User DAO Class
- * 
- * @author original author
- * @author Darren
- * @author chengyang
- */
 public interface ParkingUserDAO {
 
 	public ParkingUser getUserByEmail(String email);

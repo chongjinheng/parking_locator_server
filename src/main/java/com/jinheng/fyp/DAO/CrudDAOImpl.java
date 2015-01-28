@@ -5,12 +5,6 @@ import java.io.Serializable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * CrudDAO Class
- * 
- * @author original author
- * @author JinHeng
- */
 @Service
 @Transactional(readOnly = false)
 public class CrudDAOImpl<T> extends GenericDAO implements CrudDAO<T> {

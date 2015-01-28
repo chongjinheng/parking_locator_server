@@ -6,7 +6,6 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
  * Override Hibernate settings to generate table and column name according to what we want
  * 
  * @see ImprovedNamingStrategy
- * @author chengyang
  */
 public class CustomNamingStrategy extends ImprovedNamingStrategy {
 

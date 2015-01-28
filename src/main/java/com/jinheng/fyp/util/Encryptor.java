@@ -3,12 +3,6 @@ package com.jinheng.fyp.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * Hash a string with sha512
- * 
- * @author chengyang
- */
-
 public class Encryptor {
 
 	public static String hashPassword(String password, String email) {

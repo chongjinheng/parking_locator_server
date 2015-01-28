@@ -1,10 +1,5 @@
 package com.jinheng.fyp.DTO;
 
-/**
- * Error JSON Class
- * 
- * @author original author
- */
 public class JSONServiceError {
 
 	private final String code;// eIndex

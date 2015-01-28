@@ -5,11 +5,6 @@ import java.util.List;
 import com.jinheng.fyp.bean.Lot;
 import com.jinheng.fyp.bean.Slot;
 
-/**
- * General JSON Transfer Object
- * 
- * @author original author
- */
 public class JSONServiceDTO {
 
 	/****** GENERAL ******/
@@ -17,6 +12,7 @@ public class JSONServiceDTO {
 	private JSONServiceError error;
 	private String language;
 	private String sessionKey;
+	private String feedback;
 
 	/***** IDs *****/
 	private Long ID;
@@ -45,6 +41,14 @@ public class JSONServiceDTO {
 	private Boolean alreadyParkedThere;
 	private Boolean forceRepark;
 	private Boolean slotUpdated;
+
+	public String getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
 
 	public Boolean isSlotUpdated() {
 		return slotUpdated;

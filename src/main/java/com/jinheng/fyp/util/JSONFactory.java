@@ -4,11 +4,6 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-/**
- * JSON Factory serialization and deserialization
- * 
- * @author original author
- */
 public class JSONFactory {
 
 	public static Gson create() {

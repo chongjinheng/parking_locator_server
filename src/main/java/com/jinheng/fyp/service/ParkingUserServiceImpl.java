@@ -20,11 +20,6 @@ import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.fyp.util.Formatters;
 import com.jinheng.fyp.util.Validators;
 
-/**
- * Pos User Services, contains signup, login, forgotPassword, changePassword and update profile
- * 
- * @author chongjinheng
- */
 @Service
 public class ParkingUserServiceImpl implements ParkingUserService {
 
@@ -310,5 +305,13 @@ public class ParkingUserServiceImpl implements ParkingUserService {
 
 		return dtoToReturn;
 
+	}
+
+	@Override
+	public void sendFeedback(String feedback) throws Exception {
+		EmailDetails details = new EmailDetails();
+		details.setEmail("parking.locator.app@gmail.com");
+		details.setFeedback(feedback);
+		emailService.sendEmail("parking.locator.app@gmail.com", details);
 	}
 }

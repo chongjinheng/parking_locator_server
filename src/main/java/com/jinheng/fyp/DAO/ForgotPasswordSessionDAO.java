@@ -2,10 +2,6 @@ package com.jinheng.fyp.DAO;
 
 import com.jinheng.fyp.bean.ForgotPasswordSession;
 
-/**
- * @author chengyang
- */
-
 public interface ForgotPasswordSessionDAO {
 
 	public Long createForgetPasswordSession(String email, String hashedTempPassword);

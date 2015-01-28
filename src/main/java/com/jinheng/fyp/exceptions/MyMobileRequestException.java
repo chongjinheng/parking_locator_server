@@ -2,12 +2,6 @@ package com.jinheng.fyp.exceptions;
 
 import com.jinheng.fyp.enums.ErrorStatus;
 
-/**
- * POS version of SSPayMobileServiceException
- * 
- * @author azliabdullah
- * 
- */
 public class MyMobileRequestException extends MyException {
 
 	private static final long serialVersionUID = 1184800589758888L;

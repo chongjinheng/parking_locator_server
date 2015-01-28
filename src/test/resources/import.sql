@@ -1,0 +1,24 @@
+INSERT INTO PRICE VALUES (2,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'200','300','5000','RATE','100');
+INSERT INTO PRICE VALUES (1,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'100','200','5000','FLAT','100');
+
+INSERT INTO LOT VALUES (1,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Lingkaran Cyber Point Timur Cyber 12, 63000','M',200,'Cyberjaya',22,2.922120,101.651440,'DPulze Shopping Center','B','DPulze Residence, Jaya Grocer, Sushi Zanmai, The Manhattan Fish Market',10,'10am - 10pm','Selangor',1);
+INSERT INTO LOT VALUES (2,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Perdana CBD Perdana, 63000','U',200,'Cyberjaya',0,2.923470,101.651279,'CBD Perdana','O','Secret Recipe, Restaurant Saba',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (3,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Perdana CBD Perdana, 63000','U',200,'Cyberjaya',0,2.926046,101.651516,'CBD Perdana 2','O','My Iman Noodle House, Sumo Japanese Restaurant, Sysaban Restaurant',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (4,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Teknokrat 3, Glomac Cyberjaya, Cyber 12, 63000','U',200,'Cyberjaya',0,2.924434,101.655914,'Glomac Cyberjaya','O','Nasi Kandar Pelita, Hinz Kitchen, Good Taste House, Jscoozi, Khush Vegetarian, Restaurant Umar Yusoff',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (5,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Lingkaran Cyberpoint, Neo Cyber, 63000 ','U',200,'Cyberjaya',0,2.915337,101.649401,'Neo Cyber','O','Homestyle Chinese Food Cafe, Restaurant Khadem, Restaurant Al-nazmaju, Restaurant Pizza Pizza, Restaurant Dsedup, Restaurant DBanana Leaf, Restaurant Broadway, Seri Penang Restaurang, Chillout',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (6,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Prima 11, Block 3545, Jalan Teknokrat 6, 63000','U',200,'Cyberjaya',0,2.914120,101.655398,'Retreat Cyberjaya','O','Burger King, Its A Grind Coffee House, Restaurant Lok Yoon, Zhia Kitchen',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (7,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Persiaran Apec, 63000','U',200,'Cyberjaya',0,2.920420,101.659132,'Cottage Walk','O','Pizza Hut, KFC, Dapur Penyet, Papparich, Petronas',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (8,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Teknokrat 5, 63000','U',200,'Cyberjaya',0,2.921234,101.656954,'Prima Avenue','O','Old Town White Coffee, Padi House, Tokio Cafe, Kitchen Village, Where Else Delights, Starbucks Coffee, Maybank, CIMB Bank',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (9,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Usahawan, 63000','U',200,'Cyberjaya',0,2.920673,101.651090,'The Street Mall','O','QThai, Indian Cuisine, Melaka Kitchen',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (10,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','U',200,'Cyberjaya',0,2.938505,101.645278,'The Street Mall','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (11,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','L',200,'Cyberjaya',0,2.923232,101.637657,'Cyberia','O','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (12,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Kelab, Off Persiaran Semarak Api, 63000','M',200,'Cyberjaya',0,2.9242392,101.639867,'Cyberia','B','Golf, Go Kart, Paint Ball',0,'24 Hour','Selangor',2);
+
+INSERT INTO LOT VALUES (13,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Multimedia, 63000','H',200,'Cyberjaya',0,2.927460,101.641079,'Siti Hasmah Digital Library','O','Tau Cafe, Hot and Roll',0,'24 Hour','Selangor',1);
+INSERT INTO LOT VALUES (14,'chongjinheng@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'Jalan Multimedia, 63000','H',200,'Cyberjaya',0,2.928355,101.640757,'FCI Parking','B','Cool Blog, FCI Cafe, FPrint',0,'24 Hour','Selangor',2);
+
+INSERT INTO ADMIN VALUES (1,'admin@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,1);
+INSERT INTO PARKING_USER VALUES (2,'admin@gmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'admin@gmail.com',NULL,'b396b8b52c1af73338f753c178d04c432258f1905a9a3a6e71061a85a4c901fad930ec135ba6da3d15843775864ea32b7963e3d3a6bb8980c3acbaa29e7a3d67','admin',1,NULL);
+
+INSERT INTO SLOT VALUES(1,NULL,'2014-04-17 15:25:30',0,NULL,NULL,1,'B2','2015-01-12 06:15:27','A26','E',12,NULL);
+INSERT INTO SLOT VALUES(2,'chongjinheng@hotmail.com','2014-04-17 15:25:30',0,NULL,NULL,1,'B2','2015-01-29 06:15:27','A26','U',13,NULL);

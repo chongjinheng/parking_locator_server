@@ -7,14 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-/**
- * Reference to determine whether user used forgotPassword to hard reset their password<br>
- * Field: tempPassword, validTillDate
- * 
- * @param String, Date
- * @author chengyang
- */
-
 @Entity
 public class ForgotPasswordSession extends BasicTable {
 

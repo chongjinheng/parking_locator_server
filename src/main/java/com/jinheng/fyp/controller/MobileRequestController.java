@@ -29,21 +29,12 @@ import com.jinheng.fyp.service.ParkingUserService;
 import com.jinheng.fyp.util.Encryptor;
 import com.jinheng.fyp.util.JSONFactory;
 
-/**
- * POS version of GenericMobileServiceController<br/>
- * Renamed to reflect more on this Class' role and avoid confusion
- * 
- * @author original author
- * @author azliabdullah
- */
 @Controller
 public class MobileRequestController extends AbstractController {
 
 	private int SESSION_TIME_OUT = 60 * 60 * 24;
 
 	private static final Logger logger = LoggerFactory.getLogger(MobileRequestController.class);
-	// TODO later phase? perf logger
-	// TODO later phase? smartdeviceversioning
 
 	@Autowired
 	private ParkingUserService parkingUserService;
@@ -51,15 +42,8 @@ public class MobileRequestController extends AbstractController {
 	@Autowired
 	private MapService mapService;
 
-	// @Autowired
-	// private SessionService sessionService;
-
-	// TODO exception logger here in later phase?
-
 	@Autowired
 	private MessageSource messageSource;
-
-	// TODO initResource and versioning later phase?
 
 	@RequestMapping(value = { "" }, method = RequestMethod.GET)
 	@ResponseBody
@@ -72,28 +56,15 @@ public class MobileRequestController extends AbstractController {
 			throws Exception {
 		String serviceName = null;
 		try {
-			// TODO get rsa3, senderPublicKey from request's session. They are used for encryption/decryption. Not in Phase 1
-
 			StringBuilder newJsonFromMobile = Encryptor.hidePasswordFromMobile(jsonFromMobile);
 			StringBuilder maskedJSONFromMobile = Encryptor.hideSessionKeyFromMobile(newJsonFromMobile.toString());
 
 			logger.debug("\nJSON sent from mobile app: {}", maskedJSONFromMobile);
 
-			// checkCookie here
-			// checkCookie(request, response);
-			// logger.debug("Cookie validated");
-
-			// setMaxInactiveInterval (when session will time out)
 			request.getSession().setMaxInactiveInterval(SESSION_TIME_OUT);
 
 			// do process request and get the response JSON
-			// TODO later phase? decrypt the json before convert to JSONServiceDTO object then process
-			// in Phase 1 directly convert to JSONServiceDTO object then process
 			JSONServiceDTO requestObj = JSONFactory.create().fromJson(jsonFromMobile, JSONServiceDTO.class);
-
-			// check whether the server session match with the dto session, then check with the db
-			// checkSessionKey(requestObj, request, response);
-			// logger.debug("Session validated");
 
 			serviceName = requestObj.getServiceName();
 			JSONServiceDTO respObj = processRequest(requestObj, locale, request, response);
@@ -113,32 +84,7 @@ public class MobileRequestController extends AbstractController {
 				}
 			}
 			if (request.getSession() != null) {
-
-				// if haven't login or signUp won't set session
-				if (!(respObj.getError() != null && (serviceName.equals(ServiceNames.FORGOT_PASSWORD.toString()) || serviceName.equals(ServiceNames.LOGIN.toString()) || serviceName
-						.equals(ServiceNames.SIGN_UP.toString())))) {
-					// renew session key
-					// String sessionKey = generateAndSetSessionKey(respObj);
-					// logger.debug("New session key set in DTO");
-					//
-					// // renew session cookie
-					// Cookie cookie = generateAndSetCookie(response);
-					// logger.debug("New cookie added to response");
-					//
-					// // set the session key and cookie to the session
-					// setCookieToSession(request.getSession(), cookie);
-					// logger.debug("Cookie set in session");
-
-					// if (respObj.getEmail() == null) {
-					// respObj.setEmail(requestObj.getEmail());
-					// }
-					respObj.setServiceName(requestObj.getServiceName());
-
-					// this is the part where you pass current cookie data into the new session
-					// this is the part you update db
-					// setSessionKeyToSession(request.getSession(), sessionKey, respObj);
-					// logger.debug("Session key set in database");
-				}
+				respObj.setServiceName(requestObj.getServiceName());
 			}
 
 			// flushResponse will throw an IOException if client connection is dropped
@@ -154,7 +100,6 @@ public class MobileRequestController extends AbstractController {
 
 				flushResponse(response, getExceptionMessage(locale, e.getErrorStatus(), serviceName));
 
-				// TODO if want to save exception to incident table
 			} catch (MyRecoverableException e1) {
 				logger.error("Problem returning the response to client. Has the client disconnected to my app?");
 				throw new RuntimeException(e1);
@@ -175,7 +120,6 @@ public class MobileRequestController extends AbstractController {
 				logger.error("Problem returning the response to client. Has the client disconnected to my app?");
 				throw new RuntimeException(e1);
 			}
-			// TODO if want to save exception to incident table
 			throw e;
 		}
 	}
@@ -190,13 +134,11 @@ public class MobileRequestController extends AbstractController {
 			case REGISTER:
 				logger.debug("Entering {} service", ServiceNames.REGISTER);
 				dto = parkingUserService.doRegister(dto.getEmail(), dto.getPassword());
-				// persistToSession(dto, request, dto.getEmail());
 				logger.debug("Current user set in session");
 				break;
 			case LOGIN:
 				logger.debug("Entering {} service", ServiceNames.LOGIN);
 				dto = parkingUserService.doLogIn(dto.getEmail(), dto.getPassword());
-				// persistToSession(dto, request, dto.getEmail());
 				logger.debug("Current user set in session");
 				break;
 			case LOGOUT:
@@ -235,6 +177,10 @@ public class MobileRequestController extends AbstractController {
 				logger.debug("Entering {} service", ServiceNames.QR_SCANNED);
 				dto = mapService.updateOnQRScanned(dto.getSlot(), dto.getEmail());
 				break;
+			case SEND_FEEDBACK:
+				logger.debug("Entering {} service", ServiceNames.SEND_FEEDBACK);
+				parkingUserService.sendFeedback(dto.getFeedback());
+				break;
 
 			default:
 				logger.error("Service name not found: " + serviceNameEnum);
@@ -249,8 +195,6 @@ public class MobileRequestController extends AbstractController {
 		}
 		return dto;
 	}
-
-	// TODO check platform version, checkPlatformVersion
 
 	// fill all ErrorStatus inside messages_error
 	private JSONServiceDTO getExceptionMessage(final Locale locale, final ErrorStatus errorStatus, final String serviceName) {

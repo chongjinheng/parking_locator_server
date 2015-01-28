@@ -1,24 +1,11 @@
 package com.jinheng.fyp.enums;
 
-/**
- * Client implementation specific error statuses.
- * 
- * @author azliabdullah
- */
-
 public enum ErrorStatus {
 	// error code between 5000 - 5999 && 8000 - 8999 are recoverable error, it's fine. user can retry
-	INIT_ERROR("2001", "Initialization error", "error.initialization-fault"),
 
 	SESSION_TIMED_OUT("2002", "Session expired.", "error.session-timed-out"),
 
 	ACCESS_DENIED("2003", "Access denied", "error.authorization-error"),
-
-	ERROR_CONNECTION_TIMED_OUT("2004", "Connection timed out", "error.connection-timed-out"),
-
-	APPLICATION_OUTDATED("2005", "\"You are using an outdated application. Please update your version", "update.mobile.please"),
-
-	APPLICATION_SYSTEM_DOWN("2006", "System is currently unavailable. Please try again later", ""),
 
 	ERROR_CLIENT_DISCONNECTED("2007", "Error, client disconnected", "error.client-disconnected"),
 
@@ -44,10 +31,6 @@ public enum ErrorStatus {
 	PASSWORD_REQ_ERROR("8104", "You have used this password before.\n\nPlease enter a different password", "error.pass-req-error"),
 
 	USER_DOES_NOT_EXIST("8105", "This email is not registered\nPlease register before logging in", "error.user-exist"),
-
-	TARGET_ITEM_NOT_EXIST("8106", "Item has been modified by a different user\nPlease login again", "error.missing-target"),
-
-	DUPLICATE_PRODUCT_CODE("8107", "Product code is already registered", "error.duplicate-code"),
 
 	USER_PARKED("8108", "You have already parked your vehicle elsewhere.\n\nProceed to park in this parking lot?", "error.user-parked");
 

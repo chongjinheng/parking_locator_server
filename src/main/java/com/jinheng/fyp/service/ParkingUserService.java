@@ -14,4 +14,6 @@ public interface ParkingUserService {
 
 	public JSONServiceDTO doChangePassword(String email, String oldPassword, String newPassword, Boolean isForceChangePassword) throws Exception;
 
+	public void sendFeedback(String feedback) throws Exception;
+
 }
